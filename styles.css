@@ -91,6 +91,8 @@ input {
     color: white;
     font-size: 13px;
     padding: 8px 0;
+    position: relative;
+    z-index: 3000;    
 }
 
 .top-bar-container {
@@ -239,6 +241,7 @@ input {
     min-height: 500px;
     display: flex;
     align-items: center;
+    position: relative;
 }
 
 
@@ -276,7 +279,7 @@ input {
     background: white;
     border-radius: 18px;
     box-shadow: 0 12px 30px rgba(0,0,0,0.18);
-    overflow: hidden;
+    overflow: visible;
     max-width: 1300px;
     max-height: fit-content;
     margin: 0 auto;
@@ -424,18 +427,16 @@ input {
 
 .form-row-main {
     display: grid;
-    gap: 16px;
-    align-items: end;
-    display: grid;
     grid-template-columns: 
-            1.2fr   /* Origen */
-            1.2fr   /* Destino */
-            1.6fr   /* Fechas */
-            0.9fr   /* Pasajeros */
-            140px;  /* Botón */
-    gap: 14px;
+        1.2fr     /* Origen */
+        1.2fr     /* Destino */
+        1.3fr     /* Fechas */
+        0.7fr     /* Pasajeros */
+        160px;    /* Botón */
+    gap: 12px;
     align-items: end;
 }
+
 
 .form-group {
     display: flex;
@@ -449,7 +450,7 @@ input {
     color: var(--text-secondary);
 }
 
-.input-with-icon {
+/* .input-with-icon {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -461,7 +462,13 @@ input {
     transition: var(--transition);
     position: relative;
     font-size: 14px;
+} */
+
+.input-with-icon {
+    padding: 10px 12px;
+    min-height: 44px;
 }
+
 
 .input-with-icon:focus-within {
     border-color: var(--avianca-red);
@@ -489,7 +496,8 @@ input {
 .date-group {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    gap: 8px;
+    padding: 4px 4px;
 }
 
 .date-input-wrapper {
@@ -517,6 +525,7 @@ input {
     padding: 16px 46px;
     border-radius: 12px;
     font-size: 16px;
+    min-width: 160px;
 }
 
 .btn-buscar:hover {
@@ -584,6 +593,7 @@ input {
    PROMOTIONAL BANNERS
    =================================== */
 .promo-banners {
+    margin-top: 10px;
     padding: 60px 0;
 }
 
@@ -740,6 +750,7 @@ input {
     color: var(--avianca-red);
     font-weight: 600;
     font-size: 14px;
+    justify-content: right;
 }
 
 .link-red:hover {
@@ -783,7 +794,8 @@ input {
   display:flex;
   justify-content:space-between;
   align-items:center;
-  margin-bottom:32px;
+  margin-bottom:4px;
+  text-align: center;
 }
 
 .offers-header h3 {
@@ -804,6 +816,7 @@ input {
 }
 
 .offer-card {
+  margin-top: 0%;
   border-radius:16px;
   overflow:hidden;
   box-shadow:var(--shadow-md);
@@ -1179,4 +1192,252 @@ input {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* ==============================
+   AVIANCE STYLE SEARCH GRID
+============================== */
+
+.form-row-main{
+  display:grid;
+  grid-template-columns:
+    2.8fr   /* Origen + Destino */
+    2.2fr   /* Fechas */
+    0.8fr   /* Pasajeros */
+    140px;  /* Botón */
+  gap:12px;
+  align-items:end;
+}
+
+
+/* BLOQUES GRANDES */
+.field-pair{
+  display:flex;
+  align-items:center;
+  background:white;
+  border:1px solid var(--border-color);
+  border-radius:14px;
+  padding:6px 8px;
+}
+
+.field-pair .form-group{
+  flex:1;
+}
+
+.field-pair .input-with-icon{
+  padding-left:4px;
+  border:none;
+  padding:8px 10px;
+  min-height:44px;
+  box-shadow:none;
+  gap: 8px;
+}
+
+/* SEPARADOR INTERNO */
+.divider{
+  width:1px;
+  height:36px;
+  background:#e5e5e5;
+}
+
+/* FECHAS */
+.date-pair{
+  gap:10px;
+}
+
+/* PASAJEROS */
+.passengers-group .input-with-icon{
+  min-height:20px;
+}
+
+/* BOTÓN */
+.btn-buscar{
+  min-width:160px;
+  height:52px;
+  border-radius:14px;
+  font-size:16px;
+  font-weight:700;
+}
+
+.passengers-group{
+  background:white;
+  border:1px solid #dcdcdc;
+  border-radius:14px;
+  padding:4px 8px;
+  max-width:120px;
+}
+
+
+.passengers-group .input-with-icon{
+  height:48px;
+  min-height:48px;
+  padding:0 10px;
+}
+
+.passengers-group input{
+  width:32px;
+  flex:none;
+  text-align:left;
+}
+
+/* ===============================
+   PASSENGERS DROPDOWN
+================================*/
+
+.passengers-group{
+  position:relative;
+  max-width:120px;
+}
+
+.passengers-input{
+  height:48px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  cursor:pointer;
+}
+
+.passengers-input input{
+  width:28px;
+  flex:none;
+  font-size:15px;
+  font-weight:600;
+}
+
+/* Dropdown panel */
+
+.passengers-dropdown{
+  position:absolute;
+  top:70px;
+  right:0;
+  width:260px;
+  background:white;
+  border-radius:14px;
+  box-shadow:0 12px 30px rgba(0,0,0,0.18);
+  padding:18px;
+  display:none;
+  z-index:50;
+}
+
+.passengers-dropdown h4{
+  font-size:16px;
+  margin-bottom:14px;
+}
+
+.passenger-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:14px;
+  font-size:14px;
+}
+
+.counter{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.counter button{
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  border:1px solid #ccc;
+  font-size:16px;
+}
+
+.counter span{
+  min-width:18px;
+  text-align:center;
+  font-weight:600;
+}
+
+.confirm-passengers{
+  width:100%;
+  height:42px;
+  background:#111;
+  color:white;
+  border-radius:22px;
+  font-weight:600;
+  margin-top:10px;
+}
+
+.passengers-group{
+  position:relative;
+}
+
+/* Dropdown box */
+.passengers-dropdown{
+  position:absolute;
+  top:72px;
+  right:0;
+  width:260px;
+  background:white;
+  border-radius:14px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.18);
+  padding:16px;
+  display:none;
+  z-index:2000;
+}
+
+/* Rows */
+.passengers-dropdown .row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:14px;
+  font-size:14px;
+}
+
+/* Counter */
+.counter{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.counter button{
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  border:1px solid #ccc;
+  background:white;
+  font-size:16px;
+  cursor:pointer;
+}
+
+.counter span{
+  min-width:16px;
+  text-align:center;
+  font-weight:600;
+}
+
+/* Confirm */
+.confirm-passengers{
+  width:100%;
+  margin-top:12px;
+  padding:12px;
+  background:#111;
+  color:white;
+  border:none;
+  border-radius:20px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.flatpickr-calendar{
+  border-radius:16px;
+  box-shadow:0 12px 30px rgba(0,0,0,0.18);
+  font-family: Inter, sans-serif;
+}
+
+.flatpickr-day.selected,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange{
+  background:#111;
+  border-color:#111;
+}
+
+.flatpickr-day.today{
+  border-color:#111;
 }

@@ -8,6 +8,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </head>
 <body>
     <!-- Top Bar -->
@@ -131,76 +133,120 @@
                         </a>
                     </div>
                 </div>
-
                 <form class="search-form">
-                    <div class="form-row-main">
-                        <div class="form-group">
-                            <label>Origen</label>
-                            <div class="input-with-icon">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                                    <circle cx="12" cy="10" r="3"/>
-                                </svg>
-                                <input type="text" placeholder="Destino" value="Bogotá (BOG)">
-                            </div>
+
+                <div class="form-row-main">
+
+                    <!-- ORIGEN + DESTINO -->
+                    <div class="field-pair">
+
+                    <div class="form-group">
+                        <div class="input-with-icon">
+                        <input type="text" value="Bogotá (BOG)">
                         </div>
-
-                        <div class="form-group">
-                            <label>Destino</label>
-                            <div class="input-with-icon">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-                                </svg>
-                                <input type="text" placeholder="Destino">
-                            </div>
-                        </div>
-
-                        <div class="form-group date-group">
-                            <div class="date-input-wrapper">
-                                <label>Ida</label>
-                                <div class="input-with-icon">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                                        <line x1="16" y1="2" x2="16" y2="6"/>
-                                        <line x1="8" y1="2" x2="8" y2="6"/>
-                                        <line x1="3" y1="10" x2="21" y2="10"/>
-                                    </svg>
-                                    <input type="text" placeholder="dd/mm/yyyy" value="07/02/2026">
-                                </div>
-                            </div>
-
-                            <div class="date-input-wrapper">
-                                <label>Vuelta</label>
-                                <div class="input-with-icon">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                                        <line x1="16" y1="2" x2="16" y2="6"/>
-                                        <line x1="8" y1="2" x2="8" y2="6"/>
-                                        <line x1="3" y1="10" x2="21" y2="10"/>
-                                    </svg>
-                                    <input type="text" placeholder="dd/mm/yyyy" value="10/02/2026">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group passengers-group">
-                            <label>Pasajeros</label>
-                            <div class="input-with-icon passengers-input">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                                    <circle cx="9" cy="7" r="4"/>
-                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                                </svg>
-                                <input type="text" placeholder="1" value="1" readonly>
-                                <svg class="dropdown-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="6 9 12 15 18 9"/>
-                                </svg>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="btn-buscar">Buscar</button>
                     </div>
+
+                    <div class="divider"></div>
+
+                    <div class="form-group">
+                        <div class="input-with-icon">
+                        <input type="text" placeholder="Destino">
+                        </div>
+                    </div>
+
+                    </div>
+
+                    <!-- FECHAS -->
+                    <div class="field-pair date-pair">
+
+                    <div class="form-group">
+                        <div class="input-with-icon">
+                        <input id="dateStart" type="text" placeholder="Ida">
+                        </div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <div class="form-group">
+                        <div class="input-with-icon">
+                        <input id="dateEnd" type="text" placeholder="Vuelta">
+                        </div>
+                    </div>
+
+                    </div>
+
+                    <!-- PASAJEROS -->
+                    <div class="form-group passengers-group">
+                    <div 
+                        class="input-with-icon passengers-input"
+                        id="passengersToggle"
+                    >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+
+                        <input 
+                            id="passengersValue"
+                            type="text"
+                            value="1"
+                            readonly
+                        >
+
+                        <svg class="dropdown-arrow" width="12" height="12"
+                            viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                    </div>
+
+                    <!-- DROPDOWN -->
+                    <div id="passengersDropdown" class="passengers-dropdown">
+
+                        <div class="row">
+                        <span>Adultos</span>
+                        <div class="counter">
+                            <button data-type="adult" data-op="-">-</button>
+                            <span id="adultCount">1</span>
+                            <button data-type="adult" data-op="+">+</button>
+                        </div>
+                        </div>
+
+                        <div class="row">
+                        <span>Niños</span>
+                        <div class="counter">
+                            <button data-type="child" data-op="-">-</button>
+                            <span id="childCount">0</span>
+                            <button data-type="child" data-op="+">+</button>
+                        </div>
+                        </div>
+
+                        <div class="row">
+                        <span>Bebés</span>
+                        <div class="counter">
+                            <button data-type="baby" data-op="-">-</button>
+                            <span id="babyCount">0</span>
+                            <button data-type="baby" data-op="+">+</button>
+                        </div>
+                        </div>
+
+                        <button class="confirm-passengers">
+                        Confirmar
+                        </button>
+
+                    </div>
+
+                    </div>
+
+
+                    <!-- BOTÓN -->
+                    <button class="btn-buscar">Buscar</button>
+
+                </div>
+
                 </form>
             </div>
         </div>
@@ -236,7 +282,6 @@
 
             <div class="offers-header">
             <h3>Ofertas desde <span>Bogotá</span></h3>
-            <a href="#" class="link-red">Descubrir más ofertas →</a>
             </div>
 
             <div class="offers-grid">
@@ -282,6 +327,8 @@
                 </div>
                 </div>
             </div>
+
+            <a href="#" class="link-red">Descubrir más ofertas →</a>
 
             </div>
 

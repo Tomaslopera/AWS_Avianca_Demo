@@ -12,32 +12,32 @@ const initFormSubmission = () => {
     searchForm.addEventListener('submit', (e) => {
         e.preventDefault();
 
-        const inputs = searchForm.querySelectorAll('input[type="text"]');
-        
-        let isValid = true;
-        inputs.forEach(input => {
-            if (!input.value.trim() && !input.hasAttribute('readonly')) {
-                isValid = false;
-                input.closest('.input-with-icon').style.borderColor = '#E30613';
-                setTimeout(() => {
-                    input.closest('.input-with-icon').style.borderColor = '';
-                }, 2000);
-            }
-        });
+        const origin = document.getElementById("originInput");
+        const destination = document.getElementById("destinationInput");
+        const dateStart = document.getElementById("dateStart");
+        const dateEnd = document.getElementById("dateEnd");
+        const passengers = document.getElementById("passengersValue");
 
-        if (isValid) {
-            // Simular búsqueda (aquí conectarías con tu backend)
-            showLoadingState();
-            
-            setTimeout(() => {
-                hideLoadingState();
-                alert('¡Búsqueda realizada!\n\nEn producción, esto se conectaría a tu backend de búsqueda de vuelos en EC2.');
-            }, 1500);
-        } else {
-            alert('Por favor completa todos los campos requeridos');
+        if (
+            origin.value.trim() === "" ||
+            destination.value.trim() === "" ||
+            dateStart.value.trim() === "" ||
+            dateEnd.value.trim() === "" ||
+            passengers.value.trim() === ""
+        ) {
+            alert("Por favor completa todos los campos requeridos");
+            return;
         }
+
+        showLoadingState();
+
+        setTimeout(() => {
+            hideLoadingState();
+            alert("¡Búsqueda realizada!");
+        }, 1200);
     });
 };
+
 
 // ===================================
 // LOADING STATE
@@ -131,33 +131,97 @@ const initMobileMenu = () => {
 };
 
 // ===================================
-// DATE INPUT INTERACTION
+// DATE PICKER (FLATPICKR)
 // ===================================
 const initDateInputs = () => {
-    const dateInputs = document.querySelectorAll('.date-input-wrapper input');
-    
-    dateInputs.forEach(input => {
-        input.addEventListener('click', () => {
-            // En producción, aquí integrarías un date picker como flatpickr o pikaday
-            console.log('Date picker would open here');
-        });
+
+    const startInput = document.getElementById("dateStart");
+    const endInput = document.getElementById("dateEnd");
+
+    if (!startInput || !endInput) return;
+
+    flatpickr(startInput, {
+        dateFormat: "d/m/Y",
+        minDate: "today",
+        onChange: function (selectedDates) {
+            if (selectedDates.length) {
+                endPicker.set("minDate", selectedDates[0]);
+            }
+        }
+    });
+
+    const endPicker = flatpickr(endInput, {
+        dateFormat: "d/m/Y",
+        minDate: "today"
     });
 };
 
+
+
 // ===================================
-// PASSENGER SELECTOR
+// PASSENGER SELECTOR (REAL DROPDOWN)
 // ===================================
 const initPassengerSelector = () => {
-    const passengerInput = document.querySelector('.passengers-input input');
-    
-    if (!passengerInput) return;
 
-    passengerInput.addEventListener('click', (e) => {
-        e.preventDefault();
-        // En producción, aquí mostrarías un dropdown/modal para seleccionar pasajeros
-        alert('Selector de pasajeros\n\nEn producción, esto abriría un selector donde puedes elegir:\n• Número de adultos\n• Número de niños\n• Número de bebés\n• Clase de cabina (Económica, Business, Primera)');
+    const toggle = document.getElementById("passengersToggle");
+    const dropdown = document.getElementById("passengersDropdown");
+    const valueField = document.getElementById("passengersValue");
+
+    if (!toggle || !dropdown || !valueField) return;
+
+    let counts = {
+        adult: 1,
+        child: 0,
+        baby: 0
+    };
+
+    // Abrir / cerrar
+    toggle.addEventListener("click", (e) => {
+        e.stopPropagation();
+        dropdown.style.display =
+            dropdown.style.display === "block" ? "none" : "block";
+    });
+
+    // Botones + y -
+    dropdown.querySelectorAll(".counter button").forEach(btn => {
+        btn.addEventListener("click", () => {
+
+            const type = btn.dataset.type;
+            const op = btn.dataset.op;
+
+            if (op === "+") counts[type]++;
+
+            if (op === "-" && counts[type] > 0) {
+                if (type === "adult" && counts[type] === 1) return;
+                counts[type]--;
+            }
+
+            document.getElementById(type + "Count").textContent = counts[type];
+        });
+    });
+
+    // Confirmar
+    dropdown.querySelector(".confirm-passengers")
+        .addEventListener("click", () => {
+
+            const total =
+                counts.adult +
+                counts.child +
+                counts.baby;
+
+            valueField.value = total;
+            dropdown.style.display = "none";
+        });
+
+    // Click fuera
+    document.addEventListener("click", (e) => {
+        if (!toggle.contains(e.target) &&
+            !dropdown.contains(e.target)) {
+            dropdown.style.display = "none";
+        }
     });
 };
+
 
 // ===================================
 // PROMO BUTTONS INTERACTION
