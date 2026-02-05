@@ -12,52 +12,6 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </head>
 <body>
-    <script>
-        (function () {
-        const params = new URLSearchParams(window.location.search);
-        const hasCode = params.has("code");
-
-        if (!hasCode) {
-
-            document.body.innerHTML = `
-            <div style="
-                height:100vh;
-                display:flex;
-                justify-content:center;
-                align-items:center;
-                flex-direction:column;
-                font-family:Arial;
-            ">
-                <h2>Redirecting to login...</h2>
-                <button id="loginBtn"
-                style="
-                    padding:12px 24px;
-                    font-size:16px;
-                    cursor:pointer;
-                ">
-                Login
-                </button>
-            </div>
-            `;
-
-            const loginUrl =
-            "https://us-east-1buw03g4ua.auth.us-east-1.amazoncognito.com/login" +
-            "?client_id=54fh44msqavtsb0rif249csk1r" +
-            "&response_type=code" +
-            "&scope=email+openid+phone" +
-            "&redirect_uri=https://d1cq6wgq3znilx.cloudfront.net";
-
-            document.getElementById("loginBtn").onclick = function () {
-            window.location.href = loginUrl;
-            };
-
-            // auto redirect after small delay
-            setTimeout(() => {
-            window.location.href = loginUrl;
-            }, 300);
-        }
-        })();
-    </script>
     <!-- Top Bar -->
     <div class="top-bar">
         <div class="top-bar-container">
@@ -96,9 +50,9 @@
                 </div>
                 
                 <ul class="nav-menu">
-                    <li><a href="#" class="nav-link">Reservar</a></li>
+                    <li><a href="index.html" class="nav-link">Reservar</a></li>
                     <li class="nav-dropdown">
-                        <a href="#" class="nav-link">Ofertas y destinos</a>
+                        <a href="ofertas.html" class="nav-link">Ofertas y destinos</a>
                     </li>
                     <li class="nav-dropdown">
                         <a href="#" class="nav-link">Tu reserva</a>
@@ -147,9 +101,6 @@
                             <span class="radio-custom"></span>
                             <span>Solo ida</span>
                         </label>
-                    </div>
-
-                    <div class="payment-options">
                         <button class="btn-option">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <circle cx="12" cy="12" r="10"/>
@@ -188,7 +139,29 @@
 
                     <div class="form-group">
                         <div class="input-with-icon">
-                        <input type="text" value="Bogotá (BOG)">
+                            <input id="originInput" type="text" placeholder="Bogotá (BOG)">
+                        </div>
+                        <div class="city-dropdown" id="originDropdown">
+
+                        <div class="city-filter">
+                            <label>
+                            <input type="radio" name="originFilter" value="all" checked>
+                            Todos
+                            </label>
+
+                            <label>
+                            <input type="radio" name="originFilter" value="national">
+                            Nacionales
+                            </label>
+
+                            <label>
+                            <input type="radio" name="originFilter" value="international">
+                            Internacionales
+                            </label>
+                        </div>
+
+                        <div class="city-list"></div>
+
                         </div>
                     </div>
 
@@ -196,7 +169,29 @@
 
                     <div class="form-group">
                         <div class="input-with-icon">
-                        <input type="text" placeholder="Destino">
+                            <input id="destinationInput" type="text" placeholder="Destino">
+                        </div>
+                        <div class="city-dropdown" id="destinationDropdown">
+
+                        <div class="city-filter">
+                            <label>
+                            <input type="radio" name="destinationFilter" value="all" checked>
+                            Todos
+                            </label>
+
+                            <label>
+                            <input type="radio" name="destinationFilter" value="national">
+                            Nacionales
+                            </label>
+
+                            <label>
+                            <input type="radio" name="destinationFilter" value="international">
+                            Internacionales
+                            </label>
+                        </div>
+
+                        <div class="city-list"></div>
+
                         </div>
                     </div>
 
@@ -215,7 +210,9 @@
 
                     <div class="form-group">
                         <div class="input-with-icon">
-                        <input id="dateEnd" type="text" placeholder="Vuelta">
+                            <div class="return-date">
+                                <input id="dateEnd" type="text" placeholder="Vuelta">
+                            </div>
                         </div>
                     </div>
 
@@ -333,7 +330,7 @@
             <div class="offers-grid">
 
             <div class="offer-card">
-                <div class="offer-image" style="background-image:url('https://picsum.photos/600/400?1')"></div>
+                <div class="offer-image" style="background-image:url('https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-pereira.webp')"></div>
                 <div class="offer-info">
                 <div>
                     <h4>Pereira</h4>
@@ -602,12 +599,17 @@
             </div>
         </div>
     </footer>
-
     <script src="script.js"></script>
-    <script>
-        if (window.location.search.includes("code=")) {
-        window.history.replaceState({}, document.title, "/");
-        }
-    </script>
 </body>
 </html>
+
+<!-- <script>
+function logout() {
+  localStorage.removeItem("auth");
+
+  window.location.href =
+    "https://us-east-1buw03g4ua.auth.us-east-1.amazoncognito.com/logout" +
+    "?client_id=54fh44msqavtsb0rif249csk1r" +
+    "&logout_uri=https://d1cq6wgq3znilx.cloudfront.net";
+}
+</script> -->

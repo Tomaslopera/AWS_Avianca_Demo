@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body>
+<div>
     <!-- Top Bar -->
     <div class="top-bar">
         <div class="top-bar-container">
@@ -51,12 +51,12 @@
                         <a href="ofertas.html" class="nav-link">Ofertas y destinos</a>
                     </li>
                     <li class="nav-dropdown">
-                        <a href="tu-reserva.html" class="nav-link">Tu reserva</a>
+                        <a href="#" class="nav-link">Tu reserva</a>
                     </li>
                     <li class="nav-dropdown">
-                        <a href="informacion.html" class="nav-link">Información y ayuda</a>
+                        <a href="#" class="nav-link">Información y ayuda</a>
                     </li>
-                    <li><a href="lifemiles.html" class="nav-link">Lifemiles</a></li>
+                    <li><a href="#" class="nav-link">Lifemiles</a></li>
                 </ul>
 
                 <div class="nav-actions">
@@ -85,97 +85,24 @@
     </section>
 
     <!-- Ofertas Section -->
-    <section class="offers-section">
+    <section class="offers-intro">
         <div class="container">
             <div class="offers-header">
-                <h3>Ofertas desde <span>Colombia</span></h3>
+                <h3>
+                    Te llevamos a destinos desde
+                    <span id="originCityLabel">Bogotá</span>
+                </h3>
+
+                <div class="origin-selector">
+                    <select id="originSelector"></select>
+                </div>
+
             </div>
+        </div>
 
-            <div class="offers-grid">
-                <div class="offer-card">
-                    <div class="offer-image" style="background-image:url('https://picsum.photos/600/400?1')"></div>
-                    <div class="offer-info">
-                        <div>
-                            <h4>Madrid, España</h4>
-                            <p>Por trayecto desde</p>
-                        </div>
-                        <div>
-                            <span class="badge">Acumula millas</span>
-                            <strong>COP 1.850.000</strong>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="offer-card">
-                    <div class="offer-image" style="background-image:url('https://picsum.photos/600/400?2')"></div>
-                    <div class="offer-info">
-                        <div>
-                            <h4>Miami, USA</h4>
-                            <p>Por trayecto desde</p>
-                        </div>
-                        <div>
-                            <span class="badge">Acumula millas</span>
-                            <strong>COP 780.000</strong>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="offer-card">
-                    <div class="offer-image" style="background-image:url('https://picsum.photos/600/400?3')"></div>
-                    <div class="offer-info">
-                        <div>
-                            <h4>Buenos Aires, Argentina</h4>
-                            <p>Por trayecto desde</p>
-                        </div>
-                        <div>
-                            <span class="badge">Acumula millas</span>
-                            <strong>COP 650.000</strong>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="offer-card">
-                    <div class="offer-image" style="background-image:url('https://picsum.photos/600/400?4')"></div>
-                    <div class="offer-info">
-                        <div>
-                            <h4>Cancún, México</h4>
-                            <p>Por trayecto desde</p>
-                        </div>
-                        <div>
-                            <span class="badge">Acumula millas</span>
-                            <strong>COP 890.000</strong>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="offer-card">
-                    <div class="offer-image" style="background-image:url('https://picsum.photos/600/400?5')"></div>
-                    <div class="offer-info">
-                        <div>
-                            <h4>Lima, Perú</h4>
-                            <p>Por trayecto desde</p>
-                        </div>
-                        <div>
-                            <span class="badge">Acumula millas</span>
-                            <strong>COP 420.000</strong>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="offer-card">
-                    <div class="offer-image" style="background-image:url('https://picsum.photos/600/400?6')"></div>
-                    <div class="offer-info">
-                        <div>
-                            <h4>Quito, Ecuador</h4>
-                            <p>Por trayecto desde</p>
-                        </div>
-                        <div>
-                            <span class="badge">Acumula millas</span>
-                            <strong>COP 380.000</strong>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <section class="offers-section">
+        <div class="container">
+            <div class="offers-grid" id="offersGrid"></div>
         </div>
     </section>
 
@@ -239,21 +166,23 @@
 
     <style>
         .page-hero {
-            background: linear-gradient(135deg, #A0D5E8, #C8E7F3);
-            padding: 100px 0 60px;
+            background: url('https://d1cq6wgq3znilx.cloudfront.net/images/backgrounds/image-ofertas-destinos.jpg'); 
+            padding: 200px 0 120px;
             text-align: center;
+            margin-bottom: 40px;
         }
 
         .page-hero h1 {
             font-size: 42px;
-            color: var(--text-primary);
-            margin-bottom: 16px;
+            color: white;
+            margin-bottom: 40px;
             font-weight: 700;
         }
 
         .page-hero p {
+            margin-top: 20px;
             font-size: 18px;
-            color: var(--text-secondary);
+            color: white;
         }
     </style>
 </body>

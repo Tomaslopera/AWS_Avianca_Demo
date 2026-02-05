@@ -240,25 +240,24 @@ const initPromoButtons = () => {
 // RADIO BUTTONS BEHAVIOR
 // ===================================
 const initRadioButtons = () => {
-    const radioLabels = document.querySelectorAll('.radio-label');
-    
-    radioLabels.forEach(label => {
-        label.addEventListener('click', () => {
-            const input = label.querySelector('input[type="radio"]');
-            if (input && input.name === 'trip') {
-                // Handle trip type change
-                const selectedValue = input.value;
-                console.log('Trip type changed to:', selectedValue);
-                
-                // Aquí podrías mostrar/ocultar campos según el tipo de viaje
-                if (selectedValue === 'oneway') {
-                    // Ocultar campo de vuelta
-                    console.log('One-way trip selected');
-                }
-            }
-        });
+
+  const radios = document.querySelectorAll('input[name="trip"]');
+  const datePair = document.querySelector(".date-pair");
+
+  radios.forEach(radio => {
+    radio.addEventListener("change", () => {
+
+      if (radio.value === "oneway") {
+        datePair.classList.add("oneway");
+      } else {
+        datePair.classList.remove("oneway");
+      }
+
     });
+  });
+
 };
+
 
 // ===================================
 // INTERSECTION OBSERVER FOR ANIMATIONS
@@ -402,13 +401,315 @@ const initCheckboxes = () => {
 };
 
 // ===================================
+// TRIP TYPE TOGGLE (One-way / Round-trip)
+// ===================================
+const initTripTypeToggle = () => {
+  const radios = document.querySelectorAll('input[name="trip"]');
+  const returnBox = document.querySelector('.return-date');
+
+  radios.forEach(radio=>{
+    radio.addEventListener("change", ()=>{
+
+      if(radio.value === "oneway" && radio.checked){
+        returnBox.classList.add("hidden");
+      }
+
+      if(radio.value === "round" && radio.checked){
+        returnBox.classList.remove("hidden");
+      }
+
+    });
+  });
+};
+
+// ===================================
+// CITY AUTOCOMPLETE
+// ===================================
+const cities = [
+  // --- DESTINOS NACIONALES (COLOMBIA) ---
+  { name: "Arauca", code: "AUC", type: "national", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-arauca.jpg" },
+  { name: "Armenia", code: "AXM", type: "national", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-armenia.png" },
+  { name: "Barrancabermeja", code: "EJA", type: "national", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-barrancabermeja.jpg" },
+  { name: "Barranquilla", code: "BAQ", type: "national", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-barranquilla.webp" },
+  { name: "Bogotá", code: "BOG", type: "national", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-bogota.jpg" },
+  { name: "Bucaramanga", code: "BGA", type: "national", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-bucaramanga.jpg" },
+  { name: "Cali", code: "CLO", type: "national", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-cali.jpg" },
+  { name: "Cartagena de Indias", code: "CTG", type: "national", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-cartagena.jpg" },
+  { name: "Cúcuta", code: "CUC", type: "national", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-cucuta.jpg" },
+  { name: "Ibagué", code: "IBE", type: "national", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-ibague.jpg" },
+  { name: "Ipiales", code: "IPI", type: "national", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-ipiales.jpg" },
+  { name: "Leticia", code: "LET", type: "national", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-leticia.jpg" },
+  { name: "Medellín", code: "MDE", type: "national", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-medellin.jpg" },
+  { name: "Montería", code: "MTR", type: "national", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-monteria.jpg" },
+  { name: "Neiva", code: "NVA", type: "national", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-neiva.jpg" },
+  { name: "Pasto", code: "PSO", type: "national", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-pasto.jpg" },
+  { name: "Pereira", code: "PEI", type: "national", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-pereira.webp" },
+  { name: "Popayán", code: "PPN", type: "national", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-popayan.jpg" },
+  { name: "Quibdó", code: "UIB", type: "national", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-quibdo.jpg" },
+  { name: "Riohacha", code: "RCH", type: "national", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-riohacha.jpg" },
+  { name: "San Andrés", code: "ADZ", type: "national", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-sanandres.webp" },
+  { name: "Santa Marta", code: "SMR", type: "national", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-santamarta.jpg" },
+  { name: "Valledupar", code: "VUP", type: "national", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-valledupar.jpg" },
+  { name: "Villavicencio", code: "VVC", type: "national", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-villavicencio.jpg" },
+  { name: "Yopal", code: "EYP", type: "national", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-yopal.jpg" },
+
+  // --- DESTINOS INTERNACIONALES ---
+  // Suramérica
+  { name: "Buenos Aires", code: "AEP", type: "international" },
+  { name: "Buenos Aires", code: "EZE", type: "international" },
+  { name: "Córdoba", code: "COR", type: "international" },
+  { name: "La Paz", code: "LPB", type: "international" },
+  { name: "Santa Cruz de la Sierra", code: "VVI", type: "international" },
+  { name: "Belém", code: "BEL", type: "international" },
+  { name: "Brasilia", code: "BSB", type: "international" },
+  { name: "Manaos", code: "MAO", type: "international" },
+  { name: "Río de Janeiro", code: "GIG", type: "international" },
+  { name: "São Paulo", code: "GRU", type: "international" },
+  { name: "Santiago", code: "SCL", type: "international" },
+  { name: "Cuenca", code: "CUE", type: "international" },
+  { name: "Guayaquil", code: "GYE", type: "international" },
+  { name: "Isla Baltra", code: "GPS", type: "international" },
+  { name: "Manta", code: "MEC", type: "international" },
+  { name: "Quito", code: "UIO", type: "international" },
+  { name: "San Cristóbal", code: "SCY", type: "international" },
+  { name: "Georgetown", code: "GEO", type: "international" },
+  { name: "Asunción", code: "ASU", type: "international" },
+  { name: "Cusco", code: "CUZ", type: "international" },
+  { name: "Lima", code: "LIM", type: "international" },
+  { name: "Montevideo", code: "MVD", type: "international" },
+  { name: "Caracas", code: "CCS", type: "international" },
+
+  // Norteamérica
+  { name: "Montreal", code: "YUL", type: "international" },
+  { name: "Toronto", code: "YYZ", type: "international" },
+  { name: "Cancún", code: "CUN", type: "international" },
+  { name: "Ciudad de México", code: "MEX", type: "international" },
+  { name: "Monterrey", code: "MTY", type: "international" },
+  { name: "Tulum", code: "TQO", type: "international" },
+  { name: "Boston", code: "BOS", type: "international" },
+  { name: "Chicago", code: "ORD", type: "international" },
+  { name: "Dallas", code: "DFW", type: "international" },
+  { name: "Fort Lauderdale", code: "FLL", type: "international" },
+  { name: "Houston", code: "IAH", type: "international" },
+  { name: "Las Vegas", code: "LAS", type: "international" },
+  { name: "Los Ángeles", code: "LAX", type: "international" },
+  { name: "Miami", code: "MIA", type: "international" },
+  { name: "Nueva York", code: "JFK", type: "international" },
+  { name: "Ontario", code: "ONT", type: "international" },
+  { name: "Orlando", code: "MCO", type: "international" },
+  { name: "San Francisco", code: "SFO", type: "international" },
+  { name: "Tampa", code: "TPA", type: "international" },
+  { name: "Washington D.C.", code: "IAD", type: "international" },
+
+  // Centroamérica y Caribe
+  { name: "Oranjestad", code: "AUA", type: "international" },
+  { name: "San José", code: "SJO", type: "international" },
+  { name: "Willemstad", code: "CUR", type: "international" },
+  { name: "San Salvador", code: "SAL", type: "international" },
+  { name: "Flores", code: "FRS", type: "international" },
+  { name: "Ciudad de Guatemala", code: "GUA", type: "international" },
+  { name: "Comayagua", code: "XPL", type: "international" },
+  { name: "San Pedro Sula", code: "SAP", type: "international" },
+  { name: "Managua", code: "MGA", type: "international" },
+  { name: "Ciudad de Panamá", code: "PTY", type: "international" },
+  { name: "San Juan", code: "SJU", type: "international" },
+  { name: "Punta Cana", code: "PUJ", type: "international" },
+  { name: "Santo Domingo", code: "SDQ", type: "international" },
+
+  // Europa
+  { name: "Barcelona", code: "BCN", type: "international" },
+  { name: "Madrid", code: "MAD", type: "international" },
+  { name: "París", code: "CDG", type: "international" },
+  { name: "Londres", code: "LHR", type: "international" }
+];
+
+const colombiaCities = cities.filter(c => c.type === "national");
+
+function renderCities(listEl, filter="all", inputTarget, searchText=""){
+
+  listEl.innerHTML = "";
+
+  const text = searchText.toLowerCase();
+
+  cities.forEach(city => {
+
+    if(filter !== "all" && city.type !== filter) return;
+
+    if(
+      !city.name.toLowerCase().includes(text) &&
+      !city.code.toLowerCase().includes(text)
+    ) return;
+
+    const item = document.createElement("div");
+    item.className = "city-item";
+
+    item.innerHTML = `
+      <div class="city-left">
+        <strong>${city.name}</strong>
+        <span>${city.name} (${city.code})</span>
+      </div>
+      <div class="city-code">${city.code}</div>
+    `;
+
+    item.addEventListener("click", ()=>{
+      inputTarget.value = `${city.name} (${city.code})`;
+      listEl.parentElement.style.display = "none";
+    });
+
+    listEl.appendChild(item);
+  });
+}
+
+
+function setupCityFilters(dropdownId, filterName){
+
+  const dropdown = document.getElementById(dropdownId);
+  const list = dropdown.querySelector(".city-list");
+
+  // Guardamos filtro activo
+  dropdown.dataset.filter = "all";
+
+  dropdown.querySelectorAll(`input[name="${filterName}"]`)
+    .forEach(radio=>{
+      radio.addEventListener("change", e=>{
+        dropdown.dataset.filter = e.target.value;
+
+        const input =
+          dropdown.previousElementSibling.querySelector("input");
+
+        renderCities(
+          list,
+          e.target.value,
+          input,
+          input.value
+        );
+      });
+    });
+
+}
+
+
+function setupCityInput(inputId, dropdownId){
+
+  const input = document.getElementById(inputId);
+  const dropdown = document.getElementById(dropdownId);
+  const list = dropdown.querySelector(".city-list");
+
+  if(!input || !dropdown) return;
+
+  // ABRIR
+  input.addEventListener("focus", ()=>{
+    dropdown.style.display = "block";
+
+    const filter = dropdown.dataset.filter || "all";
+
+    renderCities(list, filter, input, input.value);
+  });
+
+  // CLICK
+  input.addEventListener("click", ()=>{
+    dropdown.style.display = "block";
+
+    const filter = dropdown.dataset.filter || "all";
+
+    renderCities(list, filter, input, input.value);
+  });
+
+  // ESCRIBIR
+  input.addEventListener("input", ()=>{
+    const filter = dropdown.dataset.filter || "all";
+
+    renderCities(list, filter, input, input.value);
+  });
+
+  // CLICK AFUERA
+  document.addEventListener("click", (e)=>{
+    if(!input.contains(e.target) && !dropdown.contains(e.target)){
+      dropdown.style.display = "none";
+    }
+  });
+
+}
+
+function renderCityCards(originCity){
+
+  const grid = document.getElementById("offersGrid");
+  if(!grid) return;
+
+  grid.innerHTML = "";
+
+  cities
+    .filter(c => c.type === "national")
+    .forEach(city => {
+
+      if(city.name === originCity) return;
+
+      grid.innerHTML += `
+        <div class="offer-card">
+          <div class="offer-image"
+            style="background-image:url('${city.image}')">
+          </div>
+
+          <div class="offer-info">
+            <div>
+              <h4>${city.name}</h4>
+              <p>Por trayecto desde</p>
+            </div>
+
+            <div>
+              <span class="badge">Acumula millas</span>
+              <strong>Desde COP ${(70000 + Math.random()*120000).toFixed(0)}</strong>
+            </div>
+          </div>
+        </div>
+      `;
+  });
+}
+
+const originSelect = document.getElementById("originSelector");
+const originLabel  = document.getElementById("originCityLabel");
+
+/* Llenar selector */
+colombiaCities.forEach(city=>{
+  const opt = document.createElement("option");
+  opt.value = city.name;
+  opt.textContent = city.name;
+  originSelect.appendChild(opt);
+});
+
+/* Render inicial */
+originSelect.value = "Bogotá";
+originLabel.textContent = "Bogotá";
+renderCityCards("Bogotá");
+
+/* Cambio */
+originSelect.addEventListener("change", ()=>{
+  originLabel.textContent = originSelect.value;
+  renderCityCards(originSelect.value);
+});
+
+
+// ===================================
 // INITIALIZE ALL
 // ===================================
 const init = () => {
-    console.log('🚀 Avianca Frontend Initialized');
+    console.log('Avianca Frontend Initialized');
     
     // Core functionality
     initFormSubmission();
+    initTripTypeToggle();
+
+    // City autocomplete
+    if (document.getElementById("originDropdown")) {
+        setupCityFilters("originDropdown","originFilter");
+        setupCityFilters("destinationDropdown","destinationFilter");
+        setupCityInput("originInput","originDropdown");
+        setupCityInput("destinationInput","destinationDropdown");
+    }
+    // initCityAutocomplete();
+
+    // ===== OFERTAS PAGE =====
+    renderCityCards("Bogotá");
     
     // UI enhancements
     initHeaderScroll();

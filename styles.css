@@ -425,23 +425,12 @@ input {
     padding: 22px 24px;
 }
 
-.form-row-main {
-    display: grid;
-    grid-template-columns: 
-        1.2fr     /* Origen */
-        1.2fr     /* Destino */
-        1.3fr     /* Fechas */
-        0.7fr     /* Pasajeros */
-        160px;    /* Botón */
-    gap: 12px;
-    align-items: end;
-}
-
 
 .form-group {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    position:relative;
 }
 
 .form-group label {
@@ -449,20 +438,6 @@ input {
     font-weight: 600;
     color: var(--text-secondary);
 }
-
-/* .input-with-icon {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 14px;
-    min-height: 30px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    background: white;
-    transition: var(--transition);
-    position: relative;
-    font-size: 14px;
-} */
 
 .input-with-icon {
     padding: 10px 12px;
@@ -809,11 +784,13 @@ input {
   color:#00A7C6;
 }
 
-.offers-grid {
+.offers-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-  gap:24px;
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:32px;              /* 🔹 separación horizontal y vertical */
+  margin-top:40px;
 }
+
 
 .offer-card {
   margin-top: 0%;
@@ -1201,14 +1178,13 @@ input {
 .form-row-main{
   display:grid;
   grid-template-columns:
-    2.8fr   /* Origen + Destino */
-    2.2fr   /* Fechas */
-    0.8fr   /* Pasajeros */
-    140px;  /* Botón */
+    minmax(0, 3fr)   /* Origen + Destino */
+    minmax(0, 2.4fr) /* Fechas */
+    minmax(0, 1fr)   /* Pasajeros */
+    minmax(0, 160px);/* Botón */
   gap:12px;
-  align-items:end;
+  align-items:center;
 }
-
 
 /* BLOQUES GRANDES */
 .field-pair{
@@ -1221,6 +1197,7 @@ input {
 }
 
 .field-pair .form-group{
+  position: relative;
   flex:1;
 }
 
@@ -1441,3 +1418,265 @@ input {
 .flatpickr-day.today{
   border-color:#111;
 }
+
+
+.offer-card,
+.interest-card,
+.lifemiles-card,
+.experience-card {
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+
+.offer-card:hover,
+.interest-card:hover,
+.lifemiles-card:hover,
+.experience-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 14px 34px rgba(0,0,0,.18);
+}
+
+button:hover{
+  transform: translateY(-1px);
+}
+
+button:active{
+  transform: scale(.98);
+}
+
+@media (max-width:768px){
+  .form-row-main{
+    grid-template-columns:1fr;
+  }
+
+  .passengers-group{
+    max-width:100%;
+  }
+
+  .btn-buscar{
+    width:100%;
+  }
+}
+
+/* Evita que contenidos internos rompan el ancho */
+.field-pair{
+  overflow:visible;
+}
+
+/* El input ocupa exactamente su mitad */
+.field-pair .input-with-icon{
+  width:100%;
+}
+
+/* Evita expansión horizontal */
+.field-pair input{
+  width:100%;
+  min-width:0;
+}
+
+.date-pair .form-group{
+  flex:1;
+  min-width:0;
+}
+
+/* ===============================
+   CITY DROPDOWN (AVIANCE STYLE)
+================================*/
+
+.city-dropdown {
+  position: absolute;
+  top: 70px;
+  left: 0;
+  width: 420px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 14px 40px rgba(0,0,0,0.18);
+  max-height: 320px;
+  overflow-y: auto;
+  display: none;
+  z-index: 3000;
+  padding: 8px 0;
+}
+
+/* ITEM */
+.city-item {
+  padding: 14px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.city-item:hover {
+  background: #f5f5f5;
+}
+
+/* LEFT SIDE */
+.city-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.city-left strong {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111;
+}
+
+.city-left span {
+  font-size: 12px;
+  color: #777;
+}
+
+/* CODE */
+.city-code {
+  font-size: 13px;
+  font-weight: 700;
+  color: #111;
+}
+
+/* SCROLLBAR */
+.city-dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+
+.city-dropdown::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 10px;
+}
+
+.city-dropdown::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Estado Solo Ida */
+.date-pair.oneway .return-date{
+  display:none;
+}
+
+.date-pair.oneway .divider{
+  display:none;
+}
+
+.date-pair.oneway .form-group:first-child{
+  flex:1 1 100%;
+}
+
+.return-date{
+  transition: 
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.return-date.hidden{
+  opacity:0;
+  transform:scaleX(0);
+  pointer-events:none;
+}
+
+.city-filter{
+  display:flex;
+  gap:18px;
+  padding:12px 14px;
+  border-bottom:1px solid #eee;
+  background:#fafafa;
+  position:absolute;
+}
+
+.city-filter label{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:13px;
+  cursor:pointer;
+}
+
+.city-filter input{
+  accent-color:#00a650;
+  cursor:pointer;
+}
+
+.page-hero{
+  background-image:
+    linear-gradient(rgba(0,0,0,.35), rgba(0,0,0,.35)),
+    url("https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-sanandres.webp");
+  background-size:cover;
+  background-position:center;
+  padding:120px 0 80px;
+  text-align:center;
+}
+
+.page-hero h1,
+.page-hero p{
+  color:white;
+}
+
+.offers-section{
+  width:100%;
+  padding:0 80px;   /* margen lateral */
+  margin-bottom: 100px;
+}
+
+.offers-header{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  margin:30px 50px 20px;
+}
+
+.offers-header h3{
+  font-size:28px;
+  font-weight:700;
+}
+
+#originCityLabel{
+  color:#00a3b4;
+}
+
+.origin-selector{
+  position:relative;
+}
+
+.origin-selector select{
+  appearance:none;
+  -webkit-appearance:none;
+  -moz-appearance:none;
+
+  padding:12px 44px 12px 16px;
+  border-radius:14px;
+  border:1px solid #ddd;
+  font-size:14px;
+  min-width:230px;
+  background:#fff;
+  cursor:pointer;
+  font-weight:500;
+
+  box-shadow:0 6px 18px rgba(0,0,0,0.08);
+  transition:all .25s ease;
+}
+
+/* Hover */
+.origin-selector select:hover{
+  border-color:#00a3b4;
+}
+
+/* Focus */
+.origin-selector select:focus{
+  outline:none;
+  border-color:#00a3b4;
+  box-shadow:0 0 0 3px rgba(0,163,180,.25);
+}
+
+/* Flecha */
+.origin-selector::after{
+  content:"";
+  position:absolute;
+  right:14px;
+  top:10%;
+  transform:translateY(-50%);
+  pointer-events:none;
+  color:#00a3b4;
+  font-size:12px;
+}
+
+
+
