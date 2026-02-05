@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tu reserva - avianca</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="top-bar-container">
+            <div class="top-bar-right">
+                <a href="#" class="top-bar-link">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M21 15C21 15.5304 20.7893 16.0391 20.4142 16.4142C20.0391 16.7893 19.5304 17 19 17H7L3 21V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Avianca Chat
+                </a>
+                <a href="#" class="top-bar-link">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                        <path d="M12 2C14.5013 4.73835 15.9228 8.29203 16 12C15.9228 15.708 14.5013 19.2616 12 22M12 2C9.49872 4.73835 8.07725 8.29203 8 12C8.07725 15.708 9.49872 19.2616 12 22M2 12H22" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    Español
+                </a>
+                <a href="#" class="top-bar-link">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Colombia (COP)
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="main-header">
+        <nav class="navbar">
+            <div class="nav-container">
+                <a href="index.html" class="logo">
+                    <svg width="120" height="32" viewBox="0 0 120 32" fill="none">
+                        <text x="0" y="24" font-family="Inter" font-size="28" font-weight="700" fill="#E30613" style="letter-spacing: -0.5px;">avianca</text>
+                    </svg>
+                </a>
+                
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link">Reservar</a></li>
+                    <li class="nav-dropdown">
+                        <a href="ofertas.html" class="nav-link">Ofertas y destinos</a>
+                    </li>
+                    <li class="nav-dropdown">
+                        <a href="tu-reserva.html" class="nav-link">Tu reserva</a>
+                    </li>
+                    <li class="nav-dropdown">
+                        <a href="informacion.html" class="nav-link">Información y ayuda</a>
+                    </li>
+                    <li><a href="lifemiles.html" class="nav-link">Lifemiles</a></li>
+                </ul>
+
+                <div class="nav-actions">
+                    <button class="btn-cuenta-lifemiles">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                            <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>Cuenta Lifemiles</span>
+                    </button>
+                    <button class="hamburger">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="page-hero">
+        <div class="container">
+            <h1>Gestiona tu reserva</h1>
+            <p>Consulta, modifica o cancela tu reserva fácilmente</p>
+        </div>
+    </section>
+
+    <!-- Gestión de Reserva -->
+    <section class="manage-booking">
+        <div class="container">
+            <div class="booking-card">
+                <h3>Buscar mi reserva</h3>
+                <form class="booking-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Código de reserva</label>
+                            <input type="text" placeholder="Ej: AB12CD" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Apellido del pasajero</label>
+                            <input type="text" placeholder="Ingresa el apellido" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-buscar">Buscar reserva</button>
+                </form>
+            </div>
+
+            <div class="services-quick">
+                <h3>Servicios rápidos</h3>
+                <div class="services-grid">
+                    <div class="service-box">
+                        <div class="service-icon">✓</div>
+                        <h4>Check-in online</h4>
+                        <p>Realiza tu check-in desde 24 horas antes</p>
+                        <a href="#" class="link-red">Ir al check-in →</a>
+                    </div>
+
+                    <div class="service-box">
+                        <div class="service-icon">✈</div>
+                        <h4>Estado de vuelo</h4>
+                        <p>Consulta el estado de tu vuelo en tiempo real</p>
+                        <a href="#" class="link-red">Consultar estado →</a>
+                    </div>
+
+                    <div class="service-box">
+                        <div class="service-icon">📋</div>
+                        <h4>Cambios y reembolsos</h4>
+                        <p>Modifica o cancela tu reserva</p>
+                        <a href="#" class="link-red">Ver opciones →</a>
+                    </div>
+
+                    <div class="service-box">
+                        <div class="service-icon">💳</div>
+                        <h4>avianca credits</h4>
+                        <p>Consulta y usa tus créditos</p>
+                        <a href="#" class="link-red">Ver créditos →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-top">
+                <svg class="footer-logo" width="120" height="32" viewBox="0 0 120 32" fill="none">
+                    <text x="0" y="24" font-family="Inter" font-size="28" font-weight="700" fill="currentColor" style="letter-spacing: -0.5px;">avianca</text>
+                </svg>
+            </div>
+
+            <div class="footer-grid">
+                <div class="footer-column">
+                    <h4>Descubre y compra</h4>
+                    <ul>
+                        <li><a href="#">Vuelos baratos</a></li>
+                        <li><a href="#">Reservas de hoteles</a></li>
+                        <li><a href="#">Alquiler de autos</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h4>Sobre nosotros</h4>
+                    <ul>
+                        <li><a href="#">Somos avianca</a></li>
+                        <li><a href="#">Trabaja con nosotros</a></li>
+                        <li><a href="#">Sostenibilidad</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h4>Nuestros portales</h4>
+                    <ul>
+                        <li><a href="#">Programa Lifemiles</a></li>
+                        <li><a href="#">avianca empresas</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h4>Enlaces rápidos</h4>
+                    <ul>
+                        <li><a href="#">Información legal</a></li>
+                        <li><a href="#">Contáctanos</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>Copyright © Avianca 2026</p>
+                <a href="#" class="powered-by">Powered by Newshore</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+
+    <style>
+        .page-hero {
+            background: linear-gradient(135deg, #A0D5E8, #C8E7F3);
+            padding: 100px 0 60px;
+            text-align: center;
+        }
+
+        .page-hero h1 {
+            font-size: 42px;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            font-weight: 700;
+        }
+
+        .page-hero p {
+            font-size: 18px;
+            color: var(--text-secondary);
+        }
+
+        .manage-booking {
+            padding: 80px 0;
+        }
+
+        .booking-card {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: var(--shadow-md);
+            max-width: 700px;
+            margin: 0 auto 60px;
+        }
+
+        .booking-card h3 {
+            font-size: 26px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .booking-form .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .booking-form .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .booking-form input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        .services-quick {
+            margin-top: 60px;
+        }
+
+        .services-quick h3 {
+            font-size: 26px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+        }
+
+        .service-box {
+            background: white;
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: var(--shadow-sm);
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .service-box:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .service-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .service-box h4 {
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        .service-box p {
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 767px) {
+            .booking-form .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .page-hero h1 {
+                font-size: 32px;
+            }
+
+            .booking-card {
+                padding: 24px;
+            }
+        }
+    </style>
+</body>
+</html>
