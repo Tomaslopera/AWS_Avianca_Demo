@@ -430,7 +430,7 @@ input {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    position:relative;
+    position:absolute;
 }
 
 .form-group label {
@@ -584,36 +584,46 @@ input {
     min-height: 300px;
 }
 
-.promo-banner-card.large .banner-image {
-    height: 400px;
-    border-radius: 16px;
-    overflow: hidden;
-    position: relative;
-    display: flex;
-    align-items: flex-end;
-    padding: 40px;
+
+.promo-banner-card.large .banner-image{
+  position: relative;
+  height: 360px;
+  border-radius: 20px;
+  overflow: hidden;
+
+  background-image:
+    linear-gradient(135deg, rgba(227, 6, 19, 0.45), rgba(0,0,0,0.2)),
+    url("https://d1cq6wgq3znilx.cloudfront.net/images/backgrounds/promotional-banner.jpeg");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  display: flex;
+  align-items: center;
+  padding: 40px;
 }
 
-.banner-content {
-    z-index: 1;
+.banner-content{
+  position: relative;
+  color: #fff;
+  z-index: 2;
 }
 
-.banner-badge {
-    display: inline-block;
-    padding: 6px 14px;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 16px;
+.banner-badge{
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(6px);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  display: inline-block;
+  margin-bottom: 16px;
 }
 
-.banner-content h2 {
-    font-size: 42px;
-    color: white;
-    line-height: 1.2;
-    font-weight: 400;
+.banner-content h2{
+  font-size: 40px;
+  font-weight: 600;
+  line-height: 1.2;
 }
 
 .banner-content h2 strong {
@@ -786,8 +796,8 @@ input {
 
 .offers-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
-  gap:32px;              /* 🔹 separación horizontal y vertical */
+  grid-template-columns: repeat(3, 1fr);  /* SIEMPRE 3 */
+  gap:32px;
   margin-top:40px;
 }
 
@@ -1484,17 +1494,16 @@ button:active{
 
 .city-dropdown {
   position: absolute;
-  top: 70px;
+  top: calc(100% + 6px);
   left: 0;
   width: 420px;
   background: white;
   border-radius: 16px;
   box-shadow: 0 14px 40px rgba(0,0,0,0.18);
-  max-height: 320px;
-  overflow-y: auto;
   display: none;
   z-index: 3000;
-  padding: 8px 0;
+  max-height:320px;
+  overflow-y:auto;
 }
 
 /* ITEM */
@@ -1579,7 +1588,7 @@ button:active{
   padding:12px 14px;
   border-bottom:1px solid #eee;
   background:#fafafa;
-  position:absolute;
+  position: relative;
 }
 
 .city-filter label{
@@ -1595,88 +1604,199 @@ button:active{
   cursor:pointer;
 }
 
-.page-hero{
-  background-image:
-    linear-gradient(rgba(0,0,0,.35), rgba(0,0,0,.35)),
-    url("https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-sanandres.webp");
-  background-size:cover;
-  background-position:center;
-  padding:120px 0 80px;
-  text-align:center;
+/* ===================================
+   LOGOUT BUTTON (AUTH)
+   =================================== */
+.btn-logout {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border: 1.5px solid var(--avianca-red);
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--avianca-red);
+    background: white;
 }
 
-.page-hero h1,
-.page-hero p{
+.btn-logout:hover {
+    background: var(--avianca-red);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-logout svg {
+    transition: var(--transition);
+}
+
+.btn-logout:hover svg {
+    transform: translateX(2px);
+}
+
+
+/* =============================
+   INDEX OFFERS SECTION
+============================= */
+
+.offers-header-index{
+  text-align:center;
+  margin-bottom:40px;
+}
+
+.offers-header-index h3{
+  font-size:28px;
+  font-weight:700;
+  margin-bottom:18px;
+}
+
+.offers-header-index span{
+  color:#00a3b4;
+}
+
+#indexOriginSelector{
+  padding:12px 16px;
+  border-radius:12px;
+  border:1px solid #ddd;
+  min-width:220px;
+  font-size:14px;
+  cursor:pointer;
+}
+
+/* ============================= */
+/* LIFEMILES NEWS */
+/* ============================= */
+
+.lifemiles-news{
+  padding:80px 0;
+}
+
+.lifemiles-news h3{
+  font-size:28px;
+  font-weight:700;
+  text-align:center;
+  margin-bottom:40px;
+}
+
+.lifemiles-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:32px;
+}
+
+.lifemiles-card{
+  position:relative;
+  height:240px;
+  border-radius:20px;
+  overflow:hidden;
+  background-size:cover;
+  background-position:center;
+  display:flex;
+  align-items:flex-end;
+  transition:.4s ease;
+}
+
+.lifemiles-card:hover{
+  transform:translateY(-6px);
+}
+
+.lifemiles-overlay{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(
+    90deg,
+    rgba(0,0,0,0.75),
+    rgba(0,0,0,0.2)
+  );
+}
+
+.lifemiles-content{
+  position:relative;
+  padding:24px;
+  color:white;
+  z-index:2;
+}
+
+.lifemiles-content h4{
+  font-size:22px;
+  margin-bottom:8px;
+}
+
+.lifemiles-content p{
+  font-size:14px;
+  margin-bottom:16px;
+}
+
+.btn-white{
+  background:white;
+  color:#000;
+  border:none;
+  padding:10px 20px;
+  border-radius:30px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+/* ============================= */
+/* INTEREST SECTION */
+/* ============================= */
+
+.interest-section{
+  padding:80px 0;
+}
+
+.interest-section h3{
+  text-align:center;
+  font-size:28px;
+  font-weight:700;
+  margin-bottom:40px;
+}
+
+.interest-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:24px;
+}
+
+.interest-card{
+  position:relative;
+  height:220px;
+  border-radius:16px;
+  overflow:hidden;
+  background-size:cover;
+  background-position:center;
+  display:flex;
+  align-items:flex-end;
+  transition:.3s ease;
+}
+
+.interest-card:hover{
+  transform:translateY(-6px);
+}
+
+.interest-overlay{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(
+    to top,
+    rgba(0,0,0,0.8),
+    rgba(0,0,0,0.1)
+  );
+}
+
+.interest-content{
+  position:relative;
+  padding:20px;
   color:white;
 }
 
-.offers-section{
-  width:100%;
-  padding:0 80px;   /* margen lateral */
-  margin-bottom: 100px;
+.interest-content h4{
+  font-size:18px;
+  margin-bottom:4px;
 }
 
-.offers-header{
-  display:flex;
-  align-items:flex-end;
-  justify-content:space-between;
-  margin:30px 50px 20px;
+.interest-content p{
+  font-size:13px;
 }
-
-.offers-header h3{
-  font-size:28px;
-  font-weight:700;
-}
-
-#originCityLabel{
-  color:#00a3b4;
-}
-
-.origin-selector{
-  position:relative;
-}
-
-.origin-selector select{
-  appearance:none;
-  -webkit-appearance:none;
-  -moz-appearance:none;
-
-  padding:12px 44px 12px 16px;
-  border-radius:14px;
-  border:1px solid #ddd;
-  font-size:14px;
-  min-width:230px;
-  background:#fff;
-  cursor:pointer;
-  font-weight:500;
-
-  box-shadow:0 6px 18px rgba(0,0,0,0.08);
-  transition:all .25s ease;
-}
-
-/* Hover */
-.origin-selector select:hover{
-  border-color:#00a3b4;
-}
-
-/* Focus */
-.origin-selector select:focus{
-  outline:none;
-  border-color:#00a3b4;
-  box-shadow:0 0 0 3px rgba(0,163,180,.25);
-}
-
-/* Flecha */
-.origin-selector::after{
-  content:"";
-  position:absolute;
-  right:14px;
-  top:10%;
-  transform:translateY(-50%);
-  pointer-events:none;
-  color:#00a3b4;
-  font-size:12px;
-}
-
-
 

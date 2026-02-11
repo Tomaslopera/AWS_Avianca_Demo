@@ -1,0 +1,299 @@
+/* ============================= */
+/* HERO */
+/* ============================= */
+
+.reservation-hero {
+  position: relative;
+  background: url("https://d1cq6wgq3znilx.cloudfront.net/images/backgrounds/image-tureserva.webp");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding: 200px 0 120px;
+  text-align: center;
+  color: #fff;
+  overflow: hidden;
+}
+
+/* Overlay elegante */
+.reservation-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.45),
+    rgba(0,0,0,0.55)
+  );
+  z-index: 0;
+}
+
+.reservation-hero .container {
+  position: relative;
+  z-index: 1;
+}
+
+.reservation-hero h1 {
+  font-size: 42px;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.reservation-hero p {
+  font-size: 18px;
+  opacity: 0.95;
+}
+
+/* ============================= */
+/* FORM SECTION */
+/* ============================= */
+
+.reservation-section {
+  padding: 90px 0;
+  background: #f6f8fb;
+}
+
+/* Card */
+.reservation-card {
+  max-width: 480px;
+  margin: 0 auto;
+  background: #ffffff;
+  padding: 45px 40px;
+  border-radius: 20px;
+  box-shadow: 0 18px 45px rgba(0,0,0,.08);
+}
+
+/* Form Layout FIX DEFINITIVO */
+#reservationForm {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ============================= */
+/* FORM GROUP */
+/* ============================= */
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 8px;
+  color: #222;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 15px;
+  border-radius: 14px;
+  border: 1px solid #dcdcdc;
+  font-size: 14px;
+  transition: 0.25s ease;
+  background: #fff;
+}
+
+/* Focus elegante */
+.form-group input:focus {
+  outline: none;
+  border-color: #00a3b4;
+  box-shadow: 0 0 0 3px rgba(0,163,180,.15);
+}
+
+/* ============================= */
+/* BUTTON */
+/* ============================= */
+
+.btn-primary {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  background: #E30613;
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.3s ease;
+  margin-top: 5px;
+}
+
+.btn-primary:hover {
+  background: #c00010;
+  transform: translateY(-2px);
+}
+
+/* ============================= */
+/* RESULT SECTION */
+/* ============================= */
+
+.reservation-result {
+  padding: 70px 0;
+  background: #ffffff;
+}
+
+.result-card {
+  max-width: 700px;
+  margin: 0 auto;
+  background: #ffffff;
+  padding: 45px;
+  border-radius: 20px;
+  box-shadow: 0 15px 40px rgba(0,0,0,.08);
+}
+
+/* Hidden Utility */
+.hidden {
+  display: none !important;
+}
+
+/* ============================= */
+/* RESPONSIVE */
+/* ============================= */
+
+@media (max-width: 768px) {
+  .reservation-hero {
+    padding: 150px 0 90px;
+  }
+
+  .reservation-hero h1 {
+    font-size: 32px;
+  }
+
+  .reservation-card {
+    padding: 35px 25px;
+  }
+}
+
+/* ===================================== */
+/* FORZAR LAYOUT SOLO PARA ESTA PÁGINA */
+/* ===================================== */
+
+#reservationForm {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+}
+
+#reservationForm .form-group {
+  width: 100%;
+}
+
+#reservationForm input {
+  width: 100% !important;
+}
+
+#reservationForm .btn-primary {
+  position: relative !important;
+  width: 100% !important;
+  margin-top: 10px;
+}
+
+
+/* ================================ */
+/* AISLAMIENTO TOTAL DEL FORM */
+/* ================================ */
+
+.reservation-card form {
+  display: block;
+  position: relative;
+}
+
+.reservation-card .form-group {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.reservation-card .form-group input {
+  width: 100%;
+  display: block;
+  position: relative;
+}
+
+.reservation-card .btn-primary {
+  display: block;
+  width: 100%;
+  position: relative;
+  left: auto;
+  right: auto;
+  top: auto;
+}
+
+/* ============================= */
+/* FORM SECTION CORREGIDO */
+/* ============================= */
+
+.reservation-card form{
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.reservation-card .form-group{
+  margin: 0;
+}
+
+.reservation-card input{
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+}
+
+.reservation-card .btn-primary{
+  width: 100%;
+  padding: 14px;
+  background: #E30613;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  position: static; /* 👈 ESTA ES LA CLAVE */
+}
+
+/* ============================= */
+/* FORM SECTION */
+/* ============================= */
+
+.reservation-card form{
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.reservation-field{
+  display: flex;
+  flex-direction: column;
+}
+
+.reservation-field label{
+  margin-bottom: 8px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.reservation-field input{
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+}
+
+/* BOTÓN AISLADO */
+
+.reservation-btn{
+  width: 100%;
+  padding: 14px;
+  background: #E30613;
+  color: white;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  margin-top: 5px;
+}
