@@ -1,6 +1,5 @@
 // Datos de ciudades
 const destinations = [
-
   // Colombia
   { name: "Arauca", code: "AUC", country: "Colombia", region: "CO", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-arauca.jpg" },
   { name: "Armenia", code: "AXM", country: "Colombia", region: "CO", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-armenia.png" },
@@ -28,11 +27,73 @@ const destinations = [
   { name: "Villavicencio", code: "VVC", country: "Colombia", region: "CO", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-villavicencio.jpg" },
   { name: "Yopal", code: "EYP", country: "Colombia", region: "CO", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-yopal.jpg" },
 
-  // Estados Unidos
-  { name: "Miami", code: "MIA", country: "Estados Unidos", region: "NA", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-yopal.jpg" },
-  { name: "Nueva York", code: "JFK", country: "Estados Unidos", region: "NA", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-yopal.jpg" },
-  { name: "Los Ángeles", code: "LAX", country: "Estados Unidos", region: "NA", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-yopal.jpg" },
-  { name: "Chicago", code: "ORD", country: "Estados Unidos", region: "NA", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-yopal.jpg" }
+  // Suramérica
+  { name: "Buenos Aires", code: "AEP", country: "Argentina", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-buenos-aires.webp" },
+  { name: "Buenos Aires", code: "EZE", country: "Argentina", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-buenos-aires.webp" },
+  { name: "Córdoba", code: "COR", country: "Argentina", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-cordoba.jpg" },
+  { name: "La Paz", code: "LPB", country: "Bolivia", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-la-paz.jpg" },
+  { name: "Santa Cruz de la Sierra", code: "VVI", country: "Bolivia", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-santa-cruz.jpg" },
+  { name: "Belém", code: "BEL", country: "Brasil", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-belem.jpg" },
+  { name: "Brasilia", code: "BSB", country: "Brasil", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-brasilia.jpg" },
+  { name: "Manaos", code: "MAO", country: "Brasil", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-manaos.webp" },
+  { name: "Río de Janeiro", code: "GIG", country: "Brasil", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-rio-de-janeiro.jpeg" },
+  { name: "São Paulo", code: "GRU", country: "Brasil", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-sao-paulo.png" },
+  { name: "Santiago", code: "SCL", country: "Chile", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-santiago.jpg" },
+  { name: "Cuenca", code: "CUE", country: "Ecuador", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-cuenca.jpg" },
+  { name: "Guayaquil", code: "GYE", country: "Ecuador", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-guayaquil.jpg" },
+  { name: "Isla Baltra", code: "GPS", country: "Ecuador", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-isla-baltra.webp" },
+  { name: "Manta", code: "MEC", country: "Ecuador", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-manta.jpg" },
+  { name: "Quito", code: "UIO", country: "Ecuador", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-quito.webp" },
+  { name: "San Cristóbal", code: "SCY", country: "Ecuador", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-san-cristobal.jpg" },
+  { name: "Georgetown", code: "GEO", country: "Guyana", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-georgetown.webp" },
+  { name: "Asunción", code: "ASU", country: "Paraguay", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-asuncion.jpg" },
+  { name: "Cusco", code: "CUZ", country: "Perú", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-cusco.webp" },
+  { name: "Lima", code: "LIM", country: "Perú", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-lima.jpg" },
+  { name: "Montevideo", code: "MVD", country: "Uruguay", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-montevideo.webp" },
+  { name: "Caracas", code: "CCS", country: "Venezuela", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-caracas.webp" },
+
+  // Norteamérica
+  { name: "Montreal", code: "YUL", country: "Canadá", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-montreal.jpg" },
+  { name: "Toronto", code: "YYZ", country: "Canadá", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-toronto.jpg" },
+  { name: "Cancún", code: "CUN", country: "México", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-cancun.jpg" },
+  { name: "Ciudad de México", code: "MEX", country: "México", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-ciudad-de-mexico.jpg" },
+  { name: "Monterrey", code: "MTY", country: "México", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-monterrey.jpg" },
+  { name: "Tulum", code: "TQO", country: "México", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-tulum.jpg" },
+  { name: "Boston", code: "BOS", country: "Estados Unidos", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-boston.jpg" },
+  { name: "Chicago", code: "ORD", country: "Estados Unidos", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-chicago.jpg" },
+  { name: "Dallas", code: "DFW", country: "Estados Unidos", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-dallas.jpg" },
+  { name: "Fort Lauderdale", code: "FLL", country: "Estados Unidos", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-fort-lauderdale.jpg" },
+  { name: "Houston", code: "IAH", country: "Estados Unidos", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-houston.jpg" },
+  { name: "Las Vegas", code: "LAS", country: "Estados Unidos", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-las-vegas.jpg" },
+  { name: "Los Ángeles", code: "LAX", country: "Estados Unidos", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-los-angeles.jpg" },
+  { name: "Miami", code: "MIA", country: "Estados Unidos", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-miami.jpg" },
+  { name: "Nueva York", code: "JFK", country: "Estados Unidos", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-nueva-york.jpg" },
+  { name: "Ontario", code: "ONT", country: "Estados Unidos", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-ontario.jpg" },
+  { name: "Orlando", code: "MCO", country: "Estados Unidos", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-orlando.jpg" },
+  { name: "San Francisco", code: "SFO", country: "Estados Unidos", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-san-francisco.jpg" },
+  { name: "Tampa", code: "TPA", country: "Estados Unidos", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-tampa.jpg" },
+  { name: "Washington D.C.", code: "IAD", country: "Estados Unidos", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-washington.jpg" },
+
+  // Centroamérica y Caribe
+  { name: "Oranjestad", code: "AUA", country: "Aruba", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-oranjestad.jpg" },
+  { name: "San José", code: "SJO", country: "Costa Rica", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-san-jose.jpg" },
+  { name: "Willemstad", code: "CUR", country: "Curazao", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-willemstad.jpg" },
+  { name: "San Salvador", code: "SAL", country: "El Salvador", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-san-salvador.jpg" },
+  { name: "Flores", code: "FRS", country: "Guatemala", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-flores.jpg" },
+  { name: "Ciudad de Guatemala", code: "GUA", country: "Guatemala", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-ciudad-de-guatemala.jpg" },
+  { name: "Comayagua", code: "XPL", country: "Honduras", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-comayagua.jpg" },
+  { name: "San Pedro Sula", code: "SAP", country: "Honduras", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-san-pedro-sula.jpg" },
+  { name: "Managua", code: "MGA", country: "Nicaragua", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-managua.jpg" },
+  { name: "Ciudad de Panamá", code: "PTY", country: "Panamá", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-ciudad-de-panama.jpg" },
+  { name: "San Juan", code: "SJU", country: "Puerto Rico", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-san-juan.jpg" },
+  { name: "Punta Cana", code: "PUJ", country: "República Dominicana", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-punta-cana.jpg" },
+  { name: "Santo Domingo", code: "SDQ", country: "República Dominicana", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-santo-domingo.jpg" },
+
+  // Europa
+  { name: "Barcelona", code: "BCN", country: "España", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-barcelona.jpg" },
+  { name: "Madrid", code: "MAD", country: "España", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-madrid.jpg" },
+  { name: "París", code: "CDG", country: "Francia", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-paris.jpg" },
+  { name: "Londres", code: "LHR", country: "Reino Unido", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-londres.jpg" }
 ];
 
 function generatePriceByCountry(country){
@@ -105,13 +166,20 @@ function loadOriginSelector() {
   destinations
     .filter(city => city.country === "Colombia")
     .forEach(city => {
+
       const option = document.createElement("option");
       option.value = city.name;
       option.textContent = city.name;
+
+      if(city.name === "Bogotá"){
+        option.selected = true;
+      }
+
       select.appendChild(option);
     });
 
 }
+
 
 // Cargar selector de país en la página de ofertas
 function loadCountrySelector() {
@@ -132,6 +200,8 @@ function loadCountrySelector() {
 
 }
 
+const internationalHubs = ["Bogotá", "Medellín", "Cali"];
+
 // Renderizar ofertas según ciudad de origen y país seleccionado
 function renderOffers(selectedOrigin, selectedCountry){
 
@@ -140,14 +210,19 @@ function renderOffers(selectedOrigin, selectedCountry){
 
   const filtered = destinations.filter(city => {
 
-    // Excluir ciudad origen
     if(city.name === selectedOrigin) return false;
 
-    // Filtrar por país
-    if(selectedCountry && city.country !== selectedCountry) return false;
+    if(city.region === "INT" && !internationalHubs.includes(selectedOrigin)){
+      return false;
+    }
+
+    if(selectedCountry && selectedCountry !== "ALL"){
+      if(city.country !== selectedCountry) return false;
+    }
 
     return true;
   });
+
 
   filtered.forEach(city => {
 
@@ -164,6 +239,7 @@ function renderOffers(selectedOrigin, selectedCountry){
       <div class="offer-info">
         <div>
           <h4>${city.name}</h4>
+          <h5>${city.country}</h5>
           <p>Por trayecto desde</p>
         </div>
 

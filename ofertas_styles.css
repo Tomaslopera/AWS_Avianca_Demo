@@ -216,3 +216,9 @@
   grid-template-columns: repeat(3, 1fr);
   gap:32px;
 }
+
+.offer-info h5 {
+  font-size: 13px;
+  color: #00a3b4;
+  font-weight: 500;
+}

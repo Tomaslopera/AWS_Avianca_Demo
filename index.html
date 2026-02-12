@@ -13,41 +13,89 @@
 </head>
 <body>
     <!-- LOGIN CONDITION -->
-    <!-- <script>
+    <script>
     const COGNITO_DOMAIN = "https://us-east-1qawpfkusl.auth.us-east-1.amazoncognito.com";
     const CLIENT_ID = "6oe10kr7ejbcu5cmhd2g8he09a";
-    const CALLBACK_URL = "https://d1cq6wgq3znilx.cloudfront.net";
+    const REDIRECT_URI = "https://d1cq6wgq3znilx.cloudfront.net";
 
-    const idToken = localStorage.getItem("idToken");
-
-    function parseCognitoTokens() {
-        const hash = window.location.hash.substr(1);
-        if (!hash) return null;
-
-        const params = new URLSearchParams(hash);
-        const id_token = params.get("id_token");
-        const access_token = params.get("access_token");
-
-        if (id_token && access_token) {
-        localStorage.setItem("idToken", id_token);
-        localStorage.setItem("accessToken", access_token);
-
-        window.history.replaceState({}, document.title, window.location.pathname);
-        return true;
-        }
-        return false;
+    // Generate random string
+    function generateRandomString(length) {
+        const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        let result = "";
+        const values = crypto.getRandomValues(new Uint8Array(length));
+        values.forEach(v => result += charset[v % charset.length]);
+        return result;
     }
 
-    if (parseCognitoTokens()) {
-        console.log("Cognito tokens saved.");
-    } else if (!idToken) {
-        const loginUrl = `${COGNITO_DOMAIN}/login?client_id=${CLIENT_ID}` +
-                        `&response_type=token&scope=openid+email` +
-                        `&redirect_uri=${encodeURIComponent(CALLBACK_URL)}`;
+    // SHA256 + Base64URL
+    async function sha256(plain) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(plain);
+        const hash = await crypto.subtle.digest("SHA-256", data);
+        return btoa(String.fromCharCode(...new Uint8Array(hash)))
+            .replace(/\+/g, "-")
+            .replace(/\//g, "_")
+            .replace(/=+$/, "");
+    }
+
+    async function redirectToLogin() {
+        const codeVerifier = generateRandomString(64);
+        const codeChallenge = await sha256(codeVerifier);
+
+        localStorage.setItem("pkce_verifier", codeVerifier);
+
+        const loginUrl = `${COGNITO_DOMAIN}/login` +
+            `?client_id=${CLIENT_ID}` +
+            `&response_type=code` +
+            `&scope=openid+email` +
+            `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
+            `&code_challenge=${codeChallenge}` +
+            `&code_challenge_method=S256`;
 
         window.location.href = loginUrl;
     }
-    </script> -->
+
+    async function handleCallback() {
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get("code");
+
+        if (!code) return false;
+
+        const codeVerifier = localStorage.getItem("pkce_verifier");
+
+        const response = await fetch(`${COGNITO_DOMAIN}/oauth2/token`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: new URLSearchParams({
+                grant_type: "authorization_code",
+                client_id: CLIENT_ID,
+                code: code,
+                redirect_uri: REDIRECT_URI,
+                code_verifier: codeVerifier
+            })
+        });
+
+        const tokens = await response.json();
+
+        localStorage.setItem("idToken", tokens.id_token);
+        localStorage.setItem("accessToken", tokens.access_token);
+        localStorage.setItem("refreshToken", tokens.refresh_token);
+
+        window.history.replaceState({}, document.title, "/");
+        return true;
+    }
+
+    (async () => {
+        const logged = await handleCallback();
+        const idToken = localStorage.getItem("idToken");
+
+        if (!logged && !idToken) {
+            redirectToLogin();
+        }
+    })();
+    </script>
 
     <!-- TOP BAR -->
     <div class="top-bar">
