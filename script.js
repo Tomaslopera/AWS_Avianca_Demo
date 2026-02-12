@@ -1,129 +1,3 @@
-// Datos de ciudades
-const cities = [
-  // --- DESTINOS NACIONALES (COLOMBIA) ---
-  { name: "Arauca", code: "AUC", type: "national" },
-  { name: "Armenia", code: "AXM", type: "national"},
-  { name: "Barrancabermeja", code: "EJA", type: "national" },
-  { name: "Barranquilla", code: "BAQ", type: "national" },
-  { name: "Bogotá", code: "BOG", type: "national" },
-  { name: "Bucaramanga", code: "BGA", type: "national" },
-  { name: "Cali", code: "CLO", type: "national" },
-  { name: "Cartagena de Indias", code: "CTG", type: "national" },
-  { name: "Cúcuta", code: "CUC", type: "national" },
-  { name: "Ibagué", code: "IBE", type: "national" },
-  { name: "Ipiales", code: "IPI", type: "national" },
-  { name: "Leticia", code: "LET", type: "national" },
-  { name: "Medellín", code: "MDE", type: "national" },
-  { name: "Montería", code: "MTR", type: "national" },
-  { name: "Neiva", code: "NVA", type: "national" },
-  { name: "Pasto", code: "PSO", type: "national" },
-  { name: "Pereira", code: "PEI", type: "national" },
-  { name: "Popayán", code: "PPN", type: "national" },
-  { name: "Quibdó", code: "UIB", type: "national" },
-  { name: "Riohacha", code: "RCH", type: "national" },
-  { name: "San Andrés", code: "ADZ", type: "national" },
-  { name: "Santa Marta", code: "SMR", type: "national" },
-  { name: "Valledupar", code: "VUP", type: "national" },
-  { name: "Villavicencio", code: "VVC", type: "national" },
-  { name: "Yopal", code: "EYP", type: "national" },
-  // --- DESTINOS INTERNACIONALES ---
-  // Suramérica
-  { name: "Buenos Aires", code: "AEP", type: "international" },
-  { name: "Buenos Aires", code: "EZE", type: "international" },
-  { name: "Córdoba", code: "COR", type: "international" },
-  { name: "La Paz", code: "LPB", type: "international" },
-  { name: "Santa Cruz de la Sierra", code: "VVI", type: "international" },
-  { name: "Belém", code: "BEL", type: "international" },
-  { name: "Brasilia", code: "BSB", type: "international" },
-  { name: "Manaos", code: "MAO", type: "international" },
-  { name: "Río de Janeiro", code: "GIG", type: "international" },
-  { name: "São Paulo", code: "GRU", type: "international" },
-  { name: "Santiago", code: "SCL", type: "international" },
-  { name: "Cuenca", code: "CUE", type: "international" },
-  { name: "Guayaquil", code: "GYE", type: "international" },
-  { name: "Isla Baltra", code: "GPS", type: "international" },
-  { name: "Manta", code: "MEC", type: "international" },
-  { name: "Quito", code: "UIO", type: "international" },
-  { name: "San Cristóbal", code: "SCY", type: "international" },
-  { name: "Georgetown", code: "GEO", type: "international" },
-  { name: "Asunción", code: "ASU", type: "international" },
-  { name: "Cusco", code: "CUZ", type: "international" },
-  { name: "Lima", code: "LIM", type: "international" },
-  { name: "Montevideo", code: "MVD", type: "international" },
-  { name: "Caracas", code: "CCS", type: "international" },
-
-  // Norteamérica
-  { name: "Montreal", code: "YUL", type: "international" },
-  { name: "Toronto", code: "YYZ", type: "international" },
-  { name: "Cancún", code: "CUN", type: "international" },
-  { name: "Ciudad de México", code: "MEX", type: "international" },
-  { name: "Monterrey", code: "MTY", type: "international" },
-  { name: "Tulum", code: "TQO", type: "international" },
-  { name: "Boston", code: "BOS", type: "international" },
-  { name: "Chicago", code: "ORD", type: "international" },
-  { name: "Dallas", code: "DFW", type: "international" },
-  { name: "Fort Lauderdale", code: "FLL", type: "international" },
-  { name: "Houston", code: "IAH", type: "international" },
-  { name: "Las Vegas", code: "LAS", type: "international" },
-  { name: "Los Ángeles", code: "LAX", type: "international" },
-  { name: "Miami", code: "MIA", type: "international" },
-  { name: "Nueva York", code: "JFK", type: "international" },
-  { name: "Ontario", code: "ONT", type: "international" },
-  { name: "Orlando", code: "MCO", type: "international" },
-  { name: "San Francisco", code: "SFO", type: "international" },
-  { name: "Tampa", code: "TPA", type: "international" },
-  { name: "Washington D.C.", code: "IAD", type: "international" },
-
-  // Centroamérica y Caribe
-  { name: "Oranjestad", code: "AUA", type: "international" },
-  { name: "San José", code: "SJO", type: "international" },
-  { name: "Willemstad", code: "CUR", type: "international" },
-  { name: "San Salvador", code: "SAL", type: "international" },
-  { name: "Flores", code: "FRS", type: "international" },
-  { name: "Ciudad de Guatemala", code: "GUA", type: "international" },
-  { name: "Comayagua", code: "XPL", type: "international" },
-  { name: "San Pedro Sula", code: "SAP", type: "international" },
-  { name: "Managua", code: "MGA", type: "international" },
-  { name: "Ciudad de Panamá", code: "PTY", type: "international" },
-  { name: "San Juan", code: "SJU", type: "international" },
-  { name: "Punta Cana", code: "PUJ", type: "international" },
-  { name: "Santo Domingo", code: "SDQ", type: "international" },
-
-  // Europa
-  { name: "Barcelona", code: "BCN", type: "international" },
-  { name: "Madrid", code: "MAD", type: "international" },
-  { name: "París", code: "CDG", type: "international" },
-  { name: "Londres", code: "LHR", type: "international" }
-];
-
-const citiesColombia = [
-  { name: "Arauca", code: "AUC", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-arauca.jpg" },
-  { name: "Armenia", code: "AXM", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-armenia.png" },
-  { name: "Barrancabermeja", code: "EJA", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-barrancabermeja.jpg" },
-  { name: "Barranquilla", code: "BAQ", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-barranquilla.webp" },
-  { name: "Bogotá", code: "BOG", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-bogota.jpg" },
-  { name: "Bucaramanga", code: "BGA", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-bucaramanga.jpg" },
-  { name: "Cali", code: "CLO", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-cali.jpg" },
-  { name: "Cartagena de Indias", code: "CTG", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-cartagena.jpg" },
-  { name: "Cúcuta", code: "CUC", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-cucuta.jpg" },
-  { name: "Ibagué", code: "IBE", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-ibague.jpg" },
-  { name: "Ipiales", code: "IPI", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-ipiales.jpg" },
-  { name: "Leticia", code: "LET", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-leticia.jpg" },
-  { name: "Medellín", code: "MDE", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-medellin.jpg" },
-  { name: "Montería", code: "MTR", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-monteria.jpg" },
-  { name: "Neiva", code: "NVA", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-neiva.jpg" },
-  { name: "Pasto", code: "PSO", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-pasto.jpg" },
-  { name: "Pereira", code: "PEI", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-pereira.webp" },
-  { name: "Popayán", code: "PPN", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-popayan.jpg" },
-  { name: "Quibdó", code: "UIB", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-quibdo.jpg" },
-  { name: "Riohacha", code: "RCH", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-riohacha.jpg" },
-  { name: "San Andrés", code: "ADZ", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-sanandres.webp" },
-  { name: "Santa Marta", code: "SMR", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-santamarta.jpg" },
-  { name: "Valledupar", code: "VUP", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-valledupar.jpg" },
-  { name: "Villavicencio", code: "VVC", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-villavicencio.jpg" },
-  { name: "Yopal", code: "EYP", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-yopal.jpg" }
-];
-
 // Formulario de búsqueda
 const initFormSubmission = () => {
     const searchForm = document.querySelector('.search-form');
@@ -512,7 +386,7 @@ function renderCities(listEl, filter="all", inputTarget, searchText=""){
 
   const text = searchText.toLowerCase();
 
-  cities.forEach(city => {
+  destinations.forEach(city => {
 
     if(filter !== "all" && city.type !== filter) return;
 
@@ -647,9 +521,15 @@ function renderIndexOffers(origin = "Bogotá") {
 
   grid.innerHTML = "";
 
-  // Usa las mismas ciudades que ofertas
-  const availableCities = citiesColombia
-    .filter(city => city.name !== origin);
+  if (typeof destinations === "undefined") {
+    console.error("destinations no está definido");
+    return;
+  }
+
+  const availableCities = destinations.filter(city =>
+    city.type === "national" &&
+    city.name !== origin
+  );
 
   const shuffled = [...availableCities]
     .sort(() => 0.5 - Math.random())
@@ -688,7 +568,9 @@ function loadIndexOriginSelector(){
   const select = document.getElementById("indexOriginSelector");
   if(!select) return;
 
-  citiesColombia.forEach(city=>{
+  destinations
+  .filter(city => city.type === "national")
+  .forEach(city =>{
     const option = document.createElement("option");
     option.value = city.name;
     option.textContent = city.name;
