@@ -1,4 +1,4 @@
-// Datos de ciudades
+/* // Datos de ciudades
 const destinations = [
   // Colombia
   { name: "Arauca", code: "AUC", country: "Colombia", region: "CO", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-arauca.jpg" },
@@ -53,48 +53,48 @@ const destinations = [
   { name: "Caracas", code: "CCS", country: "Venezuela", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-caracas.webp" },
 
   // Norteamérica
-  { name: "Montreal", code: "YUL", country: "Canadá", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-montreal.jpg" },
+  { name: "Montreal", code: "YUL", country: "Canadá", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-montreal.webp" },
   { name: "Toronto", code: "YYZ", country: "Canadá", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-toronto.jpg" },
-  { name: "Cancún", code: "CUN", country: "México", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-cancun.jpg" },
-  { name: "Ciudad de México", code: "MEX", country: "México", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-ciudad-de-mexico.jpg" },
+  { name: "Cancún", code: "CUN", country: "México", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-cancun.webp" },
+  { name: "Ciudad de México", code: "MEX", country: "México", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-ciudad-de-mexico.webp" },
   { name: "Monterrey", code: "MTY", country: "México", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-monterrey.jpg" },
-  { name: "Tulum", code: "TQO", country: "México", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-tulum.jpg" },
-  { name: "Boston", code: "BOS", country: "Estados Unidos", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-boston.jpg" },
+  { name: "Tulum", code: "TQO", country: "México", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-tulum.webp" },
+  { name: "Boston", code: "BOS", country: "Estados Unidos", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-boston.webp" },
   { name: "Chicago", code: "ORD", country: "Estados Unidos", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-chicago.jpg" },
   { name: "Dallas", code: "DFW", country: "Estados Unidos", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-dallas.jpg" },
   { name: "Fort Lauderdale", code: "FLL", country: "Estados Unidos", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-fort-lauderdale.jpg" },
-  { name: "Houston", code: "IAH", country: "Estados Unidos", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-houston.jpg" },
-  { name: "Las Vegas", code: "LAS", country: "Estados Unidos", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-las-vegas.jpg" },
+  { name: "Houston", code: "IAH", country: "Estados Unidos", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-houston.webp" },
+  { name: "Las Vegas", code: "LAS", country: "Estados Unidos", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-las-vegas.webp" },
   { name: "Los Ángeles", code: "LAX", country: "Estados Unidos", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-los-angeles.jpg" },
-  { name: "Miami", code: "MIA", country: "Estados Unidos", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-miami.jpg" },
+  { name: "Miami", code: "MIA", country: "Estados Unidos", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-miami.webp" },
   { name: "Nueva York", code: "JFK", country: "Estados Unidos", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-nueva-york.jpg" },
   { name: "Ontario", code: "ONT", country: "Estados Unidos", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-ontario.jpg" },
   { name: "Orlando", code: "MCO", country: "Estados Unidos", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-orlando.jpg" },
-  { name: "San Francisco", code: "SFO", country: "Estados Unidos", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-san-francisco.jpg" },
-  { name: "Tampa", code: "TPA", country: "Estados Unidos", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-tampa.jpg" },
-  { name: "Washington D.C.", code: "IAD", country: "Estados Unidos", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-washington.jpg" },
+  { name: "San Francisco", code: "SFO", country: "Estados Unidos", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-san-francisco.webp" },
+  { name: "Tampa", code: "TPA", country: "Estados Unidos", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-tampa.webp" },
+  { name: "Washington D.C.", code: "IAD", country: "Estados Unidos", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-washington.webp" },
 
   // Centroamérica y Caribe
   { name: "Oranjestad", code: "AUA", country: "Aruba", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-oranjestad.jpg" },
-  { name: "San José", code: "SJO", country: "Costa Rica", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-san-jose.jpg" },
+  { name: "San José", code: "SJO", country: "Costa Rica", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-san-jose.webp" },
   { name: "Willemstad", code: "CUR", country: "Curazao", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-willemstad.jpg" },
   { name: "San Salvador", code: "SAL", country: "El Salvador", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-san-salvador.jpg" },
-  { name: "Flores", code: "FRS", country: "Guatemala", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-flores.jpg" },
+  { name: "Flores", code: "FRS", country: "Guatemala", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-flores.webp" },
   { name: "Ciudad de Guatemala", code: "GUA", country: "Guatemala", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-ciudad-de-guatemala.jpg" },
   { name: "Comayagua", code: "XPL", country: "Honduras", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-comayagua.jpg" },
   { name: "San Pedro Sula", code: "SAP", country: "Honduras", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-san-pedro-sula.jpg" },
   { name: "Managua", code: "MGA", country: "Nicaragua", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-managua.jpg" },
   { name: "Ciudad de Panamá", code: "PTY", country: "Panamá", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-ciudad-de-panama.jpg" },
   { name: "San Juan", code: "SJU", country: "Puerto Rico", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-san-juan.jpg" },
-  { name: "Punta Cana", code: "PUJ", country: "República Dominicana", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-punta-cana.jpg" },
+  { name: "Punta Cana", code: "PUJ", country: "República Dominicana", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-punta-cana.webp" },
   { name: "Santo Domingo", code: "SDQ", country: "República Dominicana", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-santo-domingo.jpg" },
 
   // Europa
   { name: "Barcelona", code: "BCN", country: "España", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-barcelona.jpg" },
   { name: "Madrid", code: "MAD", country: "España", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-madrid.jpg" },
-  { name: "París", code: "CDG", country: "Francia", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-paris.jpg" },
+  { name: "París", code: "CDG", country: "Francia", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-paris.webp" },
   { name: "Londres", code: "LHR", country: "Reino Unido", region: "INT", image: "https://d1cq6wgq3znilx.cloudfront.net/images/cities/image-londres.jpg" }
-];
+]; */
 
 function generatePriceByCountry(country){
 
@@ -249,6 +249,10 @@ function renderOffers(selectedOrigin, selectedCountry){
         </div>
       </div>
     `;
+
+    card.addEventListener("click", () => {
+      window.location.href = `destino.html?city=${encodeURIComponent(city.name)}`;
+    });
 
     grid.appendChild(card);
 

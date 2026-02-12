@@ -1,0 +1,818 @@
+/* ============================= */
+/* HERO */
+/* ============================= */
+
+.city-hero {
+  position: relative;
+  background: url("https://d1cq6wgq3znilx.cloudfront.net/images/backgrounds/image-tureserva.webp");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding: 200px 0 120px;
+  text-align: center;
+  color: #fff;
+  overflow: hidden;
+}
+
+.city-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.45),
+    rgba(0,0,0,0.55)
+  );
+  z-index: 0;
+}
+
+.city-hero .container {
+  position: relative;
+  z-index: 1;
+}
+
+.city-hero h1 {
+  font-size: 42px;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.city-hero p {
+  font-size: 18px;
+  opacity: .95;
+}
+
+/* ============================= */
+/* RESERVATION */
+/* ============================= */
+
+.reservation-section {
+  padding: 80px 0;
+  background: #f5f7fa;
+}
+
+.reservation-card {
+  max-width: 600px;
+  margin: 0 auto;
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 15px 40px rgba(0,0,0,.08);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 14px;
+  background: #E30613;
+  color: white;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ============================= */
+/* ATTRACTIONS */
+/* ============================= */
+
+.attractions-section {
+  padding: 80px 0;
+}
+
+.attractions-section h2 {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.attractions-grid {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 30px;
+}
+
+.attraction-card {
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.08);
+  transition: .3s ease;
+}
+
+.attraction-card:hover {
+  transform: translateY(-6px);
+}
+
+@media(max-width:900px){
+  .attractions-grid{
+    grid-template-columns: repeat(2,1fr);
+  }
+}
+
+@media(max-width:600px){
+  .attractions-grid{
+    grid-template-columns: 1fr;
+  }
+}
+
+/* HERO CON IMAGEN DINÁMICA */
+
+.city-destination-hero {
+  min-height: 600px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+/* SECTION TURISMO */
+
+.tourism-section {
+  padding: 80px 0;
+  background: #f5f7fa;
+}
+
+.tourism-section h2 {
+  text-align: center;
+  margin-bottom: 40px;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.tourism-grid {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 30px;
+}
+
+.tourism-card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,.08);
+  transition: .3s ease;
+}
+
+.tourism-card:hover {
+  transform: translateY(-6px);
+}
+
+.tourism-image {
+  height: 180px;
+  background-size: cover;
+  background-position: center;
+}
+
+.tourism-info {
+  padding: 20px;
+}
+
+.tourism-info h4 {
+  margin-bottom: 6px;
+}
+
+@media(max-width:900px){
+  .tourism-grid{
+    grid-template-columns: repeat(2,1fr);
+  }
+}
+
+@media(max-width:600px){
+  .tourism-grid{
+    grid-template-columns: 1fr;
+  }
+}
+
+.destination-title{
+  font-size: 64px;
+  color: white;
+  font-weight: 800;
+  margin-bottom: 40px;
+  text-align: center;
+  text-shadow: 0 8px 25px rgba(0,0,0,.4);
+}
+
+@media(max-width:768px){
+  .destination-title{
+    font-size: 38px;
+  }
+}
+
+.city-destination-hero {
+  position: relative;
+  height: 750px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.city-destination-hero .hero-background {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+}
+
+.city-destination-hero .gradient-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.5),
+    rgba(0,0,0,0.7)
+  );
+}
+
+.destination-title {
+  color: white;
+  font-size: 56px;
+  font-weight: 700;
+  margin-bottom: 40px;
+  text-align: center;
+  z-index: 2;
+  position: relative;
+}
+
+.passengers-group{
+  background:white;
+  border:1px solid var(--border-color);
+  border-radius:14px;
+  padding:6px 10px;
+  position:relative;
+  height:52px;
+  display:flex;
+  align-items:center;
+  max-width:120px;
+}
+
+/* =========================================
+   DESTINO PAGE - HERO AJUSTES VISUALES
+========================================= */
+
+/* Hacemos que el hero tenga imagen real */
+.city-destination-hero {
+  min-height: 640px;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+/* Fondo dinámico */
+.city-destination-hero .hero-background {
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+/* Oscurecemos más que en index */
+.city-destination-hero .gradient-overlay {
+  background: linear-gradient(
+    rgba(0,0,0,.55),
+    rgba(0,0,0,.35)
+  );
+}
+
+/* Título grande arriba */
+.destination-title {
+  font-size: 64px;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+/* =========================================
+   SEARCH WIDGET OVERRIDES SOLO DESTINO
+========================================= */
+
+.city-destination-hero .search-widget {
+  border-radius: 22px;
+  box-shadow: 0 18px 50px rgba(0,0,0,0.25);
+}
+
+/* Ajuste exacto del grid */
+.city-destination-hero .form-row-main {
+  grid-template-columns:
+    minmax(0, 3fr)
+    minmax(0, 2.4fr)
+    minmax(0, 1fr)
+    minmax(0, 180px);
+}
+
+/* Inputs más limpios */
+.city-destination-hero .field-pair {
+  height: 56px;
+  padding: 8px 12px;
+  border-radius: 16px;
+}
+
+/* Fechas */
+.city-destination-hero .date-pair {
+  height: 56px;
+}
+
+/* Pasajeros alineado */
+.city-destination-hero .passengers-group {
+  height: 56px;
+  padding: 6px 12px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Input pasajeros centrado */
+.city-destination-hero .passengers-input {
+  height: 100%;
+  align-items: center;
+}
+
+/* Botón igual proporción index */
+.city-destination-hero .btn-buscar {
+  height: 56px;
+  border-radius: 16px;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+/* =========================================
+   SOLO IDA - FORZAR ESTILO PERFECTO
+========================================= */
+
+.city-destination-hero .date-pair.oneway .divider {
+  display: none !important;
+}
+
+.city-destination-hero .date-pair.oneway .return-date {
+  display: none !important;
+}
+
+.city-destination-hero .date-pair.oneway .form-group:first-child {
+  flex: 1 1 100%;
+}
+
+/* =========================================
+   TURISMO SECTION
+========================================= */
+
+.tourism-section {
+  padding: 100px 0;
+  background: #f9f9f9;
+}
+
+.tourism-section h2 {
+  text-align: center;
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 60px;
+}
+
+.tourism-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+}
+
+/* Tarjetas turismo */
+.tourism-card {
+  position: relative;
+  height: 280px;
+  border-radius: 22px;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  transition: .4s ease;
+}
+
+.tourism-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 50px rgba(0,0,0,.2);
+}
+
+.tourism-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0,0,0,.85),
+    rgba(0,0,0,.2)
+  );
+}
+
+.tourism-content {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  right: 24px;
+  color: white;
+}
+
+.tourism-content h4 {
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+
+.tourism-content p {
+  font-size: 14px;
+  opacity: .9;
+}
+
+/* ================================
+   FIX EXCLUSIVO DESTINO HERO
+================================ */
+
+/* 1️⃣ Corregir posicionamiento que rompe el layout */
+.city-destination-hero .form-group{
+  position:relative !important;
+}
+
+/* 2️⃣ Ajustar estructura EXACTA del grid */
+.city-destination-hero .form-row-main{
+  display:grid;
+  grid-template-columns:
+    minmax(0,3fr)
+    minmax(0,2.4fr)
+    minmax(0,1fr)
+    minmax(0,160px);
+  gap:12px;
+  align-items:center;
+}
+
+/* 3️⃣ Forzar mismo alto que index */
+.city-destination-hero .field-pair{
+  height:52px;
+  align-items:center;
+}
+
+.city-destination-hero .field-pair .input-with-icon{
+  height:48px;
+  display:flex;
+  align-items:center;
+}
+
+/* 4️⃣ Pasajeros alineado perfecto */
+.city-destination-hero .passengers-group{
+  height:52px;
+  display:flex;
+  align-items:center;
+  padding:4px 10px;
+}
+
+.city-destination-hero .passengers-input{
+  height:48px;
+  display:flex;
+  align-items:center;
+}
+
+/* 5️⃣ Botón exactamente igual */
+.city-destination-hero .btn-buscar{
+  height:52px;
+  border-radius:14px;
+  font-size:16px;
+  font-weight:700;
+}
+
+/* 6️⃣ FIX SOLO IDA (que ocupe todo el espacio) */
+.city-destination-hero .date-pair.oneway{
+  grid-template-columns: 1fr;
+}
+
+.city-destination-hero .date-pair.oneway .divider{
+  display:none;
+}
+
+.city-destination-hero .date-pair.oneway .return-date{
+  display:none;
+}
+
+.city-destination-hero .date-pair.oneway .form-group{
+  flex:1 1 100%;
+}
+
+/* =======================================
+   FIX DEFINITIVO SEARCH WIDGET DESTINO
+======================================= */
+
+/* 1️⃣ Volver form-group al flujo normal */
+.city-destination-hero .form-group{
+  position: relative !important;
+  width: 100%;
+}
+
+/* 2️⃣ Asegurar que los bloques ocupen bien el espacio */
+.city-destination-hero .field-pair{
+  display: flex;
+  align-items: center;
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 6px 10px;
+  gap: 8px;
+}
+
+/* 3️⃣ Inputs ocupando su mitad correctamente */
+.city-destination-hero .field-pair .form-group{
+  flex: 1;
+  min-width: 0;
+}
+
+/* 4️⃣ Eliminar cualquier expansión extra */
+.city-destination-hero .input-with-icon{
+  width: 100%;
+  min-width: 0;
+  box-shadow: none;
+}
+
+/* 5️⃣ Altura uniforme como index */
+.city-destination-hero .input-with-icon{
+  height: 48px;
+  display: flex;
+  align-items: center;
+}
+
+/* 6️⃣ Pasajeros alineado */
+.city-destination-hero .passengers-group{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 52px;
+}
+
+/* 7️⃣ Forzar comportamiento correcto Solo ida */
+.city-destination-hero .date-pair.oneway .divider{
+  display: none;
+}
+
+.city-destination-hero .date-pair.oneway .return-date{
+  display: none;
+}
+
+.city-destination-hero .date-pair.oneway .form-group{
+  flex: 1;
+}
+
+/* ==============================
+   FIX INPUT DOBLE BORDE
+============================== */
+
+/* El contenedor es el único que debe tener borde */
+.city-destination-hero .field-pair{
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 0 12px;
+}
+
+/* Eliminar completamente el borde interno */
+.city-destination-hero .field-pair .input-with-icon{
+  border: none !important;
+  background: transparent;
+  box-shadow: none !important;
+  padding: 0 8px;
+}
+
+/* Quitar cualquier borde de input */
+.city-destination-hero .field-pair input{
+  border: none !important;
+  background: transparent;
+}
+
+/* Asegurar alineación vertical */
+.city-destination-hero .field-pair{
+  display: flex;
+  align-items: center;
+  height: 56px;
+}
+
+/* Separador limpio */
+.city-destination-hero .divider{
+  height: 32px;
+  background: #e5e5e5;
+}
+
+/* ==============================
+   FIX PASAJEROS DESTINO
+============================== */
+
+.city-destination-hero .passengers-group{
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 0 12px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  background: white;
+}
+
+/* Eliminar cualquier borde interno */
+.city-destination-hero .passengers-group .input-with-icon{
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent;
+  padding: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Quitar borde del input */
+.city-destination-hero .passengers-group input{
+  border: none !important;
+  background: transparent;
+}
+
+/* =========================================
+   PASSENGERS MÁS ESTILIZADO
+========================================= */
+
+.city-destination-hero .passengers-group{
+  height: 56px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  border-radius: 14px;
+}
+
+.city-destination-hero .passengers-input{
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.city-destination-hero .passengers-input input{
+  height: 100%;
+  padding: 0;
+}
+
+/* ===============================
+   RESET VISUAL SEARCH DESTINO
+================================*/
+
+.city-destination-hero .field-pair {
+  padding: 0 !important;
+  height: 56px;
+  display: flex;
+  align-items: center;
+}
+
+.city-destination-hero .input-with-icon {
+  padding: 0 18px !important;
+  min-height: unset !important;
+  height: 56px;
+  display: flex;
+  align-items: center;
+}
+
+.city-destination-hero .input-with-icon input {
+  height: 100%;
+  padding: 0 !important;
+  line-height: 56px;   /* 🔥 centra el texto vertical real */
+}
+
+.city-destination-hero .passengers-group {
+  height: 56px;
+  padding: 0 18px !important;
+  display: flex;
+  align-items: center;
+}
+
+.city-destination-hero .passengers-input {
+  height: 56px;
+  display: flex;
+  align-items: center;
+}
+
+/* ===============================
+   DESTINO HERO - LAYOUT PROPIO
+================================*/
+
+.city-destination-hero .form-row-main{
+  display:grid;
+  grid-template-columns:
+    3fr
+    2.4fr
+    1fr
+    160px;
+  gap:12px;
+  align-items:center;
+}
+
+/* BLOQUES */
+.city-destination-hero .field-pair{
+  height:56px;
+  padding:0;
+  border-radius:14px;
+  border:1px solid #ddd;
+  display:flex;
+  align-items:center;
+  background:white;
+}
+
+/* INPUTS */
+.city-destination-hero .input-with-icon{
+  height:56px;
+  display:flex;
+  align-items:center;
+  padding:0 18px;
+}
+
+.city-destination-hero .input-with-icon input{
+  height:100%;
+  line-height:56px;
+  padding:0;
+}
+
+/* FECHAS */
+.city-destination-hero .date-pair{
+  display:flex;
+  height:56px;
+}
+
+.city-destination-hero .date-pair .divider{
+  height:32px;
+}
+
+/* PASAJEROS */
+.city-destination-hero .passengers-group{
+  height:56px;
+  border-radius:14px;
+  border:1px solid #ddd;
+  padding:0 16px;
+  display:flex;
+  align-items:center;
+}
+
+.city-destination-hero .passengers-input{
+  height:56px;
+  display:flex;
+  align-items:center;
+}
+
+/* BOTÓN */
+.city-destination-hero .btn-buscar{
+  height:56px;
+  border-radius:14px;
+}
+
+/* ===============================
+   FIX ESTRUCTURAL DESTINO
+================================*/
+
+.city-destination-hero .form-group {
+  position: relative;   /* 🔥 anulamos el absolute del styles.css */
+}
+
+.city-destination-hero .field-pair,
+.city-destination-hero .passengers-group,
+.city-destination-hero .btn-buscar {
+  height: 56px;
+}
+
+.city-destination-hero .input-with-icon {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+}
+
+.city-destination-hero .input-with-icon input {
+  height: 100%;
+  padding: 0;
+}
+
+/* ===============================
+   HERO DESTINO - CORRECCIÓN REAL
+================================*/
+
+.city-destination-hero {
+  min-height: 650px;
+  display: flex;
+  align-items: center;
+}
+
+.city-destination-hero .hero-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+}
+
+/* ===============================
+   FIX REAL DEL SEARCH WIDGET
+================================*/
+
+.city-destination-hero .form-group {
+  position: relative !important;
+}
+
