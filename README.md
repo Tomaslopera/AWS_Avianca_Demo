@@ -4,93 +4,190 @@ Desarrollo de página web estática alojada en los servicios de **AWS**
 
 ## Arquitectura
 
-
-
-## Estructura del Proyecto
-
-```
-skywings-frontend/
-│
-├── index.html
-├── styles.css
-├── script.js
-├── ofertas.html
-├── styles_ofertas.css
-├── ofertas_script.js
-└── README.md
-```
-
 ## Despliegue en AWS
 
-### Paso 1: Crear el Bucket S3
+### Paso 1: Crear el Bucket S3 y Subir los Archivos
 
-```bash
-# Crear bucket (reemplaza 'tu-nombre-bucket' con un nombre único)
-aws s3 mb s3://skywings-frontend-prod
-
-# Habilitar hosting estático
-aws s3 website s3://skywings-frontend-prod \
-  --index-document index.html \
-  --error-document index.html
-```
+![Dashboard S3](images/aws/S3-Overview.png)
 
 ### Paso 2: Configurar Política del Bucket
 
-Crear archivo `bucket-policy.json`:
+> Bucket S3: Permissions
 
 ```json
 {
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "PublicReadGetObject",
-      "Effect": "Allow",
-      "Principal": "*",
-      "Action": "s3:GetObject",
-      "Resource": "arn:aws:s3:::skywings-frontend-prod/*"
-    }
-  ]
+    "Version": "2008-10-17",
+    "Id": "PolicyForCloudFrontPrivateContent",
+    "Statement": [
+        {
+            "Sid": "AllowCloudFrontServicePrincipal",
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "cloudfront.amazonaws.com"
+            },
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::avianca-demo/*",
+            "Condition": {
+                "StringEquals": {
+                    "AWS:SourceArn": "arn:aws:cloudfront::767398005228:distribution/E27ZEE9AOMFS01"
+                }
+            }
+        }
+    ]
 }
 ```
 
-Aplicar política:
+### Paso 3: Configurar CloudFront
 
-```bash
-aws s3api put-bucket-policy \
-  --bucket skywings-frontend-prod \
-  --policy file://bucket-policy.json
+![Dashboard S3](images/aws/CloudFront-Overview.png)
+
+#### Origin
+
+> Se debe establecer OAC
+
+![Dashboard S3](images/aws/CloudFront-Origin.png)
+
+### Paso 4: Configurar Cognito
+
+**`traditional web application` → `email - phone (SNS) - username` → `required attributes` → `url redirection (CloudFront)`**
+
+![Dashboard S3](images/aws/Cognito-Overview.png)
+
+
+### Paso 5: Social and External Providers
+
+#### Google
+
+**GCP: `Create OAuth (Origin -> Cognito Domain + /oauth2/idpresponse)`**
+
+- **Goolge Cloud Platform → Create Project**
+- **Configure OAUTH Consent Screen**
+    - **APIs & Services → OAuth consent screen**
+    - **User Type → `External`**
+    - **Authorized Domains → `cognito.domain/ouath2/idpresponse`**
+
+- **Add Identity Provider (Cognito)**
+  - **Client ID**
+  - **Client Secret**
+  - **Scopes → `openid email profile`**
+ 
+- **Enable identity providers**
+    - **Login pages → `edit`**
+    - **Add identity provider → `cognito google`**
+
+![Dashboard S3](images/aws/Cognito-Google.png)
+
+#### Facebook
+
+- **Meta Developers → Create App**
+    - **`Otros` → `Consumidor`**
+- **Add Product → `Facebook Login`**
+    - **Add valid OAUTH redirect URI `https://YOUR_COGNITO_DOMAIN/oauth2/idpresponse`**
+- **Enable permissions: `email` `public_profile`**
+    - **Client OAuth Login → ON**
+    - **Web OAuth Login → ON**
+    - **Use Strict Mode for Redirect URI → ON**
+    - **Enforce HTTPS → ON**
+- **Required fields to remove warning**
+    - **Privacy policy URL (`CloudFront`)**
+    - **Data deletion URL (`CloudFront`)**
+- **Switch App to live**
+
+- **Add Identity Provider (Cognito)**
+  - **App ID**
+  - **App Secret**
+  - **Scopes → `public_profile, email`**
+
+- **Enable identity providers**
+    - **Login pages → `edit`**
+    - **Add identity provider → `cognito facebook`**
+
+![Dashboard S3](images/aws/Cognito-Facebook.png)
+
+### Paso 7: Barrera Cognito
+
+```html
+<script>
+    const COGNITO_DOMAIN = "https://us-east-1qawpfkusl.auth.us-east-1.amazoncognito.com";
+    const CLIENT_ID = "6oe10kr7ejbcu5cmhd2g8he09a";
+    const REDIRECT_URI = "https://d1cq6wgq3znilx.cloudfront.net";
+
+    // Generate random string
+    function generateRandomString(length) {
+        const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        let result = "";
+        const values = crypto.getRandomValues(new Uint8Array(length));
+        values.forEach(v => result += charset[v % charset.length]);
+        return result;
+    }
+
+    // SHA256 + Base64URL
+    async function sha256(plain) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(plain);
+        const hash = await crypto.subtle.digest("SHA-256", data);
+        return btoa(String.fromCharCode(...new Uint8Array(hash)))
+            .replace(/\+/g, "-")
+            .replace(/\//g, "_")
+            .replace(/=+$/, "");
+    }
+
+    async function redirectToLogin() {
+        const codeVerifier = generateRandomString(64);
+        const codeChallenge = await sha256(codeVerifier);
+
+        localStorage.setItem("pkce_verifier", codeVerifier);
+
+        const loginUrl = `${COGNITO_DOMAIN}/login` +
+            `?client_id=${CLIENT_ID}` +
+            `&response_type=code` +
+            `&scope=openid+email` +
+            `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
+            `&code_challenge=${codeChallenge}` +
+            `&code_challenge_method=S256`;
+
+        window.location.href = loginUrl;
+    }
+
+    async function handleCallback() {
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get("code");
+
+        if (!code) return false;
+
+        const codeVerifier = localStorage.getItem("pkce_verifier");
+
+        const response = await fetch(`${COGNITO_DOMAIN}/oauth2/token`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: new URLSearchParams({
+                grant_type: "authorization_code",
+                client_id: CLIENT_ID,
+                code: code,
+                redirect_uri: REDIRECT_URI,
+                code_verifier: codeVerifier
+            })
+        });
+
+        const tokens = await response.json();
+
+        localStorage.setItem("idToken", tokens.id_token);
+        localStorage.setItem("accessToken", tokens.access_token);
+        localStorage.setItem("refreshToken", tokens.refresh_token);
+
+        window.history.replaceState({}, document.title, "/");
+        return true;
+    }
+
+    (async () => {
+        const logged = await handleCallback();
+        const idToken = localStorage.getItem("idToken");
+
+        if (!logged && !idToken) {
+            redirectToLogin();
+        }
+    })();
+    </script>
 ```
-
-### Paso 3: Subir Archivos
-
-```bash
-# Subir todos los archivos
-aws s3 sync . s3://skywings-frontend-prod \
-  --exclude "*.md" \
-  --exclude ".git/*" \
-  --cache-control "max-age=31536000" \
-  --acl public-read
-
-# Para el HTML (cache más corto)
-aws s3 cp index.html s3://skywings-frontend-prod/ \
-  --cache-control "max-age=3600" \
-  --content-type "text/html" \
-  --acl public-read
-```
-
-### Paso 4: Configurar CloudFront
-
-```bash
-# Crear distribución de CloudFront
-aws cloudfront create-distribution \
-  --origin-domain-name skywings-frontend-prod.s3-website-us-east-1.amazonaws.com \
-  --default-root-object index.html
-```
-
-### Paso 5: Configurar Cognito
-
-
-### Paso 6: Configurar Google + Facebook
-
-
-### Paso 7: Configurar Lambda Edge
