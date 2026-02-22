@@ -501,8 +501,8 @@ const initLogout = () => {
         localStorage.removeItem("accessToken");
 
         // Redirect to Cognito logout endpoint
-        const COGNITO_DOMAIN = "https://us-east-1qawpfkusl.auth.us-east-1.amazoncognito.com";
-        const CLIENT_ID = "6oe10kr7ejbcu5cmhd2g8he09a";
+        const COGNITO_DOMAIN = "https://us-east-1wai3cb0pm.auth.us-east-1.amazoncognito.com";
+        const CLIENT_ID = "1vpm1sda0irgatmcvq9iseb9b8";
         const CALLBACK_URL = "https://d1cq6wgq3znilx.cloudfront.net";
 
         const logoutUrl =

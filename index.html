@@ -3,703 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>avianca - Encuentra tiquetes y vuelos baratos | Web oficial</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <title>avianca - Cargando...</title>
 </head>
 <body>
-    <!-- LOGIN CONDITION -->
-<!-- LOGIN CONDITION -->
-<script>
-    const COGNITO_DOMAIN = "https://us-east-1qawpfkusl.auth.us-east-1.amazoncognito.com";
-    const CLIENT_ID = "6oe10kr7ejbcu5cmhd2g8he09a";
-    const REDIRECT_URI = "https://d1cq6wgq3znilx.cloudfront.net";
+    <script>
+        const COGNITO_DOMAIN = "https://us-east-1wai3cb0pm.auth.us-east-1.amazoncognito.com";
+        const CLIENT_ID = "1vpm1sda0irgatmcvq9iseb9b8";
+        const REDIRECT_URI = "https://d1cq6wgq3znilx.cloudfront.net";
 
-    function generateRandomString(length) {
-        const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        let result = "";
-        const values = crypto.getRandomValues(new Uint8Array(length));
-        values.forEach(v => result += charset[v % charset.length]);
-        return result;
-    }
-
-    async function sha256(plain) {
-        const encoder = new TextEncoder();
-        const data = encoder.encode(plain);
-        const hash = await crypto.subtle.digest("SHA-256", data);
-        return btoa(String.fromCharCode(...new Uint8Array(hash)))
-            .replace(/\+/g, "-")
-            .replace(/\//g, "_")
-            .replace(/=+$/, "");
-    }
-
-    async function redirectToLogin() {
-        const codeVerifier = generateRandomString(64);
-        const codeChallenge = await sha256(codeVerifier);
-
-        localStorage.setItem("pkce_verifier", codeVerifier);
-
-        const loginUrl = `${COGNITO_DOMAIN}/login` +
-            `?client_id=${CLIENT_ID}` +
-            `&response_type=code` +
-            `&scope=openid+email+phone` +
-            `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
-            `&code_challenge=${codeChallenge}` +
-            `&code_challenge_method=S256`;
-
-        window.location.href = loginUrl;
-    }
-
-    async function handleCallback() {
-        const params = new URLSearchParams(window.location.search);
-        const code = params.get("code");
-
-        if (!code) return false;
-
-        const codeVerifier = localStorage.getItem("pkce_verifier");
-
-        const response = await fetch(`${COGNITO_DOMAIN}/oauth2/token`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-            body: new URLSearchParams({
-                grant_type: "authorization_code",
-                client_id: CLIENT_ID,
-                code: code,
-                redirect_uri: REDIRECT_URI,
-                code_verifier: codeVerifier
-            })
-        });
-
-        const tokens = await response.json();
-
-        // Only log the error, do nothing else
-        if (!tokens.id_token) {
-            console.error("Token exchange failed:", JSON.stringify(tokens));
-            return false;
+        function generateRandomString(length) {
+            const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            let result = "";
+            const values = crypto.getRandomValues(new Uint8Array(length));
+            values.forEach(v => result += charset[v % charset.length]);
+            return result;
         }
 
-        localStorage.setItem("idToken", tokens.id_token);
-        localStorage.setItem("accessToken", tokens.access_token);
-        localStorage.setItem("refreshToken", tokens.refresh_token);
-        localStorage.removeItem("pkce_verifier");
-
-        window.history.replaceState({}, document.title, "/");
-        return true;
-    }
-
-    (async () => {
-        const params = new URLSearchParams(window.location.search);
-        const code = params.get("code");
-        const error = params.get("error");
-
-        if (code) {
-            await handleCallback();
-            return;
+        async function sha256(plain) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(plain);
+            const hash = await crypto.subtle.digest("SHA-256", data);
+            return btoa(String.fromCharCode(...new Uint8Array(hash)))
+                .replace(/\+/g, "-")
+                .replace(/\//g, "_")
+                .replace(/=+$/, "");
         }
 
-        // Clear error params from URL but still allow entry
-        if (error) {
-            window.history.replaceState({}, document.title, "/");
-            return;
+        async function redirectToLogin() {
+            const codeVerifier = generateRandomString(64);
+            const codeChallenge = await sha256(codeVerifier);
+            localStorage.setItem("pkce_verifier", codeVerifier);
+
+            const loginUrl = `${COGNITO_DOMAIN}/login` +
+                `?client_id=${CLIENT_ID}` +
+                `&response_type=code` +
+                `&scope=openid+email+phone` +
+                `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
+                `&code_challenge=${codeChallenge}` +
+                `&code_challenge_method=S256`;
+
+            window.location.href = loginUrl;
         }
 
-        const idToken = localStorage.getItem("idToken");
-        if (!idToken) {
-            redirectToLogin();
+        async function handleCallback() {
+            const params = new URLSearchParams(window.location.search);
+            const code = params.get("code");
+            if (!code) return false;
+
+            const codeVerifier = localStorage.getItem("pkce_verifier");
+
+            const response = await fetch(`${COGNITO_DOMAIN}/oauth2/token`, {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({
+                    grant_type: "authorization_code",
+                    client_id: CLIENT_ID,
+                    code: code,
+                    redirect_uri: REDIRECT_URI,
+                    code_verifier: codeVerifier
+                })
+            });
+
+            const tokens = await response.json();
+
+            if (!tokens.id_token) {
+                console.error("Token exchange failed:", JSON.stringify(tokens));
+                return false;
+            }
+
+            localStorage.setItem("idToken", tokens.id_token);
+            localStorage.setItem("accessToken", tokens.access_token);
+            localStorage.setItem("refreshToken", tokens.refresh_token);
+            localStorage.removeItem("pkce_verifier");
+            return true;
         }
-    })();
-</script>
 
-    <!-- TOP BAR -->
-    <div class="top-bar">
-        <div class="top-bar-container">
-            <div class="top-bar-right">
-                <a href="#" class="top-bar-link">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path d="M21 15C21 15.5304 20.7893 16.0391 20.4142 16.4142C20.0391 16.7893 19.5304 17 19 17H7L3 21V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    Avianca Chat
-                </a>
-                <a href="#" class="top-bar-link">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
-                        <path d="M12 2C14.5013 4.73835 15.9228 8.29203 16 12C15.9228 15.708 14.5013 19.2616 12 22M12 2C9.49872 4.73835 8.07725 8.29203 8 12C8.07725 15.708 9.49872 19.2616 12 22M2 12H22" stroke="currentColor" stroke-width="2"/>
-                    </svg>
-                    Español
-                </a>
-                <a href="#" class="top-bar-link">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    Colombia (COP)
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <!-- HEADER -->
-    <header class="main-header">
-        <nav class="navbar">
-            <div class="nav-container">
-                <div class="logo">
-                    <svg width="120" height="32" viewBox="0 0 120 32" fill="none">
-                        <text x="0" y="24" font-family="Inter" font-size="28" font-weight="700" fill="#E30613" style="letter-spacing: -0.5px;">avianca</text>
-                    </svg>
-                </div>
-                
-                <ul class="nav-menu">
-                    <li><a href="index.html" class="nav-link">Reservar</a></li>
-                    <li class="nav-dropdown">
-                        <a href="ofertas.html" class="nav-link">Ofertas y destinos</a>
-                    </li>
-                    <li class="nav-dropdown">
-                        <a href="tu_reserva.html" class="nav-link">Tu reserva</a>
-                    </li>
-                    <li class="nav-dropdown">
-                        <a href="#" class="nav-link">Información y ayuda</a>
-                    </li>
-                    <li><a href="#" class="nav-link">Lifemiles</a></li>
-                </ul>
-
-                <div class="nav-actions">
-                    <button id="logoutBtn" class="btn-logout">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                            <path d="M16 17L21 12L16 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M21 12H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M12 19H5C4.46957 19 3.96086 18.7893 3.58579 18.4142C3.21071 18.0391 3 17.5304 3 17V7C3 6.46957 3.21071 5.96086 3.58579 5.58579C3.96086 5.21071 4.46957 5 5 5H12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        Cerrar sesión
-                    </button>
-                    <button class="hamburger">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </button>
-                </div>
-            </div>
-        </nav>
-    </header>
-
-    <!-- RESERVATION SECTION -->
-    <section class="hero">
-        <div class="hero-background">
-            <div class="gradient-overlay"></div>
-        </div>
-        
-        <div class="hero-content">
-            <!-- FLIGHT SEARCH WIDGET -->
-            <div class="search-widget">
-                <div class="search-options">
-                    <div class="trip-type">
-                        <label class="radio-label">
-                            <input type="radio" name="trip" value="round" checked>
-                            <span class="radio-custom"></span>
-                            <span>Ida y vuelta</span>
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" name="trip" value="oneway">
-                            <span class="radio-custom"></span>
-                            <span>Solo ida</span>
-                        </label>
-                        <button class="btn-option">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"/>
-                                <path d="M12 6v6l4 2"/>
-                            </svg>
-                            Comprar con millas
-                        </button>
-                        <label class="checkbox-label">
-                            <input type="checkbox">
-                            <span class="checkbox-custom"></span>
-                            <span>Pagar con <strong>avianca credits</strong></span>
-                        </label>
-                    </div>
-
-                    <div class="quick-links">
-                        <a href="#" class="quick-link">
-                            Hoteles
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/>
-                            </svg>
-                        </a>
-                        <a href="#" class="quick-link">
-                            Autos
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/>
-                            </svg>
-                        </a>
-                    </div>
-                </div>
-                <form class="search-form">
-
-                <div class="form-row-main">
-
-                    <!-- ORIGEN + DESTINO -->
-                    <div class="field-pair">
-
-                    <div class="form-group">
-                        <div class="input-with-icon">
-                            <input id="originInput" type="text" placeholder="Bogotá (BOG)">
-                        </div>
-                        <div class="city-dropdown" id="originDropdown">
-
-                        <div class="city-filter">
-                            <label>
-                            <input type="radio" name="originFilter" value="all" checked>
-                            Todos
-                            </label>
-
-                            <label>
-                            <input type="radio" name="originFilter" value="national">
-                            Nacionales
-                            </label>
-
-                            <label>
-                            <input type="radio" name="originFilter" value="international">
-                            Internacionales
-                            </label>
-                        </div>
-
-                        <div class="city-list"></div>
-
-                        </div>
-                    </div>
-
-                    <div class="divider"></div>
-
-                    <div class="form-group">
-                        <div class="input-with-icon">
-                            <input id="destinationInput" type="text" placeholder="Destino">
-                        </div>
-                        <div class="city-dropdown" id="destinationDropdown">
-
-                        <div class="city-filter">
-                            <label>
-                            <input type="radio" name="destinationFilter" value="all" checked>
-                            Todos
-                            </label>
-
-                            <label>
-                            <input type="radio" name="destinationFilter" value="national">
-                            Nacionales
-                            </label>
-
-                            <label>
-                            <input type="radio" name="destinationFilter" value="international">
-                            Internacionales
-                            </label>
-                        </div>
-
-                        <div class="city-list"></div>
-
-                        </div>
-                    </div>
-
-                    </div>
-
-                    <!-- FECHAS -->
-                    <div class="field-pair date-pair">
-
-                    <div class="form-group">
-                        <div class="input-with-icon">
-                        <input id="dateStart" type="text" placeholder="Ida">
-                        </div>
-                    </div>
-
-                    <div class="divider"></div>
-
-                    <div class="form-group">
-                        <div class="input-with-icon">
-                            <div class="return-date">
-                                <input id="dateEnd" type="text" placeholder="Vuelta">
-                            </div>
-                        </div>
-                    </div>
-
-                    </div>
-
-                    <!-- PASAJEROS -->
-                    <div class="form-group passengers-group">
-                    <div 
-                        class="input-with-icon passengers-input"
-                        id="passengersToggle"
-                    >
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2">
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                            <circle cx="9" cy="7" r="4"/>
-                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                        </svg>
-
-                        <input 
-                            id="passengersValue"
-                            type="text"
-                            value="1"
-                            readonly
-                        >
-
-                        <svg class="dropdown-arrow" width="12" height="12"
-                            viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2">
-                            <polyline points="6 9 12 15 18 9"/>
-                        </svg>
-                    </div>
-
-                    <!-- DROPDOWN -->
-                    <div id="passengersDropdown" class="passengers-dropdown">
-
-                        <div class="row">
-                        <span>Adultos</span>
-                        <div class="counter">
-                            <button type="button" data-type="adult" data-op="-">-</button>
-                            <span id="adultCount">1</span>
-                            <button type="button" data-type="adult" data-op="+">+</button>
-                        </div>
-                        </div>
-
-                        <div class="row">
-                        <span>Niños</span>
-                        <div class="counter">
-                            <button type="button" data-type="child" data-op="-">-</button>
-                            <span id="childCount">0</span>
-                            <button type="button" data-type="child" data-op="+">+</button>
-                        </div>
-                        </div>
-
-                        <div class="row">
-                        <span>Bebés</span>
-                        <div class="counter">
-                            <button type="button" data-type="baby" data-op="-">-</button>
-                            <span id="babyCount">0</span>
-                            <button type="button" data-type="baby" data-op="+">+</button>
-                        </div>
-                        </div>
-
-                        <button  type="button" class="confirm-passengers">
-                        Confirmar
-                        </button>
-
-                    </div>
-
-                    </div>
-
-                    <!-- BOTÓN -->
-                    <button class="btn-buscar">Buscar</button>
-
-                </div>
-
-                </form>
-            </div>
-        </div>
-    </section>
-
-    <!-- PROMOTIONAL BANNERS -->
-    <section class="promo-banners">
-        <div class="container">
-            <div class="banner-grid">
-                <div class="promo-banner-card large">
-                    <div class="banner-image" >
-                        <div class="banner-content">
-                            <div class="banner-badge">lm Acumula millas</div>
-                            <h2>El mundo se explora<br><strong>viajando!</strong></h2>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="promo-banner-card red">
-                    <div class="banner-content-right">
-                        <h3>¿Ya sabes cuál será tu próxima escapada?</h3>
-                        <p>Planea tu viaje y descubre todo lo que el mundo tiene para mostrarte. Compra hoy y vuela hasta junio de 2026.</p>
-                        <button class="btn-white">Compra ya</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- OFFERS SECTION -->
-    <section class="offers-section">
-        <div class="container">
-            <div class="offers-header-index">
-                <h3>
-                    Ofertas desde <span id="indexOriginLabel">Bogotá</span>
-                </h3>
-
-                <select id="indexOriginSelector"></select>
-            </div>
-
-            <div class="offers-grid" id="indexOffersGrid"></div>
-
-
-            <div style="margin-top: 30px;">
-                <a href="ofertas.html" class="link-red">Descubrir más ofertas →</a>
-            </div>
-        </div>
-    </section>
-
-
-    <!-- PREPARE SECTION -->
-    <section class="prepare-section">
-        <div class="container">
-            <h3 class="section-title">Prepárate para viajar</h3>
-
-            <div class="prepare-grid">
-
-            <div class="prepare-card">
-                <div class="prepare-icon">🔄</div>
-                <div>
-                <h4>Check-in online</h4>
-                <p>Obtén tu pase de abordar y ahorra tiempo en el aeropuerto.</p>
-                </div>
-            </div>
-
-            <div class="prepare-card">
-                <div class="prepare-icon">🔍</div>
-                <div>
-                <h4>Centro de ayuda</h4>
-                <p>Busca y encuentra información útil para resolver tus preguntas.</p>
-                </div>
-            </div>
-
-            <div class="prepare-card">
-                <div class="prepare-icon">📕</div>
-                <div>
-                <h4>Requisitos para viajar</h4>
-                <p>Infórmate acerca de visas, vacunas y documentos.</p>
-                </div>
-            </div>
-
-            </div>
-        </div>
-    </section>
-
-
-    <!-- LIFEMILES NEWS SECTION -->
-    <section class="lifemiles-news">
-    <div class="container">
-        <h3>Conoce las novedades de Lifemiles</h3>
-
-        <div class="lifemiles-grid">
-
-        <!-- Card 1 -->
-        <div class="lifemiles-card"
-            style="background-image:url('https://d1cq6wgq3znilx.cloudfront.net/images/backgrounds/lifemiles-news-1.jpg')">
-
-            <div class="lifemiles-overlay"></div>
-
-            <div class="lifemiles-content">
-            <h4>¡Dona tus millas!</h4>
-            <p>Transformemos vidas y ecosistemas una milla a la vez</p>
-            <button class="btn-white">Dona ya</button>
-            </div>
-        </div>
-
-        <!-- Card 2 -->
-        <div class="lifemiles-card"
-            style="background-image:url('https://d1cq6wgq3znilx.cloudfront.net/images/backgrounds/lifemiles-news-2.jpg')">
-
-            <div class="lifemiles-overlay"></div>
-
-            <div class="lifemiles-content">
-            <h4>Únete a Lifemiles plus</h4>
-            <p>Recibe descuento exclusivo al redimir tiquetes</p>
-            <button class="btn-white">Suscríbete ya</button>
-            </div>
-        </div>
-
-        <!-- Card 3 -->
-        <div class="lifemiles-card"
-            style="background-image:url('https://d1cq6wgq3znilx.cloudfront.net/images/backgrounds/lifemiles-news-3.avif')">
-
-            <div class="lifemiles-overlay"></div>
-
-            <div class="lifemiles-content">
-            <h4>Recibe hasta 10.000 millas</h4>
-            <p>Con tu tarjeta de crédito</p>
-            <button class="btn-white">¡Solicítala ya!</button>
-            </div>
-        </div>
-
-        </div>
-    </div>
-    </section>
-
-    <!-- INTEREST SECTION -->
-    <section class="interest-section">
-    <div class="container">
-        <h3>Más información de interés</h3>
-
-        <div class="interest-grid">
-
-        <div class="interest-card"
-            style="background-image:url('https://d1cq6wgq3znilx.cloudfront.net/images/backgrounds/experience-1.jpeg')">
-            <div class="interest-overlay"></div>
-            <div class="interest-content">
-            <h4>Experiencia avianca</h4>
-            <p>Conoce nuestras novedades.</p>
-            </div>
-        </div>
-
-        <div class="interest-card"
-            style="background-image:url('https://d1cq6wgq3znilx.cloudfront.net/images/backgrounds/experience-2.avif')">
-            <div class="interest-overlay"></div>
-            <div class="interest-content">
-            <h4>Equipaje</h4>
-            <p>Condiciones y recomendaciones.</p>
-            </div>
-        </div>
-
-        <div class="interest-card"
-            style="background-image:url('https://d1cq6wgq3znilx.cloudfront.net/images/backgrounds/experience-3.webp')">
-            <div class="interest-overlay"></div>
-            <div class="interest-content">
-            <h4>Star Alliance</h4>
-            <p>Una experiencia conectada.</p>
-            </div>
-        </div>
-
-        <div class="interest-card"
-            style="background-image:url('https://d1cq6wgq3znilx.cloudfront.net/images/backgrounds/experience-4.jpg')">
-            <div class="interest-overlay"></div>
-            <div class="interest-content">
-            <h4>Compensa tu huella</h4>
-            <p>Reduce tu impacto ambiental.</p>
-            </div>
-        </div>
-
-        </div>
-    </div>
-    </section>
-
-
-
-    <!-- EXPERIENCE SECTION -->
-    <section class="experience-section">
-        <div class="container">
-            <h3>Complementa tu experiencia</h3>
-            <div class="experience-grid">
-                <div class="experience-card">
-                    <div class="experience-icon">🏨</div>
-                    <h4>Hoteles</h4>
-                    <p>Encuentra el alojamiento perfecto</p>
-                </div>
-                <div class="experience-card">
-                    <div class="experience-icon">🚗</div>
-                    <h4>Alquiler de autos</h4>
-                    <p>Movilidad para tu viaje</p>
-                </div>
-                <div class="experience-card">
-                    <div class="experience-icon">🎒</div>
-                    <h4>Tours y excursiones</h4>
-                    <p>Vive experiencias únicas</p>
-                </div>
-                <div class="experience-card">
-                    <div class="experience-icon">✈️</div>
-                    <h4>Asistencia en viaje</h4>
-                    <p>Estamos contigo siempre</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="main-footer">
-        <div class="container">
-            <div class="footer-top">
-                <svg class="footer-logo" width="120" height="32" viewBox="0 0 120 32" fill="none">
-                    <text x="0" y="24" font-family="Inter" font-size="28" font-weight="700" fill="currentColor" style="letter-spacing: -0.5px;">avianca</text>
-                </svg>
-            </div>
-
-            <div class="footer-grid">
-                <div class="footer-column">
-                    <h4>Descubre y compra</h4>
-                    <ul>
-                        <li><a href="#">Vuelos baratos</a></li>
-                        <li><a href="#">Reservas de hoteles</a></li>
-                        <li><a href="#">Alquiler de autos</a></li>
-                        <li><a href="#">Tours y excursiones</a></li>
-                        <li><a href="#">Asistencia en viaje</a></li>
-                        <li><a href="#">avianca connect</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-column">
-                    <h4>Sobre nosotros</h4>
-                    <ul>
-                        <li><a href="#">Somos avianca</a></li>
-                        <li><a href="#">Trabaja con nosotros</a></li>
-                        <li><a href="#">Noticias corporativas</a></li>
-                        <li><a href="#">Alianzas y beneficios</a></li>
-                        <li><a href="#">Sostenibilidad</a></li>
-                        <li><a href="#">Plan de accesibilidad</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-column">
-                    <h4>Nuestros portales</h4>
-                    <ul>
-                        <li><a href="#">Programa Lifemiles</a></li>
-                        <li><a href="#">avianca empresas</a></li>
-                        <li><a href="#">aviancadirect</a></li>
-                        <li><a href="#">Soporte agencias</a></li>
-                        <li><a href="#">avianca cargo</a></li>
-                        <li><a href="#">Relación con inversionistas</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-column">
-                    <h4>Enlaces rápidos</h4>
-                    <ul>
-                        <li><a href="#">Información legal</a></li>
-                        <li><a href="#">Política de privacidad</a></li>
-                        <li><a href="#">Contrato de transporte</a></li>
-                        <li><a href="#">Artículos restringidos</a></li>
-                        <li><a href="#">Plan de contingencia</a></li>
-                        <li><a href="#">Contáctanos</a></li>
-                        <li><a href="#">Factura electrónica</a></li>
-                        <li><a href="#">Cambios y reembolsos</a></li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="footer-social">
-                <a href="#" aria-label="Twitter">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
-                    </svg>
-                </a>
-                <a href="#" aria-label="Facebook">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                    </svg>
-                </a>
-                <a href="#" aria-label="YouTube">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                    </svg>
-                </a>
-                <a href="#" aria-label="Instagram">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                    </svg>
-                </a>
-            </div>
-
-            <div class="footer-bottom">
-                <p>Copyright © Avianca 2026</p>
-                <a href="#" class="powered-by">Powered by Newshore</a>
-            </div>
-        </div>
-    </footer>
-    <script src="data_destinations.js"></script>
-    <script src="script.js"></script>
+        function isTokenValid() {
+            const idToken = localStorage.getItem("idToken");
+            if (!idToken) return false;
+            try {
+                const payload = JSON.parse(atob(idToken.split(".")[1]));
+                return payload.exp * 1000 > Date.now();
+            } catch (e) {
+                return false;
+            }
+        }
+
+        (async () => {
+            const params = new URLSearchParams(window.location.search);
+            const code = params.get("code");
+            const error = params.get("error");
+
+            if (code) {
+                await handleCallback();
+                window.location.href = "/home.html";
+                return;
+            }
+
+            if (error) {
+                window.history.replaceState({}, document.title, "/");
+                return;
+            }
+
+            const idToken = localStorage.getItem("idToken");
+            if (!idToken) {
+                redirectToLogin();
+            } else {
+                window.location.href = "/home.html";
+            }
+        })();
+    </script>
 </body>
 </html>
