@@ -13,12 +13,12 @@
 </head>
 <body>
     <!-- LOGIN CONDITION -->
-    <script>
+<!-- LOGIN CONDITION -->
+<script>
     const COGNITO_DOMAIN = "https://us-east-1qawpfkusl.auth.us-east-1.amazoncognito.com";
     const CLIENT_ID = "6oe10kr7ejbcu5cmhd2g8he09a";
     const REDIRECT_URI = "https://d1cq6wgq3znilx.cloudfront.net";
 
-    // Generate random string
     function generateRandomString(length) {
         const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         let result = "";
@@ -27,7 +27,6 @@
         return result;
     }
 
-    // SHA256 + Base64URL
     async function sha256(plain) {
         const encoder = new TextEncoder();
         const data = encoder.encode(plain);
@@ -47,7 +46,7 @@
         const loginUrl = `${COGNITO_DOMAIN}/login` +
             `?client_id=${CLIENT_ID}` +
             `&response_type=code` +
-            `&scope=openid+email` +
+            `&scope=openid+email+phone` +
             `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
             `&code_challenge=${codeChallenge}` +
             `&code_challenge_method=S256`;
@@ -79,23 +78,43 @@
 
         const tokens = await response.json();
 
+        // Only log the error, do nothing else
+        if (!tokens.id_token) {
+            console.error("Token exchange failed:", JSON.stringify(tokens));
+            return false;
+        }
+
         localStorage.setItem("idToken", tokens.id_token);
         localStorage.setItem("accessToken", tokens.access_token);
         localStorage.setItem("refreshToken", tokens.refresh_token);
+        localStorage.removeItem("pkce_verifier");
 
         window.history.replaceState({}, document.title, "/");
         return true;
     }
 
     (async () => {
-        const logged = await handleCallback();
-        const idToken = localStorage.getItem("idToken");
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get("code");
+        const error = params.get("error");
 
-        if (!logged && !idToken) {
+        if (code) {
+            await handleCallback();
+            return;
+        }
+
+        // Clear error params from URL but still allow entry
+        if (error) {
+            window.history.replaceState({}, document.title, "/");
+            return;
+        }
+
+        const idToken = localStorage.getItem("idToken");
+        if (!idToken) {
             redirectToLogin();
         }
     })();
-    </script>
+</script>
 
     <!-- TOP BAR -->
     <div class="top-bar">
