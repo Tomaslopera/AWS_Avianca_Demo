@@ -204,15 +204,14 @@ const initPassengerSelector = () => {
 };
 
 // Botón Promotional Banner
-const initPromoButtons = () => {
-    const promoButtons = document.querySelectorAll('.btn-white');
-    
-    promoButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            alert('¡Oferta especial!\n\nEn producción, esto redirigiría a la página de ofertas o aplicaría el descuento automáticamente.');
-        });
-    });
-};
+//const initPromoButtons = () => {
+//   const promoButtons = document.querySelectorAll('.btn-white');
+//      promoButtons.forEach(button => {
+//          button.addEventListener('click', () => {
+//              alert('¡Oferta especial!\n\nEn producción, esto redirigiría a la página de ofertas o aplicaría el descuento automáticamente.');
+//      });
+//   });
+//};
 
 // Toggle para viaje de ida o ida y vuelta
 const initRadioButtons = () => {
@@ -634,10 +633,24 @@ const init = () => {
 };
 
 // Wait for DOM to be fully loaded
+function startWhenReady() {
+
+    if (window._contentfulDataReady) {
+        init();
+    } else {
+        document.addEventListener(
+            'contentfulDataReady',
+            init,
+            { once: true }
+        );
+    }
+
+}
+
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', startWhenReady);
 } else {
-    init();
+    startWhenReady();
 }
 
 // Expose functions for testing or future backend integration

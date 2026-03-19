@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "contentful-management": "^11.74.0",
+    "dotenv": "^17.3.1"
+  }
+}
