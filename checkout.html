@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout - avianca</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="checkout.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="top-bar-container">
+      <div class="top-bar-right">
+        <a href="#" class="top-bar-link">Avianca Chat</a>
+        <a href="#" class="top-bar-link">Español</a>
+        <a href="#" class="top-bar-link">Colombia (COP)</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <header class="main-header">
+    <nav class="navbar">
+      <div class="nav-container">
+        <a href="home.html" class="logo">
+          <svg width="120" height="32" viewBox="0 0 120 32" fill="none">
+            <text x="0" y="24" font-family="Inter" font-size="28" font-weight="700" fill="#E30613" style="letter-spacing:-0.5px;">avianca</text>
+          </svg>
+        </a>
+        <div class="checkout-secure">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          Compra segura
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- STEPPER -->
+  <div class="stepper-bar">
+    <div class="stepper-container">
+      <div class="step active" data-step="1">
+        <div class="step-circle">1</div>
+        <span class="step-label">Vuelo</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step" data-step="2">
+        <div class="step-circle">2</div>
+        <span class="step-label">Pasajeros</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step" data-step="3">
+        <div class="step-circle">3</div>
+        <span class="step-label">Asientos</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step" data-step="4">
+        <div class="step-circle">4</div>
+        <span class="step-label">Equipaje</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step" data-step="5">
+        <div class="step-circle">5</div>
+        <span class="step-label">Pago</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <main class="checkout-main">
+    <div class="checkout-layout">
+
+      <!-- STEPS CONTENT -->
+      <div class="checkout-content">
+
+        <!-- STEP 1: RESUMEN VUELO -->
+        <div class="checkout-step" id="step1">
+          <h2 class="step-title">Resumen de tu vuelo</h2>
+
+          <div class="flight-summary-card" id="flightSummaryCard">
+            <!-- populated by JS -->
+          </div>
+
+          <div class="flight-summary-card return-summary" id="returnSummaryCard" style="display:none;">
+            <!-- populated by JS if round trip -->
+          </div>
+
+          <div class="step-actions">
+            <button class="btn-next" onclick="nextStep()">Continuar con pasajeros →</button>
+          </div>
+        </div>
+
+        <!-- STEP 2: DATOS PASAJEROS -->
+        <div class="checkout-step hidden" id="step2">
+          <h2 class="step-title">Datos de los pasajeros</h2>
+          <div id="passengersForm">
+            <!-- populated by JS -->
+          </div>
+          <div class="step-actions">
+            <button class="btn-back" onclick="prevStep()">← Volver</button>
+            <button class="btn-next" onclick="validatePassengersAndNext()">Continuar con asientos →</button>
+          </div>
+        </div>
+
+        <!-- STEP 3: SELECCIÓN DE ASIENTOS -->
+        <div class="checkout-step hidden" id="step3">
+          <h2 class="step-title">Selección de asientos</h2>
+          <p class="step-subtitle">Selecciona un asiento para cada pasajero. Los asientos marcados en gris ya están ocupados.</p>
+
+          <div id="seatSelectorContainer">
+            <!-- populated by JS -->
+          </div>
+
+          <div class="step-actions">
+            <button class="btn-back" onclick="prevStep()">← Volver</button>
+            <button class="btn-next" onclick="validateSeatsAndNext()">Continuar con equipaje →</button>
+          </div>
+        </div>
+
+        <!-- STEP 4: EQUIPAJE -->
+        <div class="checkout-step hidden" id="step4">
+          <h2 class="step-title">Equipaje</h2>
+          <p class="step-subtitle">El equipaje de mano (10kg) está incluido en tu tarifa. Agrega equipaje adicional si lo necesitas.</p>
+
+          <div id="baggageContainer">
+            <!-- populated by JS -->
+          </div>
+
+          <div class="step-actions">
+            <button class="btn-back" onclick="prevStep()">← Volver</button>
+            <button class="btn-next" onclick="nextStep()">Continuar con pago →</button>
+          </div>
+        </div>
+
+        <!-- STEP 5: PAGO -->
+        <div class="checkout-step hidden" id="step5">
+          <h2 class="step-title">Información de pago</h2>
+
+          <div class="payment-form">
+            <div class="payment-methods">
+              <div class="payment-method active">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                  <line x1="1" y1="10" x2="23" y2="10"/>
+                </svg>
+                Tarjeta crédito / débito
+              </div>
+            </div>
+
+            <div class="card-form">
+              <div class="card-preview" id="cardPreview">
+                <div class="card-preview-number" id="previewNumber">•••• •••• •••• ••••</div>
+                <div class="card-preview-bottom">
+                  <div class="card-preview-name" id="previewName">NOMBRE APELLIDO</div>
+                  <div class="card-preview-expiry" id="previewExpiry">MM/AA</div>
+                </div>
+              </div>
+
+              <div class="form-grid">
+                <div class="form-field full">
+                  <label>Número de tarjeta</label>
+                  <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
+                </div>
+                <div class="form-field full">
+                  <label>Nombre en la tarjeta</label>
+                  <input type="text" id="cardName" placeholder="Como aparece en la tarjeta">
+                </div>
+                <div class="form-field">
+                  <label>Fecha de vencimiento</label>
+                  <input type="text" id="cardExpiry" placeholder="MM/AA" maxlength="5">
+                </div>
+                <div class="form-field">
+                  <label>CVV</label>
+                  <input type="text" id="cardCvv" placeholder="•••" maxlength="3">
+                </div>
+                <div class="form-field full">
+                  <label>Cuotas</label>
+                  <select id="cardInstallments">
+                    <option value="1">1 cuota (sin interés)</option>
+                    <option value="3">3 cuotas</option>
+                    <option value="6">6 cuotas</option>
+                    <option value="12">12 cuotas</option>
+                    <option value="24">24 cuotas</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-actions">
+            <button class="btn-back" onclick="prevStep()">← Volver</button>
+            <button class="btn-confirm" onclick="confirmPurchase()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+              Confirmar y pagar
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 6: CONFIRMACIÓN -->
+        <div class="checkout-step hidden" id="step6">
+          <div class="confirmation-screen">
+            <div class="confirmation-icon"></div>
+            <h2>¡Reserva confirmada!</h2>
+            <p class="confirmation-subtitle">Tu vuelo ha sido reservado exitosamente.</p>
+
+            <div class="confirmation-code-box">
+              <span class="confirmation-code-label">Código de reserva</span>
+              <span class="confirmation-code" id="bookingCode">-</span>
+            </div>
+
+            <div class="confirmation-details" id="confirmationDetails">
+              <!-- populated by JS -->
+            </div>
+
+            <div class="confirmation-actions">
+              <button class="btn-next" onclick="window.location.href='home.html'">Volver al inicio</button>
+              <button class="btn-back" onclick="window.print()">Imprimir itinerario</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- PRICE SUMMARY SIDEBAR -->
+      <aside class="price-sidebar">
+        <div class="price-sidebar-card">
+          <h3>Resumen de precio</h3>
+
+          <div class="price-breakdown" id="priceBreakdown">
+            <!-- populated by JS -->
+          </div>
+
+          <div class="price-total-box">
+            <span>Total</span>
+            <strong id="grandTotal">-</strong>
+          </div>
+
+          <div class="price-note">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            Precios incluyen impuestos y tasas aeroportuarias
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  </main>
+
+  <script src="data_contentful.js"></script>
+  <script src="flights_data.js"></script>
+  <script src="script_checkout.js"></script>
+
+</body>
+</html>

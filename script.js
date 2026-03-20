@@ -1,37 +1,46 @@
 // Formulario de búsqueda
 const initFormSubmission = () => {
-    const searchForm = document.querySelector('.search-form');
-    if (!searchForm) return;
+  const searchForm = document.querySelector('.search-form');
+  if (!searchForm) return;
 
-    searchForm.addEventListener('submit', (e) => {
-        e.preventDefault();
+  if (!document.getElementById('originInput')) return;
 
-        const origin = document.getElementById("originInput");
-        const destination = document.getElementById("destinationInput");
-        const dateStart = document.getElementById("dateStart");
-        const dateEnd = document.getElementById("dateEnd");
-        const passengers = document.getElementById("passengersValue");
-        const tripType = document.querySelector('input[name="trip"]:checked').value;
+  searchForm.addEventListener('submit', (e) => {
+    e.preventDefault();
 
-        if (
-        origin.value.trim() === "" ||
-        destination.value.trim() === "" ||
-        dateStart.value.trim() === "" ||
-        (tripType === "round" && dateEnd.value.trim() === "") ||
-        passengers.value.trim() === ""
-        ) {
+    const origin      = document.getElementById('originInput');
+    const destination = document.getElementById('destinationInput');
+    const dateStart   = document.getElementById('dateStart');
+    const dateEnd     = document.getElementById('dateEnd');
+    const passengers  = document.getElementById('passengersValue');
+    const tripType    = document.querySelector('input[name="trip"]:checked')?.value || 'round';
 
-            alert("Por favor completa todos los campos requeridos");
-            return;
-        }
+    if (!origin?.value.trim() || !destination?.value.trim()) {
+      alert('Por favor completa origen y destino.');
+      return;
+    }
 
-        showLoadingState();
+    if (!dateStart?.value.trim()) {
+      alert('Por favor selecciona la fecha de ida.');
+      return;
+    }
 
-        setTimeout(() => {
-            hideLoadingState();
-            alert("¡Búsqueda realizada!");
-        }, 1200);
+    if (tripType === 'round' && !dateEnd?.value.trim()) {
+      alert('Por favor selecciona la fecha de vuelta.');
+      return;
+    }
+
+    const params = new URLSearchParams({
+      origin:      origin.value.trim(),
+      destination: destination.value.trim(),
+      dateStart:   dateStart.value.trim(),
+      dateEnd:     dateEnd?.value.trim() || '',
+      passengers:  passengers?.value.trim() || '1',
+      trip:        tripType,
     });
+
+    window.location.href = `resultados.html?${params.toString()}`;
+  });
 };
 
 // Búsqueda de reserva (Tu reserva)
@@ -620,7 +629,6 @@ const init = () => {
     initCheckboxes();
     
     // Links and cards
-    initPromoButtons();
     initInfoLinks();
     initExperienceCards();
     initLifemilesLinks();

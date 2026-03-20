@@ -1913,3 +1913,168 @@ button:active{
         gap: 24px;
     }
 }
+
+/* ===================================
+   EXPERIENCE CARD — background image style (igual que interest-card)
+   Reemplaza los estilos de .experience-card en styles.css
+   =================================== */
+
+.experience-section {
+    padding: 60px 0;
+}
+
+.experience-section h3 {
+    text-align: center;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 40px;
+}
+
+.experience-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+}
+
+.experience-card {
+    position: relative;
+    height: 220px;
+    border-radius: 16px;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: flex-end;
+    transition: .3s ease;
+    cursor: pointer;
+}
+
+.experience-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 14px 34px rgba(0,0,0,.18);
+}
+
+.experience-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to top,
+        rgba(0,0,0,0.8),
+        rgba(0,0,0,0.1)
+    );
+}
+
+.experience-content {
+    position: relative;
+    padding: 20px;
+    color: white;
+    z-index: 2;
+}
+
+.experience-content h4 {
+    font-size: 18px;
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.experience-content p {
+    font-size: 13px;
+    opacity: 0.9;
+}
+
+/* ===================================
+   PREPARE CARD — background image style (igual que interest-card)
+   Reemplaza los estilos de .prepare-card en styles.css
+   =================================== */
+
+.prepare-section {
+    padding: 80px 0;
+    background: #fff;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 40px;
+}
+
+.prepare-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+.prepare-card {
+    position: relative;
+    height: 220px;
+    border-radius: 16px;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: flex-end;
+    transition: .3s ease;
+    cursor: pointer;
+}
+
+.prepare-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 14px 34px rgba(0,0,0,.18);
+}
+
+.prepare-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to top,
+        rgba(0,0,0,0.8),
+        rgba(0,0,0,0.1)
+    );
+}
+
+.prepare-content {
+    position: relative;
+    padding: 20px;
+    color: white;
+    z-index: 2;
+}
+
+.prepare-content h4 {
+    font-size: 18px;
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.prepare-content p {
+    font-size: 13px;
+    opacity: 0.9;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .experience-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .prepare-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .experience-grid {
+        grid-template-columns: 1fr;
+    }
+    .prepare-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.experience-content p,
+.prepare-content p,
+.interest-content p,
+.lifemiles-content p,
+.tourism-content p {
+    color: white;
+    opacity: 0.9;
+}

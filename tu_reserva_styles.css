@@ -4,7 +4,6 @@
 
 .reservation-hero {
   position: relative;
-  background: url("https://d1cq6wgq3znilx.cloudfront.net/images/backgrounds/image-tureserva.webp");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -296,4 +295,11 @@
   cursor: pointer;
   border: none;
   margin-top: 5px;
+}
+
+.reservation-hero {
+  background-color: #1a3a5c; /* color mientras carga la imagen */
+  background-size: cover;
+  background-position: center;
+  transition: background-image 0.3s ease;
 }

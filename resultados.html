@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resultados de vuelos - avianca</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="resultados.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="top-bar-container">
+      <div class="top-bar-right">
+        <a href="#" class="top-bar-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M21 15C21 15.5304 20.7893 16.0391 20.4142 16.4142C20.0391 16.7893 19.5304 17 19 17H7L3 21V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Avianca Chat
+        </a>
+        <a href="#" class="top-bar-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+            <path d="M12 2C14.5013 4.73835 15.9228 8.29203 16 12C15.9228 15.708 14.5013 19.2616 12 22M12 2C9.49872 4.73835 8.07725 8.29203 8 12C8.07725 15.708 9.49872 19.2616 12 22M2 12H22" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          Español
+        </a>
+        <a href="#" class="top-bar-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Colombia (COP)
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <header class="main-header">
+    <nav class="navbar">
+      <div class="nav-container">
+        <a href="home.html" class="logo">
+          <svg width="120" height="32" viewBox="0 0 120 32" fill="none">
+            <text x="0" y="24" font-family="Inter" font-size="28" font-weight="700" fill="#E30613" style="letter-spacing: -0.5px;">avianca</text>
+          </svg>
+        </a>
+        <ul class="nav-menu">
+          <li><a href="home.html" class="nav-link">Reservar</a></li>
+          <li><a href="ofertas.html" class="nav-link">Ofertas y destinos</a></li>
+          <li><a href="tu_reserva.html" class="nav-link">Tu reserva</a></li>
+          <li><a href="#" class="nav-link">Información y ayuda</a></li>
+          <li><a href="#" class="nav-link">Lifemiles</a></li>
+        </ul>
+        <div class="nav-actions">
+          <button id="logoutBtn" class="btn-logout">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M16 17L21 12L16 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M21 12H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M12 19H5C4.46957 19 3.96086 18.7893 3.58579 18.4142C3.21071 18.0391 3 17.5304 3 17V7C3 6.46957 3.21071 5.96086 3.58579 5.58579C3.96086 5.21071 4.46957 5 5 5H12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Cerrar sesión
+          </button>
+          <button class="hamburger">
+            <span></span><span></span><span></span>
+          </button>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- SEARCH SUMMARY BAR -->
+  <div class="search-summary-bar">
+    <div class="search-summary-container">
+      <div class="summary-route" id="summaryRoute">
+        <span id="summaryOrigin">-</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+        <span id="summaryDestination">-</span>
+      </div>
+      <div class="summary-details">
+        <span id="summaryDate">-</span>
+        <span class="summary-dot">·</span>
+        <span id="summaryPassengers">-</span>
+        <span class="summary-dot">·</span>
+        <span id="summaryTrip">-</span>
+      </div>
+      <button class="btn-modify" id="btnModify">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+        </svg>
+        Modificar búsqueda
+      </button>
+    </div>
+  </div>
+
+  <!-- MODIFY SEARCH PANEL (hidden by default) -->
+  <div class="modify-panel" id="modifyPanel">
+    <div class="modify-panel-inner">
+      <div class="search-widget">
+        <div class="search-options">
+          <div class="trip-type">
+            <label class="radio-label">
+              <input type="radio" name="tripMod" value="round" checked>
+              <span class="radio-custom"></span>
+              <span>Ida y vuelta</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="tripMod" value="oneway">
+              <span class="radio-custom"></span>
+              <span>Solo ida</span>
+            </label>
+          </div>
+        </div>
+        <form class="search-form" id="modifySearchForm">
+          <div class="form-row-main">
+            <div class="field-pair">
+              <div class="form-group">
+                <div class="input-with-icon">
+                  <input id="modOriginInput" type="text" placeholder="Origen">
+                </div>
+                <div class="city-dropdown" id="modOriginDropdown">
+                  <div class="city-filter">
+                    <label><input type="radio" name="modOriginFilter" value="all" checked> Todos</label>
+                    <label><input type="radio" name="modOriginFilter" value="national"> Nacionales</label>
+                    <label><input type="radio" name="modOriginFilter" value="international"> Internacionales</label>
+                  </div>
+                  <div class="city-list"></div>
+                </div>
+              </div>
+              <div class="divider"></div>
+              <div class="form-group">
+                <div class="input-with-icon">
+                  <input id="modDestinationInput" type="text" placeholder="Destino">
+                </div>
+                <div class="city-dropdown" id="modDestinationDropdown">
+                  <div class="city-filter">
+                    <label><input type="radio" name="modDestinationFilter" value="all" checked> Todos</label>
+                    <label><input type="radio" name="modDestinationFilter" value="national"> Nacionales</label>
+                    <label><input type="radio" name="modDestinationFilter" value="international"> Internacionales</label>
+                  </div>
+                  <div class="city-list"></div>
+                </div>
+              </div>
+            </div>
+            <div class="field-pair date-pair" id="modDatePair">
+              <div class="form-group">
+                <div class="input-with-icon">
+                  <input id="modDateStart" type="text" placeholder="Ida">
+                </div>
+              </div>
+              <div class="divider"></div>
+              <div class="form-group">
+                <div class="input-with-icon">
+                  <div class="return-date">
+                    <input id="modDateEnd" type="text" placeholder="Vuelta">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group passengers-group">
+              <div class="input-with-icon passengers-input" id="modPassengersToggle">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                  <circle cx="9" cy="7" r="4"/>
+                </svg>
+                <input id="modPassengersValue" type="text" value="1" readonly>
+                <svg class="dropdown-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"/>
+                </svg>
+              </div>
+              <div id="modPassengersDropdown" class="passengers-dropdown">
+                <div class="row">
+                  <span>Adultos</span>
+                  <div class="counter">
+                    <button type="button" data-type="modAdult" data-op="-">-</button>
+                    <span id="modAdultCount">1</span>
+                    <button type="button" data-type="modAdult" data-op="+">+</button>
+                  </div>
+                </div>
+                <div class="row">
+                  <span>Niños</span>
+                  <div class="counter">
+                    <button type="button" data-type="modChild" data-op="-">-</button>
+                    <span id="modChildCount">0</span>
+                    <button type="button" data-type="modChild" data-op="+">+</button>
+                  </div>
+                </div>
+                <div class="row">
+                  <span>Bebés</span>
+                  <div class="counter">
+                    <button type="button" data-type="modBaby" data-op="-">-</button>
+                    <span id="modBabyCount">0</span>
+                    <button type="button" data-type="modBaby" data-op="+">+</button>
+                  </div>
+                </div>
+                <button type="button" class="confirm-passengers">Confirmar</button>
+              </div>
+            </div>
+            <button type="submit" class="btn-buscar">Buscar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <main class="results-main">
+    <div class="results-layout">
+
+      <!-- SIDEBAR FILTERS -->
+      <aside class="filters-sidebar">
+        <div class="filters-header">
+          <h3>Filtros</h3>
+          <button class="btn-clear-filters" id="btnClearFilters">Limpiar</button>
+        </div>
+
+        <!-- Ordenar por -->
+        <div class="filter-group">
+          <h4>Ordenar por</h4>
+          <div class="filter-options">
+            <label class="filter-radio">
+              <input type="radio" name="sortBy" value="precio" checked>
+              <span>Menor precio</span>
+            </label>
+            <label class="filter-radio">
+              <input type="radio" name="sortBy" value="duracion">
+              <span>Menor duración</span>
+            </label>
+            <label class="filter-radio">
+              <input type="radio" name="sortBy" value="salida">
+              <span>Hora de salida</span>
+            </label>
+            <label class="filter-radio">
+              <input type="radio" name="sortBy" value="escalas">
+              <span>Menos escalas</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Escalas -->
+        <div class="filter-group">
+          <h4>Escalas</h4>
+          <div class="filter-options">
+            <label class="filter-check">
+              <input type="checkbox" name="stops" value="0" checked>
+              <span>Directo</span>
+            </label>
+            <label class="filter-check">
+              <input type="checkbox" name="stops" value="1" checked>
+              <span>1 escala</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Hora de salida -->
+        <div class="filter-group">
+          <h4>Hora de salida</h4>
+          <div class="filter-options">
+            <label class="filter-check">
+              <input type="checkbox" name="timeRange" value="morning" checked>
+              <span>Mañana (00:00 – 11:59)</span>
+            </label>
+            <label class="filter-check">
+              <input type="checkbox" name="timeRange" value="afternoon" checked>
+              <span>Tarde (12:00 – 17:59)</span>
+            </label>
+            <label class="filter-check">
+              <input type="checkbox" name="timeRange" value="night" checked>
+              <span>Noche (18:00 – 23:59)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Clase -->
+        <div class="filter-group">
+          <h4>Clase</h4>
+          <div class="filter-options">
+            <label class="filter-radio">
+              <input type="radio" name="cabin" value="economica" checked>
+              <span>Económica</span>
+            </label>
+            <label class="filter-radio">
+              <input type="radio" name="cabin" value="ejecutiva">
+              <span>Ejecutiva</span>
+            </label>
+          </div>
+        </div>
+      </aside>
+
+      <!-- RESULTS AREA -->
+      <section class="results-area">
+
+        <!-- IDA -->
+        <div class="results-block" id="outboundBlock">
+          <div class="results-block-header">
+            <div class="block-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.99 12 19.79 19.79 0 0 1 1.93 3.36 2 2 0 0 1 3.9 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9a16 16 0 0 0 6.29 6.29l1.42-1.42a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+              </svg>
+              <span id="outboundTitle">Vuelo de ida</span>
+            </div>
+            <span class="results-count" id="outboundCount"></span>
+          </div>
+          <div class="flights-list" id="outboundList">
+            <!-- populated by JS -->
+          </div>
+        </div>
+
+        <!-- VUELTA (solo ida y vuelta) -->
+        <div class="results-block" id="returnBlock" style="display:none;">
+          <div class="results-block-header">
+            <div class="block-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.99 12 19.79 19.79 0 0 1 1.93 3.36 2 2 0 0 1 3.9 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9a16 16 0 0 0 6.29 6.29l1.42-1.42a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+              </svg>
+              <span id="returnTitle">Vuelo de vuelta</span>
+            </div>
+            <span class="results-count" id="returnCount"></span>
+          </div>
+          <div class="flights-list" id="returnList">
+            <!-- populated by JS -->
+          </div>
+        </div>
+
+        <!-- ESTADO VACÍO -->
+        <div class="empty-state" id="emptyState" style="display:none;">
+          <div class="empty-icon">✈️</div>
+          <h3>No encontramos vuelos</h3>
+          <p>No hay vuelos disponibles para la ruta seleccionada.<br>Intenta con otras fechas u origen/destino.</p>
+          <a href="home.html" class="btn-buscar" style="display:inline-block; text-decoration:none; padding: 14px 32px;">Nueva búsqueda</a>
+        </div>
+
+      </section>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="main-footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>Copyright © Avianca 2026</p>
+        <a href="#" class="powered-by">Powered by Newshore</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="data_contentful.js"></script>
+  <script src="flights_data.js"></script>
+  <script src="script.js"></script>
+  <script src="script_resultados.js"></script>
+
+</body>
+</html>
