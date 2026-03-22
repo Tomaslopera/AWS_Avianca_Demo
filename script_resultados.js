@@ -6,6 +6,8 @@ const state = {
   sortBy: 'precio',
   stops: [0, 1],
   timeRanges: ['morning', 'afternoon', 'night'],
+  selectedOutbound: null,   // vuelo de ida seleccionado
+  selectedReturn:   null,   // vuelo de vuelta seleccionado
 };
 
 // ─── PARSE URL PARAMS ─────────────────────────────────────────────────────────
@@ -76,7 +78,6 @@ function renderFlightCard(flight, listId) {
   const isDirect   = flight.stops.length === 0;
   const passengers = state.params.passengers || 1;
   const totalPrice = price * passengers;
-  const showTotal  = true;
 
   const seatsClass = seatsLeft <= 5 ? 'low' : 'ok';
   const seatsText  = seatsLeft <= 5
@@ -96,13 +97,17 @@ function renderFlightCard(flight, listId) {
     </div>
   `).join('');
 
-  // Mostrar fecha de referencia si existe
   const dateRef = listId === 'outbound'
     ? (state.params.dateStart ? `<span class="flight-date-ref">${state.params.dateStart}</span>` : '')
     : (state.params.dateEnd   ? `<span class="flight-date-ref">${state.params.dateEnd}</span>`   : '');
 
+  // Detectar si este vuelo está seleccionado
+  const isSelected = listId === 'outbound'
+    ? state.selectedOutbound?.id === flight.id
+    : state.selectedReturn?.id   === flight.id;
+
   const card = document.createElement('div');
-  card.className = 'flight-card';
+  card.className = `flight-card${isSelected ? ' selected' : ''}`;
   card.dataset.flightId = flight.id;
   card.dataset.listId   = listId;
 
@@ -144,20 +149,21 @@ function renderFlightCard(flight, listId) {
         <span class="info-aircraft">${flight.aircraft}</span>
         <span class="info-seats ${seatsClass}">${seatsText}</span>
       </div>
-    </div>
 
-    <div class="flight-pricing">
-      <div>
-        <div class="pricing-from">Desde</div>
-        <div class="pricing-amount">${formatPrice(price)}</div>
-        <div class="pricing-cabin">${state.cabin === 'economica' ? 'Económica' : 'Ejecutiva'} · por persona</div>
-        ${showTotal ? `
-        <div class="pricing-total">
-          Total ${passengers} pasajeros: <strong>${formatPrice(totalPrice)}</strong>
-        </div>` : ''}
-        <div class="pricing-taxes">Impuestos incluidos</div>
+      <div class="flight-pricing">
+        <div>
+          <div class="pricing-from">Desde</div>
+          <div class="pricing-amount">${formatPrice(price)}</div>
+          <div class="pricing-cabin">${state.cabin === 'economica' ? 'Económica' : 'Ejecutiva'} · por persona</div>
+          <div class="pricing-total">
+            Total ${passengers} ${passengers === 1 ? 'pasajero' : 'pasajeros'}: <strong>${formatPrice(totalPrice)}</strong>
+          </div>
+          <div class="pricing-taxes">Impuestos incluidos</div>
+        </div>
+        <button class="btn-select-flight${isSelected ? ' btn-selected' : ''}">
+          ${isSelected ? '✓ Seleccionado' : 'Seleccionar'}
+        </button>
       </div>
-      <button class="btn-select-flight">Seleccionar</button>
     </div>
 
     ${stopDetails ? `<div class="stop-details-wrapper">${stopDetails}</div>` : ''}
@@ -165,14 +171,109 @@ function renderFlightCard(flight, listId) {
 
   card.querySelector('.btn-select-flight').addEventListener('click', (e) => {
     e.stopPropagation();
-    goToCheckout(flight.id, listId);
+    selectFlight(flight, listId);
   });
 
   card.addEventListener('click', () => {
-    goToCheckout(flight.id, listId);
+    selectFlight(flight, listId);
   });
 
   return card;
+}
+
+// ─── SELECT FLIGHT ────────────────────────────────────────────────────────────
+
+function selectFlight(flight, listId) {
+  const isRound = state.params.trip === 'round';
+
+  if (listId === 'outbound') {
+    // Si ya estaba seleccionado, deseleccionar
+    if (state.selectedOutbound?.id === flight.id) {
+      state.selectedOutbound = null;
+    } else {
+      state.selectedOutbound = flight;
+      // Si es solo ida, ir directo al checkout
+      if (!isRound) {
+        goToCheckout();
+        return;
+      }
+      // Si es ida y vuelta, hacer scroll al bloque de vuelta
+      setTimeout(() => {
+        const returnBlock = document.getElementById('returnBlock');
+        if (returnBlock) returnBlock.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+  } else {
+    if (state.selectedReturn?.id === flight.id) {
+      state.selectedReturn = null;
+    } else {
+      state.selectedReturn = flight;
+    }
+  }
+
+  renderResults();
+  updateContinueBar();
+}
+
+// ─── CONTINUE BAR ─────────────────────────────────────────────────────────────
+
+function updateContinueBar() {
+  const bar     = document.getElementById('continueBar');
+  const isRound = state.params.trip === 'round';
+
+  const hasOutbound = !!state.selectedOutbound;
+  const hasReturn   = !!state.selectedReturn;
+  const canContinue = isRound ? (hasOutbound && hasReturn) : hasOutbound;
+
+  if (!bar) return;
+
+  if (!hasOutbound && !hasReturn) {
+    bar.style.display = 'none';
+    return;
+  }
+
+  bar.style.display = 'block';
+
+  const outboundText = hasOutbound
+    ? `✓ Ida: ${state.selectedOutbound.flightNumber} · ${state.selectedOutbound.departure} → ${state.selectedOutbound.arrival}`
+    : '— Selecciona vuelo de ida';
+
+  const returnText = isRound
+    ? (hasReturn
+        ? `✓ Vuelta: ${state.selectedReturn.flightNumber} · ${state.selectedReturn.departure} → ${state.selectedReturn.arrival}`
+        : '— Selecciona vuelo de vuelta')
+    : '';
+
+  const price      = state.selectedOutbound ? state.selectedOutbound.prices[state.cabin] : 0;
+  const rPrice     = (isRound && state.selectedReturn) ? state.selectedReturn.prices[state.cabin] : 0;
+  const total      = (price + rPrice) * state.params.passengers;
+
+  document.getElementById('continueOutbound').textContent = outboundText;
+  document.getElementById('continueReturn').textContent   = returnText;
+  document.getElementById('continueReturn').style.display = isRound ? 'block' : 'none';
+  document.getElementById('continueTotal').textContent    = canContinue ? `Total: ${formatPrice(total)}` : '';
+
+  const btn = document.getElementById('btnContinueCheckout');
+  btn.disabled = !canContinue;
+  btn.style.opacity = canContinue ? '1' : '0.5';
+  btn.textContent = canContinue
+    ? `Continuar con ${isRound ? '2 vuelos' : '1 vuelo'} →`
+    : isRound
+      ? (hasOutbound ? 'Ahora selecciona el vuelo de vuelta' : 'Selecciona los vuelos')
+      : 'Selecciona un vuelo';
+}
+
+function goToCheckout() {
+  const params = new URLSearchParams({
+    outboundId: state.selectedOutbound.id,
+    returnId:   state.selectedReturn ? state.selectedReturn.id : '',
+    cabin:      state.cabin,
+    passengers: state.params.passengers,
+    dateStart:  state.params.dateStart || '',
+    dateEnd:    state.params.dateEnd   || '',
+    trip:       state.params.trip,
+  });
+  window.location.href = `checkout.html?${params.toString()}`;
 }
 
 // ─── RENDER RESULTS ───────────────────────────────────────────────────────────
@@ -208,6 +309,15 @@ function renderResults() {
     returnList.innerHTML      = '';
     returnCount.textContent   = `${returnFiltered.length} ${returnFiltered.length === 1 ? 'vuelo' : 'vuelos'}`;
 
+    // Bloquear visualmente hasta que se seleccione ida
+    returnBlock.style.opacity = state.selectedOutbound ? '1' : '0.45';
+    returnBlock.style.pointerEvents = state.selectedOutbound ? 'auto' : 'none';
+
+    const returnHint = document.getElementById('returnHint');
+    if (returnHint) {
+      returnHint.style.display = state.selectedOutbound ? 'none' : 'block';
+    }
+
     if (returnFiltered.length === 0) {
       returnList.innerHTML = `
         <div style="padding:32px;text-align:center;color:#888;">
@@ -220,21 +330,6 @@ function renderResults() {
       });
     }
   }
-}
-
-// ─── GO TO CHECKOUT ───────────────────────────────────────────────────────────
-
-function goToCheckout(flightId, direction) {
-  const params = new URLSearchParams({
-    flightId,
-    cabin:      state.cabin,
-    passengers: state.params.passengers,
-    dateStart:  state.params.dateStart || '',
-    dateEnd:    state.params.dateEnd   || '',
-    trip:       state.params.trip,
-    direction,
-  });
-  window.location.href = `checkout.html?${params.toString()}`;
 }
 
 // ─── INIT FILTERS ─────────────────────────────────────────────────────────────
@@ -296,21 +391,17 @@ function initModifyPanel() {
     panel.classList.toggle('open');
   });
 
-  // Flatpickr
   flatpickr('#modDateStart', { dateFormat: 'd/m/Y', minDate: 'today' });
   flatpickr('#modDateEnd',   { dateFormat: 'd/m/Y', minDate: 'today' });
 
-  // City dropdowns
   setupCityFilters('modOriginDropdown',      'modOriginFilter');
   setupCityFilters('modDestinationDropdown', 'modDestinationFilter');
   setupCityInput('modOriginInput',      'modOriginDropdown');
   setupCityInput('modDestinationInput', 'modDestinationDropdown');
 
-  // Trip type
   const tripRadio = document.querySelector(`input[name="tripMod"][value="${p.trip}"]`);
   if (tripRadio) tripRadio.checked = true;
 
-  // Passengers
   const modToggle   = document.getElementById('modPassengersToggle');
   const modDropdown = document.getElementById('modPassengersDropdown');
   const modValue    = document.getElementById('modPassengersValue');
@@ -347,7 +438,6 @@ function initModifyPanel() {
     }
   });
 
-  // Submit
   document.getElementById('modifySearchForm').addEventListener('submit', e => {
     e.preventDefault();
     const newOrigin      = document.getElementById('modOriginInput').value.trim();
@@ -363,17 +453,13 @@ function initModifyPanel() {
     }
 
     const params = new URLSearchParams({
-      origin:      newOrigin,
-      destination: newDestination,
-      dateStart:   newDateStart,
-      dateEnd:     newDateEnd,
-      passengers:  newPassengers,
-      trip:        newTrip,
+      origin: newOrigin, destination: newDestination,
+      dateStart: newDateStart, dateEnd: newDateEnd,
+      passengers: newPassengers, trip: newTrip,
     });
     window.location.href = `resultados.html?${params.toString()}`;
   });
 
-  // Pre-fill después de todo el setup
   setTimeout(() => {
     document.getElementById('modOriginInput').value      = p.originRaw      || '';
     document.getElementById('modDestinationInput').value = p.destinationRaw || '';
@@ -397,7 +483,18 @@ function initResultados() {
   initFilters();
   initModifyPanel();
   renderResults();
+  updateContinueBar();
 
+  // Botón continuar
+  document.getElementById('btnContinueCheckout').addEventListener('click', (e) => {
+    e.preventDefault();
+    const isRound    = state.params.trip === 'round';
+    const canContinue = isRound
+      ? (!!state.selectedOutbound && !!state.selectedReturn)
+      : !!state.selectedOutbound;
+
+    if (canContinue) goToCheckout();
+  });
   const logoutBtn = document.getElementById('logoutBtn');
   if (logoutBtn) {
     logoutBtn.addEventListener('click', () => {

@@ -9,6 +9,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-9V78277M5X"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-9V78277M5X');
+  </script>
 </head>
 <body>
 
@@ -323,6 +332,12 @@
             </div>
             <span class="results-count" id="returnCount"></span>
           </div>
+          <div id="returnHint" class="return-hint" style="display:none;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/>
+            </svg>
+            Primero selecciona tu vuelo de ida para continuar
+          </div>
           <div class="flights-list" id="returnList">
             <!-- populated by JS -->
           </div>
@@ -340,6 +355,20 @@
     </div>
   </main>
 
+  <!-- CONTINUE BAR (sticky bottom) -->
+  <div class="continue-bar" id="continueBar" style="display:none;">
+    <div class="continue-bar-inner">
+      <div class="continue-flights">
+        <span id="continueOutbound" class="continue-flight-text"></span>
+        <span id="continueReturn"   class="continue-flight-text"></span>
+      </div>
+        <div class="continue-right">
+          <span id="continueTotal" class="continue-total"></span>
+        <button class="btn-continue-checkout" id="btnContinueCheckout">...</button>
+      </div>
+    </div>
+  </div>
+
   <!-- FOOTER -->
   <footer class="main-footer">
     <div class="container">
@@ -355,5 +384,6 @@
   <script src="script.js"></script>
   <script src="script_resultados.js"></script>
 
+  <script src="analytics.js"></script>
 </body>
 </html>

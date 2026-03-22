@@ -1,0 +1,234 @@
+/* ===================================
+   TU RESERVA — RESULTADO
+   Agrega al final de tu_reserva_styles.css
+=================================== */
+
+.reservation-result {
+  padding: 40px 0 60px;
+}
+
+.reservation-result .result-card {
+  background: white;
+  border-radius: 20px;
+  padding: 36px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* Header */
+.reservation-result-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 28px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.reservation-result-icon {
+  font-size: 48px;
+  line-height: 1;
+}
+
+.reservation-result-header h3 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: #1a1a1a;
+}
+
+.reservation-code {
+  font-size: 32px;
+  font-weight: 800;
+  color: #E30613;
+  letter-spacing: 4px;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.reservation-date {
+  font-size: 13px;
+  color: #aaa;
+}
+
+/* Info grid */
+.reservation-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.reservation-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-label {
+  font-size: 11px;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.info-value {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.info-value-price {
+  font-size: 20px;
+  font-weight: 800;
+  color: #E30613;
+}
+
+/* Flight cards */
+.reservation-flight-card {
+  background: #fafafa;
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 16px;
+  border: 1.5px solid #f0f0f0;
+}
+
+.reservation-flight-card.return {
+  border-color: #e8f5ff;
+  background: #f8fbff;
+}
+
+.reservation-flight-badge {
+  display: inline-block;
+  background: #f0f0f0;
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #555;
+  margin-bottom: 16px;
+}
+
+.reservation-flight-badge.return {
+  background: #e8f5ff;
+  color: #0066cc;
+}
+
+.reservation-flight-route {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.reservation-flight-time {
+  font-size: 28px;
+  font-weight: 800;
+  color: #1a1a1a;
+  line-height: 1;
+}
+
+.reservation-flight-city {
+  font-size: 13px;
+  color: #888;
+  margin-top: 4px;
+}
+
+.reservation-flight-arrow {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.reservation-flight-number {
+  font-size: 12px;
+  color: #888;
+  font-weight: 600;
+}
+
+.reservation-flight-line {
+  width: 100%;
+  height: 1.5px;
+  background: #ddd;
+}
+
+.reservation-flight-meta {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: #666;
+  font-weight: 500;
+}
+
+/* Baggage */
+.reservation-baggage {
+  background: #fafafa;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+
+.reservation-section-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+
+/* Actions */
+.reservation-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.btn-print {
+  padding: 12px 24px;
+  background: white;
+  border: 1.5px solid #ddd;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #555;
+  font-family: inherit;
+  transition: 0.2s ease;
+}
+
+.btn-print:hover {
+  border-color: #aaa;
+  color: #1a1a1a;
+}
+
+/* Error */
+.reservation-error {
+  background: #fff0f0;
+  color: #E30613;
+  border: 1px solid #fcc;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 16px;
+}
+
+@media (max-width: 600px) {
+  .reservation-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .reservation-result .result-card {
+    padding: 20px;
+  }
+}

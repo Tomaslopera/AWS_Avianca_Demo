@@ -1,64 +1,92 @@
 /**
  * script_checkout.js
- * Lógica completa del checkout de vuelos
- * Pasos: Vuelo → Pasajeros → Asientos → Equipaje → Pago → Confirmación
+ * Checkout completo: ida simple o ida y vuelta en un solo flujo
+ * Pasos: Vuelo → Pasajeros → Asientos (ida) → [Asientos vuelta] → Equipaje → Pago → Confirmación
  */
 
 // ─── ESTADO GLOBAL ────────────────────────────────────────────────────────────
 
 const checkout = {
-  params:       {},       // parámetros de la URL
-  flight:       null,     // vuelo de ida
-  returnFlight: null,     // vuelo de vuelta (si aplica)
-  cabin:        'economica',
-  passengers:   1,
-  passengerData:  [],     // datos de cada pasajero
-  selectedSeats:  [],     // asiento por pasajero
-  baggage:        [],     // equipaje por pasajero
-  basePrice:      0,      // precio base total (vuelo × pasajeros)
-  baggageTotal:   0,      // costo adicional equipaje
-  currentStep:    1,
+  params:            {},
+  flight:            null,    // vuelo de ida
+  returnFlight:      null,    // vuelo de vuelta (si aplica)
+  cabin:             'economica',
+  passengers:        1,
+  passengerData:     [],
+  selectedSeats:     [],      // asientos de ida por pasajero
+  selectedReturnSeats: [],    // asientos de vuelta por pasajero
+  baggage:           [],
+  basePrice:         0,
+  baggageTotal:      0,
+  upgradeTotal:      0,
+  seatUpgrades:      {},
+  currentStep:       1,
+  isRound:           false,
 };
 
-const BAGGAGE_PRICES = {
-  hand:    0,
-  bag23:   89000,
-  bag32:   149000,
-};
+const BAGGAGE_PRICES = { hand: 0, bag23: 89000, bag32: 149000 };
 
 // ─── PARSE PARAMS ─────────────────────────────────────────────────────────────
 
 function parseCheckoutParams() {
-  const urlParams = new URLSearchParams(window.location.search);
+  const p = new URLSearchParams(window.location.search);
   return {
-    flightId:   urlParams.get('flightId')   || '',
-    cabin:      urlParams.get('cabin')      || 'economica',
-    passengers: parseInt(urlParams.get('passengers') || '1'),
-    dateStart:  urlParams.get('dateStart')  || '',
-    dateEnd:    urlParams.get('dateEnd')    || '',
-    trip:       urlParams.get('trip')       || 'oneway',
-    direction:  urlParams.get('direction')  || 'outbound',
+    outboundId: p.get('outboundId') || p.get('flightId') || '',
+    returnId:   p.get('returnId')   || '',
+    cabin:      p.get('cabin')      || 'economica',
+    passengers: parseInt(p.get('passengers') || '1'),
+    dateStart:  p.get('dateStart')  || '',
+    dateEnd:    p.get('dateEnd')    || '',
+    trip:       p.get('trip')       || 'oneway',
   };
 }
 
 // ─── STEPPER ──────────────────────────────────────────────────────────────────
 
-function goToStep(step) {
-  // Hide all steps
-  document.querySelectorAll('.checkout-step').forEach(el => el.classList.add('hidden'));
+function buildStepper() {
+  // Si es ida y vuelta, insertar paso extra "Asientos vuelta"
+  const stepperContainer = document.querySelector('.stepper-container');
+  if (checkout.isRound) {
+    // Insertar después del paso 3 (asientos)
+    const line = document.createElement('div');
+    line.className = 'step-line';
+    line.id = 'stepLine3b';
+    const step = document.createElement('div');
+    step.className = 'step';
+    step.dataset.step = '3b';
+    step.innerHTML = `
+      <div class="step-circle" id="stepCircle3b">4</div>
+      <span class="step-label">Asientos vuelta</span>
+    `;
+    // Renumerar pasos 4 y 5 a 5 y 6
+    document.querySelectorAll('.step').forEach(el => {
+      const n = parseInt(el.dataset.step);
+      if (n >= 4) {
+        el.dataset.step = n + 1;
+        el.querySelector('.step-circle').textContent = n + 1;
+      }
+    });
+    document.querySelectorAll('.step-line').forEach((el, i) => {
+      if (i >= 2) el.id = `stepLine${i + 2}`;
+    });
+    // Insertar después del 3er step-line
+    const lines = stepperContainer.querySelectorAll('.step-line');
+    lines[2].insertAdjacentElement('afterend', step);
+    step.insertAdjacentElement('afterend', line);
+  }
+}
 
-  // Show target step
+function goToStep(step) {
+  document.querySelectorAll('.checkout-step').forEach(el => el.classList.add('hidden'));
   document.getElementById(`step${step}`).classList.remove('hidden');
 
-  // Update stepper UI
-  document.querySelectorAll('.step').forEach((el, i) => {
-    const n = i + 1;
+  const allSteps = [...document.querySelectorAll('.step')];
+  allSteps.forEach((el, i) => {
     el.classList.remove('active', 'completed');
-    if (n < step)  el.classList.add('completed');
-    if (n === step) el.classList.add('active');
+    if (i + 1 < step)  el.classList.add('completed');
+    if (i + 1 === step) el.classList.add('active');
   });
 
-  // Update step lines
   document.querySelectorAll('.step-line').forEach((el, i) => {
     el.classList.toggle('completed', i + 1 < step);
   });
@@ -76,10 +104,8 @@ function prevStep() { goToStep(checkout.currentStep - 1); }
 function renderFlightSummary() {
   const flight = checkout.flight;
   const cabin  = checkout.cabin;
-  const price  = flight.prices[cabin];
-  const total  = price * checkout.passengers;
 
-  checkout.basePrice = total;
+  checkout.basePrice = flight.prices[cabin] * checkout.passengers;
   if (checkout.returnFlight) {
     checkout.basePrice += checkout.returnFlight.prices[cabin] * checkout.passengers;
   }
@@ -111,25 +137,21 @@ function renderSummaryCard(flight, containerId, direction) {
     <div class="summary-badge ${direction === 'vuelta' ? 'return' : ''}">
       ${direction === 'ida' ? '✈ Vuelo de ida' : '↩ Vuelo de vuelta'}
     </div>
-
     <div class="summary-route-row">
       <div>
         <div class="summary-time">${flight.departure}</div>
         <div class="summary-code">${flight.origin} · ${flight.originCity}</div>
       </div>
-
       <div class="summary-arrow">
         <div class="summary-duration">${flight.duration}</div>
         <div class="summary-arrow-line"></div>
         <span class="summary-stops-badge ${stopsClass}">${stopsText}</span>
       </div>
-
       <div style="text-align:right">
         <div class="summary-time">${flight.arrival}</div>
         <div class="summary-code">${flight.destination} · ${flight.destinationCity}</div>
       </div>
     </div>
-
     <div class="summary-meta">
       <div class="summary-meta-item">
         <span class="summary-meta-label">Vuelo</span>
@@ -143,8 +165,7 @@ function renderSummaryCard(flight, containerId, direction) {
         <span class="summary-meta-label">Clase</span>
         <span class="summary-meta-value">${cabinLabel}</span>
       </div>
-      ${date ? `
-      <div class="summary-meta-item">
+      ${date ? `<div class="summary-meta-item">
         <span class="summary-meta-label">Fecha</span>
         <span class="summary-meta-value">${date}</span>
       </div>` : ''}
@@ -220,8 +241,7 @@ function renderPassengersForm() {
         <div class="form-field">
           <label>Teléfono de contacto *</label>
           <input type="tel" id="p${i}_phone" placeholder="+57 300 000 0000">
-        </div>
-        ` : ''}
+        </div>` : ''}
       </div>
     `;
     container.appendChild(block);
@@ -237,7 +257,6 @@ function validatePassengersAndNext() {
     const lastName  = document.getElementById(`p${i}_lastName`);
     const docNumber = document.getElementById(`p${i}_docNumber`);
 
-    // Reset errors
     [firstName, lastName, docNumber].forEach(el => el.classList.remove('error'));
 
     if (!firstName.value.trim()) { firstName.classList.add('error'); valid = false; }
@@ -270,49 +289,31 @@ function validatePassengersAndNext() {
 
   checkout.passengerData = data;
   nextStep();
-  renderSeatMap();
+  renderSeatMap('outbound');
 }
 
-// ─── STEP 3: SEAT MAP ─────────────────────────────────────────────────────────
+// ─── STEP 3 & 4: SEAT MAP ─────────────────────────────────────────────────────
 
-// ─── SEAT CONFIG POR AVIÓN ───────────────────────────────────────────────────
-// Reemplaza generateOccupiedSeats y renderSeatMap en script_checkout.js
-
-function getSeatConfig() {
-  const aircraft = checkout.flight.aircraft;
-  const is787    = aircraft.includes('787');
-
+function getSeatConfig(flight) {
+  const is787 = flight.aircraft.includes('787');
   if (is787) {
     return {
-      is787: true,
-      totalRows: 40,
-      execRows: 8,
-      // Económica: 2-4-2 → A B | C D E F | G H
-      econCols:  ['A','B','C','D','E','F','G','H'],
-      econAisles: [2, 6],   // índices DESPUÉS de los cuales va un pasillo
-      // Ejecutiva: 1-2-1 → A | C D | G
-      execCols:  ['A','C','D','G'],
-      execAisles: [1, 3],
-    };
-  } else {
-    return {
-      is787: false,
-      totalRows: 30,
-      execRows: 4,
-      // Económica: 3-3 → A B C | D E F
-      econCols:  ['A','B','C','D','E','F'],
-      econAisles: [3],
-      // Ejecutiva: misma distribución pero asientos más anchos
-      execCols:  ['A','B','C','D','E','F'],
-      execAisles: [3],
+      is787: true, totalRows: 40, execRows: 8,
+      econCols: ['A','B','C','D','E','F','G','H'], econAisles: [2, 6],
+      execCols: ['A','C','D','G'], execAisles: [1, 3],
     };
   }
+  return {
+    is787: false, totalRows: 30, execRows: 4,
+    econCols: ['A','B','C','D','E','F'], econAisles: [3],
+    execCols: ['A','B','C','D','E','F'], execAisles: [3],
+  };
 }
 
-function generateOccupiedSeats() {
-  const config    = getSeatConfig();
+function generateOccupiedSeats(flight) {
+  const config    = getSeatConfig(flight);
   const occupied  = new Set();
-  const available = checkout.flight.seatsLeft[checkout.cabin];
+  const available = flight.seatsLeft[checkout.cabin];
 
   const totalExec  = config.execRows * config.execCols.length;
   const totalEcon  = (config.totalRows - config.execRows) * config.econCols.length;
@@ -320,34 +321,52 @@ function generateOccupiedSeats() {
   const count      = Math.max(0, totalSeats - available);
 
   let seed = 0;
-  for (let i = 0; i < checkout.flight.id.length; i++) {
-    seed += checkout.flight.id.charCodeAt(i);
-  }
+  for (let i = 0; i < flight.id.length; i++) seed += flight.id.charCodeAt(i);
 
   let attempts = 0;
   while (occupied.size < count && attempts < count * 10) {
     attempts++;
     seed = (seed * 9301 + 49297) % 233280;
-    const row = (seed % config.totalRows) + 1;
+    const row       = (seed % config.totalRows) + 1;
     seed = (seed * 9301 + 49297) % 233280;
     const isExecRow = row <= config.execRows;
     const colSet    = isExecRow ? config.execCols : config.econCols;
     const col       = colSet[seed % colSet.length];
     occupied.add(`${row}${col}`);
   }
-
   return occupied;
 }
 
-function renderSeatMap() {
-  const container = document.getElementById('seatSelectorContainer');
+function buildHeaderRow(cols, aisles) {
+  let html = '';
+  cols.forEach((col, idx) => {
+    if (aisles.includes(idx)) html += `<div class="seat-aisle"></div>`;
+    html += `<div class="seat-col-label">${col}</div>`;
+  });
+  return html;
+}
+
+function renderSeatMap(direction) {
+  // direction: 'outbound' | 'return'
+  const flight     = direction === 'outbound' ? checkout.flight : checkout.returnFlight;
+  const seatsArray = direction === 'outbound' ? checkout.selectedSeats : checkout.selectedReturnSeats;
+  const container  = document.getElementById('seatSelectorContainer');
+  const stepTitle  = document.getElementById('seatStepTitle');
+
+  if (stepTitle) {
+    stepTitle.textContent = direction === 'outbound'
+      ? `Asientos — Vuelo de ida (${flight.origin} → ${flight.destination})`
+      : `Asientos — Vuelo de vuelta (${flight.origin} → ${flight.destination})`;
+  }
+
   container.innerHTML = '';
+  container.dataset.direction = direction;
 
-  const config   = getSeatConfig();
-  const occupied = generateOccupiedSeats();
+  const config   = getSeatConfig(flight);
+  const occupied = generateOccupiedSeats(flight);
 
-  if (checkout.selectedSeats.length === 0) {
-    checkout.selectedSeats = new Array(checkout.passengers).fill(null);
+  if (seatsArray.length === 0) {
+    for (let i = 0; i < checkout.passengers; i++) seatsArray.push(null);
   }
 
   for (let p = 0; p < checkout.passengers; p++) {
@@ -358,41 +377,28 @@ function renderSeatMap() {
       ? `${checkout.passengerData[p].firstName} ${checkout.passengerData[p].lastName}`
       : `Pasajero ${p + 1}`;
 
-    // Header de columnas para económica
-    const econHeaderCells = buildHeaderRow(config.econCols, config.econAisles);
-    // Header de columnas para ejecutiva
-    const execHeaderCells = buildHeaderRow(config.execCols, config.execAisles);
-
     block.innerHTML = `
       <div class="seat-selector-title">
         <div class="passenger-number-badge">${p + 1}</div>
         ${passengerName}
-        <span style="font-size:12px;color:#888;font-weight:400;margin-left:8px;">
-          ${checkout.flight.aircraft}
-        </span>
+        <span style="font-size:12px;color:#888;font-weight:400;margin-left:8px;">${flight.aircraft}</span>
       </div>
-
       <div class="seat-legend">
         <div class="legend-item"><div class="legend-dot available"></div> Disponible</div>
         <div class="legend-item"><div class="legend-dot occupied"></div> Ocupado</div>
         <div class="legend-item"><div class="legend-dot selected"></div> Seleccionado</div>
         <div class="legend-item"><div class="legend-dot executive"></div> Ejecutiva (+upgrade)</div>
       </div>
-
       <div class="seat-map">
         <div class="seat-map-plane" id="seatMap_${p}">
-
           ${config.execRows > 0 ? `
           <div class="seat-section-label">✦ Clase Ejecutiva — Filas 1–${config.execRows}</div>
           <div class="seat-row seat-header-row">
             <div class="seat-row-number"></div>
-            ${execHeaderCells}
-          </div>
-          ` : ''}
-
+            ${buildHeaderRow(config.execCols, config.execAisles)}
+          </div>` : ''}
         </div>
       </div>
-
       <div class="selected-seat-info" id="seatInfo_${p}" style="display:none;">
         ✅ Asiento seleccionado: <strong id="seatInfoText_${p}"></strong>
       </div>
@@ -401,24 +407,19 @@ function renderSeatMap() {
     container.appendChild(block);
 
     const mapEl = document.getElementById(`seatMap_${p}`);
-
-    // Separador entre ejecutiva y económica
     let econHeaderAdded = false;
 
     for (let row = 1; row <= config.totalRows; row++) {
       const isExecRow = row <= config.execRows;
-      const cols      = isExecRow ? config.execCols    : config.econCols;
-      const aisles    = isExecRow ? config.execAisles  : config.econAisles;
+      const cols      = isExecRow ? config.execCols   : config.econCols;
+      const aisles    = isExecRow ? config.execAisles : config.econAisles;
 
-      // Agregar header de económica cuando empieza
       if (!isExecRow && !econHeaderAdded) {
         econHeaderAdded = true;
-
         const divider = document.createElement('div');
         divider.className = 'seat-section-label econ';
         divider.textContent = `✈ Clase Económica — Filas ${config.execRows + 1}–${config.totalRows}`;
         mapEl.appendChild(divider);
-
         const econHeader = document.createElement('div');
         econHeader.className = 'seat-row seat-header-row';
         econHeader.innerHTML = `<div class="seat-row-number"></div>${buildHeaderRow(config.econCols, config.econAisles)}`;
@@ -427,14 +428,12 @@ function renderSeatMap() {
 
       const rowEl = document.createElement('div');
       rowEl.className = `seat-row${isExecRow ? ' exec-row' : ''}`;
-
       const rowNum = document.createElement('div');
       rowNum.className = 'seat-row-number';
       rowNum.textContent = row;
       rowEl.appendChild(rowNum);
 
       cols.forEach((col, colIdx) => {
-        // Pasillo ANTES de este índice
         if (aisles.includes(colIdx)) {
           const aisle = document.createElement('div');
           aisle.className = 'seat-aisle';
@@ -443,17 +442,15 @@ function renderSeatMap() {
 
         const seatId       = `${row}${col}`;
         const isOcc        = occupied.has(seatId);
-        const isSelByOther = checkout.selectedSeats.some((s, idx) => s === seatId && idx !== p);
-
-        const seat = document.createElement('div');
-        seat.className = `seat${isExecRow ? ' exec-size' : ''}`;
-        seat.textContent = col;
-        seat.dataset.seat      = seatId;
-        seat.dataset.passenger = p;
+        const isSelByOther = seatsArray.some((s, idx) => s === seatId && idx !== p);
+        const seat         = document.createElement('div');
+        seat.className     = `seat${isExecRow ? ' exec-size' : ''}`;
+        seat.textContent   = col;
+        seat.dataset.seat  = seatId;
 
         if (isOcc || isSelByOther) {
-          // queda gris/ocupado — sin clase adicional
-        } else if (checkout.selectedSeats[p] === seatId) {
+          // ocupado
+        } else if (seatsArray[p] === seatId) {
           seat.classList.add('selected');
         } else if (isExecRow) {
           seat.classList.add('executive', 'available');
@@ -463,8 +460,8 @@ function renderSeatMap() {
 
         if (!isOcc && !isSelByOther) {
           seat.addEventListener('click', () => {
-            selectSeat(p, seatId, isExecRow);
-            renderSeatMap();
+            selectSeat(p, seatId, isExecRow, direction);
+            renderSeatMap(direction);
           });
         }
 
@@ -474,71 +471,68 @@ function renderSeatMap() {
       mapEl.appendChild(rowEl);
     }
 
-    // Info asiento seleccionado
-    if (checkout.selectedSeats[p]) {
+    if (seatsArray[p]) {
       const infoEl = document.getElementById(`seatInfo_${p}`);
       const textEl = document.getElementById(`seatInfoText_${p}`);
       infoEl.style.display = 'block';
-      const rowNum  = parseInt(checkout.selectedSeats[p]);
-      const isExec  = rowNum <= config.execRows;
-      textEl.textContent = `${checkout.selectedSeats[p]} · ${isExec ? 'Ejecutiva' : 'Económica'} · Fila ${rowNum}`;
+      const rowNum = parseInt(seatsArray[p]);
+      textEl.textContent = `${seatsArray[p]} · ${rowNum <= config.execRows ? 'Ejecutiva' : 'Económica'} · Fila ${rowNum}`;
     }
   }
 }
 
-// Helper: genera las celdas del header de columnas con pasillos
-function buildHeaderRow(cols, aisles) {
-  let html = '';
-  cols.forEach((col, idx) => {
-    if (aisles.includes(idx)) {
-      html += `<div class="seat-aisle"></div>`;
-    }
-    html += `<div class="seat-col-label">${col}</div>`;
-  });
-  return html;
-}
+function selectSeat(passengerIdx, seatId, isExecRow, direction) {
+  const seatsArray = direction === 'outbound' ? checkout.selectedSeats : checkout.selectedReturnSeats;
 
-
-function selectSeat(passengerIdx, seatId, isExec) {
-  if (checkout.selectedSeats[passengerIdx] === seatId) {
-    checkout.selectedSeats[passengerIdx] = null;
-    checkout.seatUpgrades = checkout.seatUpgrades || {};
-    checkout.seatUpgrades[passengerIdx] = 0;
+  if (seatsArray[passengerIdx] === seatId) {
+    seatsArray[passengerIdx] = null;
+    checkout.seatUpgrades[`${direction}_${passengerIdx}`] = 0;
   } else {
-    checkout.selectedSeats[passengerIdx] = seatId;
-    checkout.seatUpgrades = checkout.seatUpgrades || {};
-    // Si eligió ejecutiva pero pagó económica, cobrar diferencia
-    if (isExec && checkout.cabin === 'economica') {
-      const diff = checkout.flight.prices['ejecutiva'] - checkout.flight.prices['economica'];
-      checkout.seatUpgrades[passengerIdx] = diff > 0 ? diff : 0;
+    seatsArray[passengerIdx] = seatId;
+    if (isExecRow && checkout.cabin === 'economica') {
+      const flight = direction === 'outbound' ? checkout.flight : checkout.returnFlight;
+      const diff   = flight.prices['ejecutiva'] - flight.prices['economica'];
+      checkout.seatUpgrades[`${direction}_${passengerIdx}`] = diff > 0 ? diff : 0;
     } else {
-      checkout.seatUpgrades[passengerIdx] = 0;
+      checkout.seatUpgrades[`${direction}_${passengerIdx}`] = 0;
     }
   }
-  // Recalcular total de upgrades
-  checkout.upgradeTotal = Object.values(checkout.seatUpgrades || {}).reduce((a, b) => a + b, 0);
+
+  checkout.upgradeTotal = Object.values(checkout.seatUpgrades).reduce((a, b) => a + b, 0);
   updatePriceSidebar();
 }
 
 function validateSeatsAndNext() {
-  const unselected = checkout.selectedSeats.filter(s => !s);
+  const direction  = document.getElementById('seatSelectorContainer').dataset.direction;
+  const seatsArray = direction === 'outbound' ? checkout.selectedSeats : checkout.selectedReturnSeats;
+  const unselected = seatsArray.filter(s => !s);
+
   if (unselected.length > 0) {
-    alert(`Por favor selecciona asiento para todos los pasajeros (${checkout.passengers - (checkout.passengers - unselected.length)} pendientes).`);
+    alert(`Por favor selecciona asiento para todos los pasajeros.`);
     return;
   }
+
+  // Si es ida y vuelta y acaba de seleccionar ida → ir a asientos vuelta
+  if (direction === 'outbound' && checkout.isRound) {
+    nextStep();
+    renderSeatMap('return');
+    return;
+  }
+
+  // Si es vuelta o solo ida → ir a equipaje
   nextStep();
   renderBaggageOptions();
 }
 
-// ─── STEP 4: BAGGAGE ──────────────────────────────────────────────────────────
+// ─── STEP 4/5: BAGGAGE ────────────────────────────────────────────────────────
 
 function renderBaggageOptions() {
   const container = document.getElementById('baggageContainer');
   container.innerHTML = '';
 
-  // Inicializar equipaje
   if (checkout.baggage.length === 0) {
-    checkout.baggage = new Array(checkout.passengers).fill('hand');
+    const defaultBaggage = checkout.cabin === 'ejecutiva' ? 'bag23' : 'hand';
+    checkout.baggage = new Array(checkout.passengers).fill(defaultBaggage);
   }
 
   for (let p = 0; p < checkout.passengers; p++) {
@@ -548,18 +542,15 @@ function renderBaggageOptions() {
 
     const block = document.createElement('div');
     block.className = 'baggage-passenger-block';
-
     block.innerHTML = `
       <div class="baggage-passenger-title">
-        <span class="passenger-number-badge" style="width:24px;height:24px;font-size:12px;border-radius:50%;background:#E30613;color:white;display:inline-flex;align-items:center;justify-content:center;margin-right:8px;">${p+1}</span>
+        <span style="width:24px;height:24px;font-size:12px;border-radius:50%;background:#E30613;color:white;display:inline-flex;align-items:center;justify-content:center;margin-right:8px;">${p+1}</span>
         ${passengerName}
       </div>
       <div class="baggage-options">
-
-        <div class="baggage-option ${checkout.baggage[p] === 'hand' ? 'selected' : ''}"
-             onclick="selectBaggage(${p}, 'hand', this)">
+        <div class="baggage-option ${checkout.baggage[p] === 'hand' ? 'selected' : ''}" onclick="selectBaggage(${p}, 'hand', this)">
           <div class="baggage-option-left">
-            <div class="baggage-icon"></div>
+            <div class="baggage-icon">👜</div>
             <div>
               <div class="baggage-name">Equipaje de mano</div>
               <div class="baggage-desc">1 artículo personal + 1 equipaje de mano (10kg)</div>
@@ -570,26 +561,24 @@ function renderBaggageOptions() {
             <div class="baggage-checkbox">${checkout.baggage[p] === 'hand' ? '✓' : ''}</div>
           </div>
         </div>
-
-        <div class="baggage-option ${checkout.baggage[p] === 'bag23' ? 'selected' : ''}"
-             onclick="selectBaggage(${p}, 'bag23', this)">
+        <div class="baggage-option ${checkout.baggage[p] === 'bag23' ? 'selected' : ''}" onclick="selectBaggage(${p}, 'bag23', this)">
           <div class="baggage-option-left">
-            <div class="baggage-icon"></div>
+            <div class="baggage-icon">🧳</div>
             <div>
               <div class="baggage-name">Maleta bodega 23kg</div>
               <div class="baggage-desc">1 maleta de hasta 23kg en bodega</div>
             </div>
           </div>
           <div style="display:flex;align-items:center;gap:12px;">
-            <div class="baggage-price">+ ${formatPrice(BAGGAGE_PRICES.bag23)}</div>
+            <div class="baggage-price ${checkout.cabin === 'ejecutiva' ? 'free' : ''}">
+              ${checkout.cabin === 'ejecutiva' ? 'Incluido' : '+ ' + formatPrice(BAGGAGE_PRICES.bag23)}
+            </div>
             <div class="baggage-checkbox">${checkout.baggage[p] === 'bag23' ? '✓' : ''}</div>
           </div>
         </div>
-
-        <div class="baggage-option ${checkout.baggage[p] === 'bag32' ? 'selected' : ''}"
-             onclick="selectBaggage(${p}, 'bag32', this)">
+        <div class="baggage-option ${checkout.baggage[p] === 'bag32' ? 'selected' : ''}" onclick="selectBaggage(${p}, 'bag32', this)">
           <div class="baggage-option-left">
-            <div class="baggage-icon"></div>
+            <div class="baggage-icon">🧳</div>
             <div>
               <div class="baggage-name">Maleta bodega 32kg</div>
               <div class="baggage-desc">1 maleta de hasta 32kg en bodega</div>
@@ -600,20 +589,15 @@ function renderBaggageOptions() {
             <div class="baggage-checkbox">${checkout.baggage[p] === 'bag32' ? '✓' : ''}</div>
           </div>
         </div>
-
       </div>
     `;
-
     container.appendChild(block);
   }
-
   updateBaggageTotal();
 }
 
 function selectBaggage(passengerIdx, type, clickedEl) {
   checkout.baggage[passengerIdx] = type;
-
-  // Update UI for this passenger's block
   const block = clickedEl.closest('.baggage-passenger-block');
   block.querySelectorAll('.baggage-option').forEach(opt => {
     opt.classList.remove('selected');
@@ -621,23 +605,23 @@ function selectBaggage(passengerIdx, type, clickedEl) {
   });
   clickedEl.classList.add('selected');
   clickedEl.querySelector('.baggage-checkbox').textContent = '✓';
-
   updateBaggageTotal();
   updatePriceSidebar();
 }
 
 function updateBaggageTotal() {
   checkout.baggageTotal = checkout.baggage.reduce((sum, type) => {
+    if (checkout.cabin === 'ejecutiva' && type === 'bag23') return sum;
     return sum + (BAGGAGE_PRICES[type] || 0);
   }, 0);
 }
 
-// ─── STEP 5: PAYMENT ──────────────────────────────────────────────────────────
+// ─── PAYMENT ──────────────────────────────────────────────────────────────────
 
 function initPaymentForm() {
-  const cardNumber  = document.getElementById('cardNumber');
-  const cardName    = document.getElementById('cardName');
-  const cardExpiry  = document.getElementById('cardExpiry');
+  const cardNumber = document.getElementById('cardNumber');
+  const cardName   = document.getElementById('cardName');
+  const cardExpiry = document.getElementById('cardExpiry');
 
   cardNumber.addEventListener('input', e => {
     let val = e.target.value.replace(/\D/g, '').substring(0, 16);
@@ -645,11 +629,9 @@ function initPaymentForm() {
     e.target.value = val;
     document.getElementById('previewNumber').textContent = val || '•••• •••• •••• ••••';
   });
-
   cardName.addEventListener('input', e => {
     document.getElementById('previewName').textContent = e.target.value.toUpperCase() || 'NOMBRE APELLIDO';
   });
-
   cardExpiry.addEventListener('input', e => {
     let val = e.target.value.replace(/\D/g, '').substring(0, 4);
     if (val.length >= 2) val = val.substring(0, 2) + '/' + val.substring(2);
@@ -664,49 +646,74 @@ function confirmPurchase() {
   const cardExpiry = document.getElementById('cardExpiry').value.trim();
   const cardCvv    = document.getElementById('cardCvv').value.trim();
 
-  if (!cardNumber || cardNumber.length < 16) {
-    alert('Por favor ingresa un número de tarjeta válido.');
-    return;
-  }
-  if (!cardName) {
-    alert('Por favor ingresa el nombre del titular.');
-    return;
-  }
-  if (!cardExpiry || cardExpiry.length < 5) {
-    alert('Por favor ingresa la fecha de vencimiento.');
-    return;
-  }
-  if (!cardCvv || cardCvv.length < 3) {
-    alert('Por favor ingresa el CVV.');
-    return;
-  }
+  if (!cardNumber || cardNumber.length < 16) { alert('Número de tarjeta inválido.'); return; }
+  if (!cardName)                              { alert('Ingresa el nombre del titular.'); return; }
+  if (!cardExpiry || cardExpiry.length < 5)   { alert('Ingresa la fecha de vencimiento.'); return; }
+  if (!cardCvv    || cardCvv.length < 3)      { alert('Ingresa el CVV.'); return; }
 
-  // Simular procesamiento
   const btn = document.querySelector('.btn-confirm');
   btn.textContent = 'Procesando...';
   btn.disabled = true;
 
-  setTimeout(() => {
-    showConfirmation();
-  }, 1500);
+  setTimeout(showConfirmation, 1500);
 }
 
-// ─── STEP 6: CONFIRMATION ─────────────────────────────────────────────────────
+// ─── CONFIRMATION ─────────────────────────────────────────────────────────────
 
 function generateBookingCode() {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   return Array.from({ length: 6 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
 }
 
+// ─── GUARDAR RESERVA EN localStorage ─────────────────────────────────────────
+// Pega esta función en script_checkout.js ANTES de showConfirmation()
+// Y llama a saveReservation(code, total) dentro de showConfirmation()
+
+function saveReservation(code, total) {
+  const reservation = {
+    code,
+    date:          new Date().toLocaleDateString('es-CO'),
+    cabin:         checkout.cabin,
+    passengers:    checkout.passengers,
+    passengerData: checkout.passengerData,
+    outbound: {
+      flightNumber: checkout.flight.flightNumber,
+      origin:       checkout.flight.originCity,
+      destination:  checkout.flight.destinationCity,
+      departure:    checkout.flight.departure,
+      arrival:      checkout.flight.arrival,
+      date:         checkout.params.dateStart || 'Flexible',
+    },
+    return: checkout.returnFlight ? {
+      flightNumber: checkout.returnFlight.flightNumber,
+      origin:       checkout.returnFlight.originCity,
+      destination:  checkout.returnFlight.destinationCity,
+      departure:    checkout.returnFlight.departure,
+      arrival:      checkout.returnFlight.arrival,
+      date:         checkout.params.dateEnd || 'Flexible',
+    } : null,
+    seatsOutbound: [...checkout.selectedSeats],
+    seatsReturn:   [...checkout.selectedReturnSeats],
+    baggage:       [...checkout.baggage],
+    total,
+  };
+
+  const existing = JSON.parse(localStorage.getItem('avianca_reservations') || '[]');
+  existing.push(reservation);
+  localStorage.setItem('avianca_reservations', JSON.stringify(existing));
+}
+
 function showConfirmation() {
-  const code = generateBookingCode();
+  const code  = generateBookingCode();
+  const total = checkout.basePrice + checkout.baggageTotal + (checkout.upgradeTotal || 0);
+  saveReservation(code, total);
+
   document.getElementById('bookingCode').textContent = code;
 
-  const flight   = checkout.flight;
-  const cabin    = checkout.cabin === 'economica' ? 'Económica' : 'Ejecutiva';
-  const mainPax  = checkout.passengerData[0];
-  const seats    = checkout.selectedSeats.join(', ');
-  const total = checkout.basePrice + checkout.baggageTotal + (checkout.upgradeTotal || 0);
+  const mainPax    = checkout.passengerData[0];
+  const cabin      = checkout.cabin === 'economica' ? 'Económica' : 'Ejecutiva';
+  const seatsIda   = checkout.selectedSeats.join(', ');
+  const seatsVuelta = checkout.isRound ? checkout.selectedReturnSeats.join(', ') : null;
 
   document.getElementById('confirmationDetails').innerHTML = `
     <div class="confirmation-detail-row">
@@ -714,21 +721,36 @@ function showConfirmation() {
       <span class="confirmation-detail-value">${mainPax?.firstName} ${mainPax?.lastName}</span>
     </div>
     <div class="confirmation-detail-row">
-      <span class="confirmation-detail-label">Vuelo</span>
-      <span class="confirmation-detail-value">${flight.flightNumber} · ${flight.originCity} → ${flight.destinationCity}</span>
+      <span class="confirmation-detail-label">Vuelo de ida</span>
+      <span class="confirmation-detail-value">${checkout.flight.flightNumber} · ${checkout.flight.originCity} → ${checkout.flight.destinationCity}</span>
     </div>
+    ${checkout.returnFlight ? `
     <div class="confirmation-detail-row">
-      <span class="confirmation-detail-label">Fecha</span>
+      <span class="confirmation-detail-label">Vuelo de vuelta</span>
+      <span class="confirmation-detail-value">${checkout.returnFlight.flightNumber} · ${checkout.returnFlight.originCity} → ${checkout.returnFlight.destinationCity}</span>
+    </div>` : ''}
+    <div class="confirmation-detail-row">
+      <span class="confirmation-detail-label">Fecha ida</span>
       <span class="confirmation-detail-value">${checkout.params.dateStart || 'Flexible'}</span>
     </div>
+    ${checkout.isRound ? `
+    <div class="confirmation-detail-row">
+      <span class="confirmation-detail-label">Fecha vuelta</span>
+      <span class="confirmation-detail-value">${checkout.params.dateEnd || 'Flexible'}</span>
+    </div>` : ''}
     <div class="confirmation-detail-row">
       <span class="confirmation-detail-label">Clase</span>
       <span class="confirmation-detail-value">${cabin}</span>
     </div>
     <div class="confirmation-detail-row">
-      <span class="confirmation-detail-label">Asientos</span>
-      <span class="confirmation-detail-value">${seats}</span>
+      <span class="confirmation-detail-label">Asientos ida</span>
+      <span class="confirmation-detail-value">${seatsIda}</span>
     </div>
+    ${seatsVuelta ? `
+    <div class="confirmation-detail-row">
+      <span class="confirmation-detail-label">Asientos vuelta</span>
+      <span class="confirmation-detail-value">${seatsVuelta}</span>
+    </div>` : ''}
     <div class="confirmation-detail-row">
       <span class="confirmation-detail-label">Pasajeros</span>
       <span class="confirmation-detail-value">${checkout.passengers}</span>
@@ -739,10 +761,8 @@ function showConfirmation() {
     </div>
   `;
 
-  // Hide stepper on confirmation
   document.querySelector('.stepper-bar').style.display = 'none';
-
-  goToStep(6);
+  goToStep(checkout.isRound ? 7 : 6);
 }
 
 // ─── PRICE SIDEBAR ────────────────────────────────────────────────────────────
@@ -750,7 +770,6 @@ function showConfirmation() {
 function updatePriceSidebar() {
   const breakdown  = document.getElementById('priceBreakdown');
   const grandTotal = document.getElementById('grandTotal');
-
   const flight     = checkout.flight;
   if (!flight) return;
 
@@ -763,8 +782,7 @@ function updatePriceSidebar() {
     <div class="price-row">
       <span class="price-row-label">Vuelo de ida × ${passengers}</span>
       <span class="price-row-value">${formatPrice(price * passengers)}</span>
-    </div>
-  `);
+    </div>`);
 
   if (checkout.returnFlight) {
     const rPrice = checkout.returnFlight.prices[cabin];
@@ -772,8 +790,7 @@ function updatePriceSidebar() {
       <div class="price-row">
         <span class="price-row-label">Vuelo de vuelta × ${passengers}</span>
         <span class="price-row-value">${formatPrice(rPrice * passengers)}</span>
-      </div>
-    `);
+      </div>`);
   }
 
   if (checkout.baggageTotal > 0) {
@@ -781,26 +798,21 @@ function updatePriceSidebar() {
       <div class="price-row">
         <span class="price-row-label">Equipaje adicional</span>
         <span class="price-row-value extra">+ ${formatPrice(checkout.baggageTotal)}</span>
-      </div>
-    `);
+      </div>`);
   }
 
   if (checkout.upgradeTotal > 0) {
     rows.push(`
-        <div class="price-row">
+      <div class="price-row">
         <span class="price-row-label">Upgrade a Ejecutiva</span>
         <span class="price-row-value extra">+ ${formatPrice(checkout.upgradeTotal)}</span>
-        </div>
-    `);
+      </div>`);
   }
 
   breakdown.innerHTML = rows.join('');
-
   const total = checkout.basePrice + checkout.baggageTotal + (checkout.upgradeTotal || 0);
   grandTotal.textContent = formatPrice(total);
 }
-
-// ─── FORMAT PRICE ─────────────────────────────────────────────────────────────
 
 function formatPrice(price) {
   return `COP ${price.toLocaleString('es-CO')}`;
@@ -813,20 +825,27 @@ function initCheckout() {
   checkout.params     = params;
   checkout.cabin      = params.cabin;
   checkout.passengers = params.passengers;
+  checkout.isRound    = !!params.returnId;
 
-  // Get flight
-  const flight = getFlightById(params.flightId);
-  if (!flight) {
-    alert('No se encontró el vuelo seleccionado.');
-    window.history.back();
-    return;
-  }
+  const flight = getFlightById(params.outboundId);
+  if (!flight) { alert('No se encontró el vuelo.'); window.history.back(); return; }
   checkout.flight = flight;
 
-  // Calculate base price
-  checkout.basePrice = flight.prices[checkout.cabin] * checkout.passengers;
+  if (checkout.isRound) {
+    const returnFlight = getFlightById(params.returnId);
+    if (returnFlight) checkout.returnFlight = returnFlight;
+  }
 
-  // Init UI
+  checkout.basePrice = flight.prices[checkout.cabin] * checkout.passengers;
+  if (checkout.returnFlight) {
+    checkout.basePrice += checkout.returnFlight.prices[checkout.cabin] * checkout.passengers;
+  }
+
+  // Agregar paso extra de asientos vuelta si es ida y vuelta
+  if (checkout.isRound) {
+    addReturnSeatsStep();
+  }
+
   renderFlightSummary();
   renderPassengersForm();
   initPaymentForm();
@@ -834,7 +853,218 @@ function initCheckout() {
   goToStep(1);
 }
 
-// Esperar a que flights_data.js esté disponible
+function addReturnSeatsStep() {
+  // Insertar step3b en el HTML dinámicamente
+  const step3 = document.getElementById('step3');
+
+  // Actualizar el botón de step3 para que llame validateSeatsAndNext
+  // (ya lo hace, no necesita cambio)
+
+  // Crear step para asientos de vuelta
+  const step3b = document.createElement('div');
+  step3b.className = 'checkout-step hidden';
+  step3b.id = 'step4'; // paso 4 ahora es asientos vuelta
+
+  // Renumerar step4 → step5, step5 → step6, step6 → step7
+  ['6','5','4'].forEach(n => {
+    const el = document.getElementById(`step${n}`);
+    if (el) el.id = `step${parseInt(n) + 1}`;
+  });
+
+  step3b.innerHTML = `
+    <h2 class="step-title" id="seatStepTitleReturn">Asientos — Vuelo de vuelta</h2>
+    <p class="step-subtitle">Selecciona un asiento para cada pasajero en el vuelo de vuelta.</p>
+    <div id="seatSelectorContainerReturn"></div>
+    <div class="step-actions">
+      <button class="btn-back" onclick="prevStep()">← Volver</button>
+      <button class="btn-next" onclick="validateReturnSeatsAndNext()">Continuar con equipaje →</button>
+    </div>
+  `;
+
+  step3.insertAdjacentElement('afterend', step3b);
+
+  // Agregar al stepper
+  const stepper = document.querySelector('.stepper-container');
+  const steps   = stepper.querySelectorAll('.step');
+  const lines   = stepper.querySelectorAll('.step-line');
+
+  // Renumerar pasos 4 y 5 en el stepper
+  steps[3].querySelector('.step-circle').textContent = '5';
+  steps[4].querySelector('.step-circle').textContent = '6';
+  steps[3].dataset.step = '5';
+  steps[4].dataset.step = '6';
+
+  // Insertar nuevo paso después del paso 3
+  const newLine = document.createElement('div');
+  newLine.className = 'step-line';
+  const newStep = document.createElement('div');
+  newStep.className = 'step';
+  newStep.dataset.step = '4';
+  newStep.innerHTML = `<div class="step-circle">4</div><span class="step-label">Asientos vuelta</span>`;
+
+  lines[2].insertAdjacentElement('afterend', newStep);
+  newStep.insertAdjacentElement('afterend', newLine);
+}
+
+function validateReturnSeatsAndNext() {
+  // Renderizar en el contenedor correcto
+  const container = document.getElementById('seatSelectorContainerReturn');
+  if (!container) { nextStep(); renderBaggageOptions(); return; }
+
+  // Usar selectedReturnSeats
+  const unselected = checkout.selectedReturnSeats.filter(s => !s);
+  if (unselected.length > 0) {
+    alert('Por favor selecciona asiento de vuelta para todos los pasajeros.');
+    return;
+  }
+
+  nextStep();
+  renderBaggageOptions();
+}
+
+function renderReturnSeatMap() {
+  const container = document.getElementById('seatSelectorContainerReturn');
+  if (!container || !checkout.returnFlight) return;
+  container.innerHTML = '';
+
+  const flight   = checkout.returnFlight;
+  const config   = getSeatConfig(flight);
+  const occupied = generateOccupiedSeats(flight);
+
+  if (checkout.selectedReturnSeats.length === 0) {
+    for (let i = 0; i < checkout.passengers; i++) checkout.selectedReturnSeats.push(null);
+  }
+
+  for (let p = 0; p < checkout.passengers; p++) {
+    const block = document.createElement('div');
+    block.className = 'seat-selector-block';
+    const passengerName = checkout.passengerData[p]
+      ? `${checkout.passengerData[p].firstName} ${checkout.passengerData[p].lastName}`
+      : `Pasajero ${p + 1}`;
+
+    block.innerHTML = `
+      <div class="seat-selector-title">
+        <div class="passenger-number-badge">${p + 1}</div>
+        ${passengerName}
+        <span style="font-size:12px;color:#888;font-weight:400;margin-left:8px;">${flight.aircraft}</span>
+      </div>
+      <div class="seat-legend">
+        <div class="legend-item"><div class="legend-dot available"></div> Disponible</div>
+        <div class="legend-item"><div class="legend-dot occupied"></div> Ocupado</div>
+        <div class="legend-item"><div class="legend-dot selected"></div> Seleccionado</div>
+        <div class="legend-item"><div class="legend-dot executive"></div> Ejecutiva (+upgrade)</div>
+      </div>
+      <div class="seat-map">
+        <div class="seat-map-plane" id="returnSeatMap_${p}">
+          ${config.execRows > 0 ? `
+          <div class="seat-section-label">✦ Clase Ejecutiva — Filas 1–${config.execRows}</div>
+          <div class="seat-row seat-header-row">
+            <div class="seat-row-number"></div>
+            ${buildHeaderRow(config.execCols, config.execAisles)}
+          </div>` : ''}
+        </div>
+      </div>
+      <div class="selected-seat-info" id="returnSeatInfo_${p}" style="display:none;">
+        ✅ Asiento vuelta seleccionado: <strong id="returnSeatInfoText_${p}"></strong>
+      </div>
+    `;
+    container.appendChild(block);
+
+    const mapEl = document.getElementById(`returnSeatMap_${p}`);
+    let econHeaderAdded = false;
+
+    for (let row = 1; row <= config.totalRows; row++) {
+      const isExecRow = row <= config.execRows;
+      const cols   = isExecRow ? config.execCols   : config.econCols;
+      const aisles = isExecRow ? config.execAisles : config.econAisles;
+
+      if (!isExecRow && !econHeaderAdded) {
+        econHeaderAdded = true;
+        const divider = document.createElement('div');
+        divider.className = 'seat-section-label econ';
+        divider.textContent = `✈ Clase Económica — Filas ${config.execRows + 1}–${config.totalRows}`;
+        mapEl.appendChild(divider);
+        const econHeader = document.createElement('div');
+        econHeader.className = 'seat-row seat-header-row';
+        econHeader.innerHTML = `<div class="seat-row-number"></div>${buildHeaderRow(config.econCols, config.econAisles)}`;
+        mapEl.appendChild(econHeader);
+      }
+
+      const rowEl = document.createElement('div');
+      rowEl.className = `seat-row${isExecRow ? ' exec-row' : ''}`;
+      const rowNum = document.createElement('div');
+      rowNum.className = 'seat-row-number';
+      rowNum.textContent = row;
+      rowEl.appendChild(rowNum);
+
+      cols.forEach((col, colIdx) => {
+        if (aisles.includes(colIdx)) {
+          const aisle = document.createElement('div');
+          aisle.className = 'seat-aisle';
+          rowEl.appendChild(aisle);
+        }
+
+        const seatId       = `${row}${col}`;
+        const isOcc        = occupied.has(seatId);
+        const isSelByOther = checkout.selectedReturnSeats.some((s, idx) => s === seatId && idx !== p);
+        const seat         = document.createElement('div');
+        seat.className     = `seat${isExecRow ? ' exec-size' : ''}`;
+        seat.textContent   = col;
+
+        if (isOcc || isSelByOther) {
+          // ocupado
+        } else if (checkout.selectedReturnSeats[p] === seatId) {
+          seat.classList.add('selected');
+        } else if (isExecRow) {
+          seat.classList.add('executive', 'available');
+        } else {
+          seat.classList.add('available');
+        }
+
+        if (!isOcc && !isSelByOther) {
+          seat.addEventListener('click', () => {
+            selectSeat(p, seatId, isExecRow, 'return');
+            renderReturnSeatMap();
+          });
+        }
+        rowEl.appendChild(seat);
+      });
+      mapEl.appendChild(rowEl);
+    }
+
+    if (checkout.selectedReturnSeats[p]) {
+      const infoEl = document.getElementById(`returnSeatInfo_${p}`);
+      const textEl = document.getElementById(`returnSeatInfoText_${p}`);
+      infoEl.style.display = 'block';
+      const rowNum = parseInt(checkout.selectedReturnSeats[p]);
+      textEl.textContent = `${checkout.selectedReturnSeats[p]} · ${rowNum <= config.execRows ? 'Ejecutiva' : 'Económica'} · Fila ${rowNum}`;
+    }
+  }
+}
+
+// Override nextStep para step3 cuando es ida y vuelta
+const _originalNextStep = nextStep;
+function validateSeatsAndNext() {
+  const container  = document.getElementById('seatSelectorContainer');
+  const direction  = container?.dataset.direction || 'outbound';
+  const seatsArray = direction === 'outbound' ? checkout.selectedSeats : checkout.selectedReturnSeats;
+  const unselected = seatsArray.filter(s => !s);
+
+  if (unselected.length > 0) {
+    alert('Por favor selecciona asiento para todos los pasajeros.');
+    return;
+  }
+
+  if (direction === 'outbound' && checkout.isRound) {
+    nextStep();
+    renderReturnSeatMap();
+    return;
+  }
+
+  nextStep();
+  renderBaggageOptions();
+}
+
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initCheckout);
 } else {
