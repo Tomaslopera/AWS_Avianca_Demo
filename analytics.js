@@ -1,5 +1,3 @@
-// ─── HELPER BASE ──────────────────────────────────────────────────────────────
-
 function gaEvent(eventName, params = {}) {
   if (typeof gtag === 'undefined') return;
   gtag('event', eventName, params);
@@ -20,7 +18,6 @@ const GA_PAGE = (() => {
 // ─── EVENTOS GLOBALES (todas las páginas) ─────────────────────────────────────
 
 function initGlobalEvents() {
-  // Navbar links
   document.querySelectorAll('.nav-link').forEach(link => {
     link.addEventListener('click', () => {
       gaEvent('click_nav_link', {
@@ -31,7 +28,6 @@ function initGlobalEvents() {
     });
   });
 
-  // Cerrar sesión
   const logoutBtn = document.getElementById('logoutBtn');
   if (logoutBtn) {
     logoutBtn.addEventListener('click', () => {
@@ -45,7 +41,6 @@ function initGlobalEvents() {
 function initHomeEvents() {
   if (GA_PAGE !== 'home') return;
 
-  // Búsqueda de vuelos — esperar a que el form esté listo
   function attachSearchTracker() {
     const form = document.querySelector('.search-form');
     if (!form) return;
@@ -66,10 +61,9 @@ function initHomeEvents() {
         passengers:  parseInt(passengers),
         trip_type:   trip,
       });
-    }, true); // capture: true para que se dispare antes del redirect
+    }, true);
   }
 
-  // Offer cards (index)
   function attachOfferCards() {
     document.querySelectorAll('.offer-card').forEach(card => {
       card.addEventListener('click', () => {
@@ -79,7 +73,6 @@ function initHomeEvents() {
     });
   }
 
-  // Interest cards
   document.querySelectorAll('.interest-card').forEach(card => {
     card.addEventListener('click', () => {
       const title = card.querySelector('h4')?.textContent || '';
