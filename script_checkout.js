@@ -8,13 +8,14 @@
 
 const checkout = {
   params:            {},
-  flight:            null,    // vuelo de ida
-  returnFlight:      null,    // vuelo de vuelta (si aplica)
+  flight:            null,
+  returnFlight:      null,
   cabin:             'economica',
   passengers:        1,
   passengerData:     [],
-  selectedSeats:     [],      // asientos de ida por pasajero
-  selectedReturnSeats: [],    // asientos de vuelta por pasajero
+  selectedSeats:     [],
+  selectedReturnSeats: [],
+  
   baggage:           [],
   basePrice:         0,
   baggageTotal:      0,
