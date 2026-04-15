@@ -293,11 +293,6 @@ async function loadSiteHeader() {
   const entry = items[0];
   const get   = (key) => resolveField(entry.fields, key);
 
-  console.log('📋 siteHeader fields keys:', Object.keys(entry.fields));
-  console.log('📋 logo:', get('logo'));
-  console.log('📋 navLinks:', get('navLinks'));
-  console.log('📋 topBarLinks:', get('topBarLinks'));
-
   // Top bar
   const topBarLinks = get('topBarLinks');
   const topBar      = document.querySelector('.top-bar-right');
@@ -339,10 +334,6 @@ async function loadSiteFooter() {
   const entry = items[0];
   const get   = (key) => resolveField(entry.fields, key);
 
-  console.log('📋 siteFooter fields keys:', Object.keys(entry.fields));
-  console.log('📋 columns:', get('columns'));
-  console.log('📋 socialLinks:', get('socialLinks'));
-
   // Columns
   const columns    = get('columns');
   const footerGrid = document.querySelector('.footer-grid');
@@ -357,8 +348,6 @@ async function loadSiteFooter() {
         </ul>
       </div>
     `).join('');
-  } else {
-    console.warn('⚠️ columns:', columns, '| .footer-grid el:', footerGrid);
   }
 
   // Social
@@ -370,8 +359,6 @@ async function loadSiteFooter() {
         ${SOCIAL_ICONS[s.platform] ?? ''}
       </a>
     `).join('');
-  } else {
-    console.warn('⚠️ socialLinks:', socialLinks, '| .footer-social el:', footerSocial);
   }
 
   // Copyright

@@ -10,6 +10,26 @@ const state = {
   selectedReturn:   null,   // vuelo de vuelta seleccionado
 };
 
+// ─── HELPERS (previously in flights_data.js) ──────────────────────────────────
+
+function sortFlights(flights, criteria) {
+  const copy = [...flights];
+  switch (criteria) {
+    case 'precio':   return copy.sort((a, b) => a.prices.economica - b.prices.economica);
+    case 'duracion': return copy.sort((a, b) => {
+      const toMin = d => { const [h, m] = d.replace('h','').replace('m','').trim().split(' ').map(Number); return h*60+m; };
+      return toMin(a.duration) - toMin(b.duration);
+    });
+    case 'salida':  return copy.sort((a, b) => a.departure.localeCompare(b.departure));
+    case 'escalas': return copy.sort((a, b) => a.stops.length - b.stops.length);
+    default:        return copy;
+  }
+}
+
+function formatPrice(price) {
+  return `COP ${price.toLocaleString('es-CO')}`;
+}
+
 // ─── PARSE URL PARAMS ─────────────────────────────────────────────────────────
 
 function parseSearchParams() {
@@ -264,9 +284,10 @@ function updateContinueBar() {
 }
 
 function goToCheckout() {
+  sessionStorage.setItem('selectedOutbound', JSON.stringify(state.selectedOutbound));
+  sessionStorage.setItem('selectedReturn',   JSON.stringify(state.selectedReturn || null));
+
   const params = new URLSearchParams({
-    outboundId: state.selectedOutbound.id,
-    returnId:   state.selectedReturn ? state.selectedReturn.id : '',
     cabin:      state.cabin,
     passengers: state.params.passengers,
     dateStart:  state.params.dateStart || '',
@@ -468,15 +489,54 @@ function initModifyPanel() {
   }, 100);
 }
 
+// ─── API ───────────────────────────────────────────────────────────────────────
+
+const FLIGHTS_API = 'https://qxsi6eee0k.execute-api.us-east-1.amazonaws.com/flights';
+
+async function fetchFlights(origin, destination) {
+  const url = `${FLIGHTS_API}?origin=${origin}&destination=${destination}`;
+  const res  = await fetch(url);
+  if (!res.ok) throw new Error(`API error ${res.status}`);
+  const data   = await res.json();
+  const mapped = (data.flights || []).map(f => ({
+    id:                 f.id,
+    flightNumber:       f.flight_number,
+    origin:             f.origin_iata,
+    originCity:         f.origin_city,
+    originAirport:      f.origin_airport,
+    destination:        f.destination_iata,
+    destinationCity:    f.destination_city,
+    destinationAirport: f.destination_airport,
+    aircraft:           f.aircraft,
+    departure:          f.departure,
+    arrival:            f.arrival,
+    duration:           f.duration,
+    stops:              f.stops || [],
+    prices:    { economica: f.price_economy,  ejecutiva: f.price_business },
+    seatsLeft: { economica: f.seats_economy,  ejecutiva: f.seats_business },
+  }));
+  console.log(`✈️ API flights [${origin}→${destination}]: ${mapped.length} vuelos`, mapped);
+  return mapped;
+}
+
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 
-function initResultados() {
+async function initResultados() {
   const params = parseSearchParams();
   state.params = params;
 
-  state.outboundFlights = searchFlights(params.origin, params.destination);
-  if (params.trip === 'round') {
-    state.returnFlights = searchFlights(params.destination, params.origin);
+  try {
+    const fetches = [fetchFlights(params.origin, params.destination)];
+    if (params.trip === 'round') {
+      fetches.push(fetchFlights(params.destination, params.origin));
+    }
+    const results = await Promise.all(fetches);
+    state.outboundFlights = results[0];
+    state.returnFlights   = results[1] || [];
+  } catch (err) {
+    console.error('Error cargando vuelos:', err);
+    state.outboundFlights = [];
+    state.returnFlights   = [];
   }
 
   updateSummaryBar(params);

@@ -101,8 +101,6 @@ INSERT INTO airports (iata_code, name, city, country, country_code, type) VALUES
 ('CDG', 'Charles de Gaulle',               'París',               'Francia',       'FR', 'international'),
 ('LHR', 'Heathrow',                        'Londres',             'Reino Unido',   'GB', 'international')
 
-SELECT * FROM airports
-
 -- ─────────────────────────────────────────
 -- 2. AIRCRAFT
 -- ─────────────────────────────────────────
@@ -115,8 +113,6 @@ INSERT INTO aircraft (model, total_seats) VALUES
 ('Boeing 787-8',    242),
 ('Boeing 787-9',    296),
 ('ATR 72',           70);
-
-SELECT * FROM aircraft
 
 
 -- ─────────────────────────────────────────
@@ -417,9 +413,6 @@ VALUES
 -- ── BOG ↔ CDG (via MDE + BCN) ──────────────────────────────────────────────
 ('AV 4311', 'BOG', 'CDG', (SELECT id FROM aircraft WHERE model='Boeing 787-8'), '17:45', '18:45', 1140, 4200000, 8800000, 10,  2),
 ('AV 4312', 'CDG', 'BOG', (SELECT id FROM aircraft WHERE model='Boeing 787-8'), '14:30', '07:30', 1380, 4050000, 8600000, 10,  2);
-
-SELECT * FROM flights
-
 
 -- ─────────────────────────────────────────
 -- 4. FLIGHT_STOPS

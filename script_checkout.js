@@ -322,7 +322,8 @@ function generateOccupiedSeats(flight) {
   const count      = Math.max(0, totalSeats - available);
 
   let seed = 0;
-  for (let i = 0; i < flight.id.length; i++) seed += flight.id.charCodeAt(i);
+  const idStr = String(flight.id);
+  for (let i = 0; i < idStr.length; i++) seed += idStr.charCodeAt(i);
 
   let attempts = 0;
   while (occupied.size < count && attempts < count * 10) {
@@ -516,7 +517,7 @@ function validateSeatsAndNext() {
   // Si es ida y vuelta y acaba de seleccionar ida → ir a asientos vuelta
   if (direction === 'outbound' && checkout.isRound) {
     nextStep();
-    renderSeatMap('return');
+    renderReturnSeatMap();
     return;
   }
 
@@ -527,12 +528,16 @@ function validateSeatsAndNext() {
 
 // ─── STEP 4/5: BAGGAGE ────────────────────────────────────────────────────────
 
+function hasEjecutivaAccess() {
+  return checkout.cabin === 'ejecutiva' || (checkout.upgradeTotal || 0) > 0;
+}
+
 function renderBaggageOptions() {
   const container = document.getElementById('baggageContainer');
   container.innerHTML = '';
 
   if (checkout.baggage.length === 0) {
-    const defaultBaggage = checkout.cabin === 'ejecutiva' ? 'bag23' : 'hand';
+    const defaultBaggage = hasEjecutivaAccess() ? 'bag23' : 'hand';
     checkout.baggage = new Array(checkout.passengers).fill(defaultBaggage);
   }
 
@@ -571,8 +576,8 @@ function renderBaggageOptions() {
             </div>
           </div>
           <div style="display:flex;align-items:center;gap:12px;">
-            <div class="baggage-price ${checkout.cabin === 'ejecutiva' ? 'free' : ''}">
-              ${checkout.cabin === 'ejecutiva' ? 'Incluido' : '+ ' + formatPrice(BAGGAGE_PRICES.bag23)}
+            <div class="baggage-price ${hasEjecutivaAccess() ? 'free' : ''}">
+              ${hasEjecutivaAccess() ? 'Incluido' : '+ ' + formatPrice(BAGGAGE_PRICES.bag23)}
             </div>
             <div class="baggage-checkbox">${checkout.baggage[p] === 'bag23' ? '✓' : ''}</div>
           </div>
@@ -586,7 +591,9 @@ function renderBaggageOptions() {
             </div>
           </div>
           <div style="display:flex;align-items:center;gap:12px;">
-            <div class="baggage-price">+ ${formatPrice(BAGGAGE_PRICES.bag32)}</div>
+            <div class="baggage-price ${hasEjecutivaAccess() ? 'free' : ''}">
+              ${hasEjecutivaAccess() ? 'Incluido' : '+ ' + formatPrice(BAGGAGE_PRICES.bag32)}
+            </div>
             <div class="baggage-checkbox">${checkout.baggage[p] === 'bag32' ? '✓' : ''}</div>
           </div>
         </div>
@@ -612,7 +619,7 @@ function selectBaggage(passengerIdx, type, clickedEl) {
 
 function updateBaggageTotal() {
   checkout.baggageTotal = checkout.baggage.reduce((sum, type) => {
-    if (checkout.cabin === 'ejecutiva' && type === 'bag23') return sum;
+    if (hasEjecutivaAccess() && (type === 'bag23' || type === 'bag32')) return sum;
     return sum + (BAGGAGE_PRICES[type] || 0);
   }, 0);
 }
@@ -671,32 +678,61 @@ function generateBookingCode() {
 // Y llama a saveReservation(code, total) dentro de showConfirmation()
 
 function saveReservation(code, total) {
+  // Structured to match DB schema:
+  // bookings → booking_legs → passengers → passenger_seats + passenger_baggage
+  const isEjecutiva = hasEjecutivaAccess();
   const reservation = {
-    code,
-    date:          new Date().toLocaleDateString('es-CO'),
-    cabin:         checkout.cabin,
-    passengers:    checkout.passengers,
-    passengerData: checkout.passengerData,
-    outbound: {
-      flightNumber: checkout.flight.flightNumber,
-      origin:       checkout.flight.originCity,
-      destination:  checkout.flight.destinationCity,
-      departure:    checkout.flight.departure,
-      arrival:      checkout.flight.arrival,
-      date:         checkout.params.dateStart || 'Flexible',
-    },
-    return: checkout.returnFlight ? {
-      flightNumber: checkout.returnFlight.flightNumber,
-      origin:       checkout.returnFlight.originCity,
-      destination:  checkout.returnFlight.destinationCity,
-      departure:    checkout.returnFlight.departure,
-      arrival:      checkout.returnFlight.arrival,
-      date:         checkout.params.dateEnd || 'Flexible',
-    } : null,
-    seatsOutbound: [...checkout.selectedSeats],
-    seatsReturn:   [...checkout.selectedReturnSeats],
-    baggage:       [...checkout.baggage],
-    total,
+    // bookings
+    booking_code:      code,
+    status:            'confirmed',
+    cabin:             checkout.cabin,
+    passengers_count:  checkout.passengers,
+    contact_email:     checkout.passengerData[0]?.email    || '',
+    contact_phone:     checkout.passengerData[0]?.phone    || '',
+    total_cop:         total,
+    created_at:        new Date().toISOString(),
+
+    // booking_legs
+    legs: [
+      {
+        leg_type:    'outbound',
+        flight_id:   checkout.flight.id,
+        flight_date: checkout.params.dateStart || '',
+      },
+      ...(checkout.returnFlight ? [{
+        leg_type:    'return',
+        flight_id:   checkout.returnFlight.id,
+        flight_date: checkout.params.dateEnd || '',
+      }] : []),
+    ],
+
+    // passengers + passenger_seats + passenger_baggage
+    passengers: checkout.passengerData.map((p, i) => ({
+      // passengers
+      first_name:  p.firstName,
+      last_name:   p.lastName,
+      doc_type:    p.docType,
+      doc_number:  p.docNumber,
+      birth_date:  p.birthDate   || null,
+      nationality: p.nationality || null,
+      is_lead:     i === 0,
+
+      // passenger_seats per leg
+      seats: [
+        { leg_type: 'outbound', seat_code: checkout.selectedSeats[i]       || null, is_upgraded: false },
+        ...(checkout.returnFlight ? [{
+          leg_type: 'return',  seat_code: checkout.selectedReturnSeats[i]  || null, is_upgraded: false,
+        }] : []),
+      ],
+
+      // passenger_baggage
+      baggage: {
+        baggage_type: checkout.baggage[i],
+        price_cop:    (isEjecutiva && (checkout.baggage[i] === 'bag23' || checkout.baggage[i] === 'bag32'))
+                        ? 0
+                        : (BAGGAGE_PRICES[checkout.baggage[i]] || 0),
+      },
+    })),
   };
 
   const existing = JSON.parse(localStorage.getItem('avianca_reservations') || '[]');
@@ -826,14 +862,14 @@ function initCheckout() {
   checkout.params     = params;
   checkout.cabin      = params.cabin;
   checkout.passengers = params.passengers;
-  checkout.isRound    = !!params.returnId;
+  checkout.isRound    = params.trip === 'round' && !!JSON.parse(sessionStorage.getItem('selectedReturn') || 'null');
 
-  const flight = getFlightById(params.outboundId);
+  const flight = JSON.parse(sessionStorage.getItem('selectedOutbound') || 'null');
   if (!flight) { alert('No se encontró el vuelo.'); window.history.back(); return; }
   checkout.flight = flight;
 
   if (checkout.isRound) {
-    const returnFlight = getFlightById(params.returnId);
+    const returnFlight = JSON.parse(sessionStorage.getItem('selectedReturn') || 'null');
     if (returnFlight) checkout.returnFlight = returnFlight;
   }
 

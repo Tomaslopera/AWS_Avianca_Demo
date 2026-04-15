@@ -609,11 +609,13 @@ const init = () => {
     // Session
     initLogout();
 
-    // City autocomplete
-    setupCityFilters("originDropdown","originFilter");
-    setupCityFilters("destinationDropdown","destinationFilter");
-    setupCityInput("originInput","originDropdown");
-    setupCityInput("destinationInput","destinationDropdown");
+    // City autocomplete (only on pages that have the search dropdowns)
+    if (document.getElementById('originDropdown')) {
+      setupCityFilters("originDropdown","originFilter");
+      setupCityFilters("destinationDropdown","destinationFilter");
+      setupCityInput("originInput","originDropdown");
+      setupCityInput("destinationInput","destinationDropdown");
+    }
     
     // UI enhancements
     initHeaderScroll();
