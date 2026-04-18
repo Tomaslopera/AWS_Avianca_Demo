@@ -663,7 +663,7 @@ function confirmPurchase() {
   btn.textContent = 'Procesando...';
   btn.disabled = true;
 
-  setTimeout(showConfirmation, 1500);
+  saveReservation(btn);
 }
 
 // ─── CONFIRMATION ─────────────────────────────────────────────────────────────
@@ -673,42 +673,41 @@ function generateBookingCode() {
   return Array.from({ length: 6 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
 }
 
-// ─── GUARDAR RESERVA EN localStorage ─────────────────────────────────────────
-// Pega esta función en script_checkout.js ANTES de showConfirmation()
-// Y llama a saveReservation(code, total) dentro de showConfirmation()
+// ─── BOOKINGS API ─────────────────────────────────────────────────────────────
 
-function saveReservation(code, total) {
-  // Structured to match DB schema:
-  // bookings → booking_legs → passengers → passenger_seats + passenger_baggage
+function toISODate(ddmmyyyy) {
+  if (!ddmmyyyy) return new Date().toISOString().slice(0, 10);
+  const [d, m, y] = ddmmyyyy.split('/');
+  return `${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
+}
+
+async function saveReservation(btn) {
+  const code       = generateBookingCode();
+  const total      = checkout.basePrice + checkout.baggageTotal + (checkout.upgradeTotal || 0);
   const isEjecutiva = hasEjecutivaAccess();
-  const reservation = {
-    // bookings
-    booking_code:      code,
-    status:            'confirmed',
-    cabin:             checkout.cabin,
-    passengers_count:  checkout.passengers,
-    contact_email:     checkout.passengerData[0]?.email    || '',
-    contact_phone:     checkout.passengerData[0]?.phone    || '',
-    total_cop:         total,
-    created_at:        new Date().toISOString(),
 
-    // booking_legs
+  const payload = {
+    booking_code:     code,
+    cabin:            checkout.cabin,
+    passengers_count: checkout.passengers,
+    contact_email:    checkout.passengerData[0]?.email || '',
+    contact_phone:    checkout.passengerData[0]?.phone || '',
+    total_cop:        total,
+
     legs: [
       {
         leg_type:    'outbound',
         flight_id:   checkout.flight.id,
-        flight_date: checkout.params.dateStart || '',
+        flight_date: toISODate(checkout.params.dateStart),
       },
-      ...(checkout.returnFlight ? [{
+      ...(checkout.isRound ? [{
         leg_type:    'return',
         flight_id:   checkout.returnFlight.id,
-        flight_date: checkout.params.dateEnd || '',
+        flight_date: toISODate(checkout.params.dateEnd),
       }] : []),
     ],
 
-    // passengers + passenger_seats + passenger_baggage
     passengers: checkout.passengerData.map((p, i) => ({
-      // passengers
       first_name:  p.firstName,
       last_name:   p.lastName,
       doc_type:    p.docType,
@@ -716,16 +715,18 @@ function saveReservation(code, total) {
       birth_date:  p.birthDate   || null,
       nationality: p.nationality || null,
       is_lead:     i === 0,
-
-      // passenger_seats per leg
       seats: [
-        { leg_type: 'outbound', seat_code: checkout.selectedSeats[i]       || null, is_upgraded: false },
-        ...(checkout.returnFlight ? [{
-          leg_type: 'return',  seat_code: checkout.selectedReturnSeats[i]  || null, is_upgraded: false,
+        {
+          leg_type:    'outbound',
+          seat_code:   checkout.selectedSeats[i] || null,
+          is_upgraded: (checkout.seatUpgrades[`outbound_${i}`] || 0) > 0,
+        },
+        ...(checkout.isRound ? [{
+          leg_type:    'return',
+          seat_code:   checkout.selectedReturnSeats[i] || null,
+          is_upgraded: false,
         }] : []),
       ],
-
-      // passenger_baggage
       baggage: {
         baggage_type: checkout.baggage[i],
         price_cop:    (isEjecutiva && (checkout.baggage[i] === 'bag23' || checkout.baggage[i] === 'bag32'))
@@ -735,16 +736,30 @@ function saveReservation(code, total) {
     })),
   };
 
-  const existing = JSON.parse(localStorage.getItem('avianca_reservations') || '[]');
-  existing.push(reservation);
-  localStorage.setItem('avianca_reservations', JSON.stringify(existing));
+  try {
+    const res = await fetch('https://qxsi6eee0k.execute-api.us-east-1.amazonaws.com/bookings', {
+      method:  'POST',
+      headers: {
+        'Content-Type':  'application/json',
+        'Authorization': localStorage.getItem('idToken') || '',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (res.status === 201) {
+      showConfirmation(code, total);
+    } else {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || `Error ${res.status}`);
+    }
+  } catch (err) {
+    alert(`No se pudo completar la reserva: ${err.message}`);
+    btn.textContent = 'Confirmar compra';
+    btn.disabled = false;
+  }
 }
 
-function showConfirmation() {
-  const code  = generateBookingCode();
-  const total = checkout.basePrice + checkout.baggageTotal + (checkout.upgradeTotal || 0);
-  saveReservation(code, total);
-
+function showConfirmation(code, total) {
   document.getElementById('bookingCode').textContent = code;
 
   const mainPax    = checkout.passengerData[0];

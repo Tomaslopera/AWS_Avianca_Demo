@@ -1,12 +1,13 @@
 /**
  * script_tu_reserva.js
- * Busca reservas guardadas en localStorage por código + documento
- * Migrable a backend: reemplazar localStorage.getItem por fetch('/api/reservations')
+ * Consulta reservas desde la API (GET /bookings/{code})
  */
+
+const API_BASE = 'https://qxsi6eee0k.execute-api.us-east-1.amazonaws.com';
 
 // ─── BUSCAR RESERVA ───────────────────────────────────────────────────────────
 
-document.getElementById('reservationForm').addEventListener('submit', (e) => {
+document.getElementById('reservationForm').addEventListener('submit', async (e) => {
   e.preventDefault();
 
   const inputs    = document.querySelectorAll('#reservationForm input[type="text"]');
@@ -18,45 +19,117 @@ document.getElementById('reservationForm').addEventListener('submit', (e) => {
     return;
   }
 
-  const reservations = JSON.parse(localStorage.getItem('avianca_reservations') || '[]');
-  const found = reservations.find(r =>
-    r.code === code &&
-    r.passengerData?.some(p => p.docNumber === docNumber)
-  );
+  const btn = e.target.querySelector('button[type="submit"]');
+  btn.textContent = 'Buscando...';
+  btn.disabled    = true;
 
-  if (!found) {
-    showError('No encontramos una reserva con ese código y documento. Verifica los datos e intenta de nuevo.');
-    return;
+  try {
+    const res = await fetch(`${API_BASE}/bookings/${code}`, {
+      headers: { 'Authorization': localStorage.getItem('idToken') || '' },
+    });
+
+    if (res.status === 404) {
+      showError('No encontramos una reserva con ese código. Verifica los datos e intenta de nuevo.');
+      return;
+    }
+    if (!res.ok) throw new Error(`Error ${res.status}`);
+
+    const data = await res.json();
+    const rows = data.booking || [];
+
+    if (!rows.length) {
+      showError('No encontramos una reserva con ese código. Verifica los datos e intenta de nuevo.');
+      return;
+    }
+
+    hideError();
+    renderReservationResult(rows);
+  } catch (err) {
+    showError(`Error al consultar: ${err.message}`);
+  } finally {
+    btn.textContent = 'Buscar reserva';
+    btn.disabled    = false;
   }
-
-  hideError();
-  renderReservationResult(found);
 });
+
+// ─── PARSEAR RESPUESTA API ─────────────────────────────────────────────────────
+
+function parseApiBooking(rows) {
+  const first       = rows[0];
+  const outboundRow = rows.find(r => r.leg_type === 'outbound');
+  const returnRow   = rows.find(r => r.leg_type === 'return');
+
+  // Unique passengers keyed by name (rows are flat: passenger × leg)
+  const passengerMap = new Map();
+  rows.forEach(r => {
+    const key = `${r.first_name}|${r.last_name}`;
+    if (!passengerMap.has(key)) {
+      passengerMap.set(key, {
+        first_name:    r.first_name,
+        last_name:     r.last_name,
+        is_lead:       r.is_lead,
+        baggage_type:  r.baggage_type,
+        baggage_price: r.baggage_price,
+        seats:         {},
+      });
+    }
+    passengerMap.get(key).seats[r.leg_type] = r.seat_code;
+  });
+
+  const passengers = [...passengerMap.values()];
+
+  const formatDate = iso => {
+    if (!iso) return '';
+    const [y, m, d] = iso.split('-');
+    return `${d}/${m}/${y}`;
+  };
+
+  const formatCreated = iso => {
+    if (!iso) return '';
+    return new Date(iso).toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
+  };
+
+  const buildLeg = row => row ? {
+    flightNumber: row.flight_number,
+    origin:       `${row.origin_city} (${row.origin_iata})`,
+    destination:  `${row.destination_city} (${row.destination_iata})`,
+    departure:    row.departure,
+    arrival:      row.arrival,
+    date:         formatDate(row.flight_date),
+  } : null;
+
+  return {
+    code:          first.booking_code,
+    status:        first.status,
+    cabin:         first.cabin,
+    passengers:    first.passengers_count,
+    email:         first.contact_email,
+    total:         first.total_cop,
+    date:          formatCreated(first.created_at),
+    outbound:      buildLeg(outboundRow),
+    return:        buildLeg(returnRow),
+    seatsOutbound: passengers.map(p => p.seats['outbound']).filter(Boolean),
+    seatsReturn:   passengers.map(p => p.seats['return']).filter(Boolean),
+    passengerList: passengers,
+  };
+}
 
 // ─── MOSTRAR RESULTADO ────────────────────────────────────────────────────────
 
-function renderReservationResult(r) {
+function renderReservationResult(rows) {
+  const r             = parseApiBooking(rows);
   const resultSection = document.getElementById('reservationResult');
   resultSection.classList.remove('hidden');
 
   const cabinLabel = r.cabin === 'economica' ? 'Económica' : 'Ejecutiva';
-  const mainPax    = r.passengerData[0];
   const totalFmt   = `COP ${r.total.toLocaleString('es-CO')}`;
+  const leadPax    = r.passengerList.find(p => p.is_lead) || r.passengerList[0];
 
-  const baggageLabels = {
-    hand:  'Equipaje de mano',
-    bag23: 'Maleta 23kg',
-    bag32: 'Maleta 32kg',
-  };
+  const baggageLabels = { hand: 'Solo equipaje de mano', bag23: 'Maleta 23 kg', bag32: 'Maleta 32 kg' };
 
-  const baggageInfo = r.baggage?.length
-    ? r.baggage.map((b, i) => {
-        const name = r.passengerData[i]
-          ? `${r.passengerData[i].firstName} ${r.passengerData[i].lastName}`
-          : `Pasajero ${i + 1}`;
-        return `<div style="font-size:13px;color:#555;">${name}: ${baggageLabels[b] || b}</div>`;
-      }).join('')
-    : '';
+  const baggageInfo = r.passengerList.map(p =>
+    `<div style="font-size:13px;color:#555;">${p.first_name} ${p.last_name}: ${baggageLabels[p.baggage_type] || p.baggage_type}</div>`
+  ).join('');
 
   resultSection.querySelector('.result-card').innerHTML = `
 
@@ -74,11 +147,11 @@ function renderReservationResult(r) {
     <div class="reservation-info-grid">
       <div class="reservation-info-item">
         <div class="info-label">Pasajero principal</div>
-        <div class="info-value">${mainPax.firstName} ${mainPax.lastName}</div>
+        <div class="info-value">${leadPax.first_name} ${leadPax.last_name}</div>
       </div>
       <div class="reservation-info-item">
-        <div class="info-label">Documento</div>
-        <div class="info-value">${mainPax.docType} ${mainPax.docNumber}</div>
+        <div class="info-label">Estado</div>
+        <div class="info-value">${r.status === 'confirmed' ? 'Confirmada' : r.status}</div>
       </div>
       <div class="reservation-info-item">
         <div class="info-label">Pasajeros</div>
@@ -94,7 +167,7 @@ function renderReservationResult(r) {
       </div>
       <div class="reservation-info-item">
         <div class="info-label">Contacto</div>
-        <div class="info-value">${mainPax.email || '—'}</div>
+        <div class="info-value">${r.email || '—'}</div>
       </div>
     </div>
 
@@ -117,7 +190,7 @@ function renderReservationResult(r) {
       </div>
       <div class="reservation-flight-meta">
         <span>${r.outbound.date}</span>
-        ${r.seatsOutbound?.length ? `<span>Asientos: ${r.seatsOutbound.join(', ')}</span>` : ''}
+        ${r.seatsOutbound.length ? `<span>Asientos: ${r.seatsOutbound.join(', ')}</span>` : ''}
       </div>
     </div>
 
@@ -141,7 +214,7 @@ function renderReservationResult(r) {
       </div>
       <div class="reservation-flight-meta">
         <span>${r.return.date}</span>
-        ${r.seatsReturn?.length ? `<span>Asientos: ${r.seatsReturn.join(', ')}</span>` : ''}
+        ${r.seatsReturn.length ? `<span>Asientos: ${r.seatsReturn.join(', ')}</span>` : ''}
       </div>
     </div>` : ''}
 
@@ -167,11 +240,11 @@ function showError(msg) {
   let errorEl = document.getElementById('reservationError');
   if (!errorEl) {
     errorEl = document.createElement('div');
-    errorEl.id = 'reservationError';
+    errorEl.id        = 'reservationError';
     errorEl.className = 'reservation-error';
     document.querySelector('.reservation-card').appendChild(errorEl);
   }
-  errorEl.textContent = msg;
+  errorEl.textContent  = msg;
   errorEl.style.display = 'block';
 }
 
