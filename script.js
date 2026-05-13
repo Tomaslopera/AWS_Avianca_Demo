@@ -669,3 +669,278 @@ window.AviancaFrontend = {
     hideLoadingState,
     init
 };
+// =============================================
+// RECOMMENDATION WIZARD — ML Destination AI
+// =============================================
+const initRecommendationWizard = () => {
+    const overlay  = document.getElementById('recModalOverlay');
+    const btnOpen  = document.getElementById('openRecWizard');
+    const btnClose = document.getElementById('recModalClose');
+    if (!overlay || !btnOpen) return;
+
+    const questions = [
+        {
+            field: 'q1_paisaje',
+            text: '¿Qué tipo de paisaje prefieres?',
+            options: [
+                { value: 'playa',   label: 'Playa',   icon: '🏖️' },
+                { value: 'montaña', label: 'Montaña', icon: '⛰️' },
+                { value: 'ciudad',  label: 'Ciudad',  icon: '🏙️' },
+                { value: 'selva',   label: 'Selva',   icon: '🌿' },
+            ],
+        },
+        {
+            field: 'q2_actividad',
+            text: '¿Qué te gusta hacer en vacaciones?',
+            options: [
+                { value: 'descansar', label: 'Descansar', icon: '😌' },
+                { value: 'explorar',  label: 'Explorar',  icon: '🧭' },
+                { value: 'fiesta',    label: 'Fiesta',    icon: '🎉' },
+                { value: 'cultura',   label: 'Cultura',   icon: '🏛️' },
+            ],
+        },
+        {
+            field: 'q3_clima',
+            text: '¿Cómo prefieres el clima?',
+            options: [
+                { value: 'caliente',  label: 'Caliente',  icon: '☀️' },
+                { value: 'frio',      label: 'Frío',      icon: '❄️' },
+                { value: 'templado',  label: 'Templado',  icon: '🌤️' },
+            ],
+            cols: 3,
+        },
+        {
+            field: 'q4_gastro',
+            text: '¿Qué gastronomía te atrae?',
+            options: [
+                { value: 'local',          label: 'Local típica',   icon: '🍲' },
+                { value: 'internacional',  label: 'Internacional',  icon: '🌍' },
+                { value: 'mariscos',       label: 'Mariscos',       icon: '🦞' },
+                { value: 'parrilla',       label: 'Parrilla',       icon: '🥩' },
+            ],
+        },
+        {
+            field: 'q5_compania',
+            text: '¿Con quién viajas?',
+            options: [
+                { value: 'solo',    label: 'Solo',    icon: '🧍' },
+                { value: 'pareja',  label: 'Pareja',  icon: '👫' },
+                { value: 'familia', label: 'Familia', icon: '👨‍👩‍👧' },
+                { value: 'amigos',  label: 'Amigos',  icon: '👥' },
+            ],
+        },
+        {
+            field: 'q6_duracion',
+            text: '¿Cuánto dura tu viaje ideal?',
+            options: [
+                { value: 'finde',       label: 'Un fin de semana',  icon: '⚡' },
+                { value: 'semana',      label: '1 semana',          icon: '📅' },
+                { value: 'dos_semanas', label: 'Más de 2 semanas',  icon: '🗓️' },
+            ],
+            cols: 3,
+        },
+        {
+            field: 'q7_nocturna',
+            text: '¿Qué tanto te importa la vida nocturna?',
+            options: [
+                { value: 'mucho', label: 'Mucho', icon: '🌃' },
+                { value: 'algo',  label: 'Algo',  icon: '🌆' },
+                { value: 'nada',  label: 'Nada',  icon: '🌙' },
+            ],
+            cols: 3,
+        },
+        {
+            field: 'q8_tipo',
+            text: '¿Prefieres destino nacional o internacional?',
+            options: [
+                { value: 'nacional',       label: 'Nacional',       icon: '🇨🇴' },
+                { value: 'internacional',  label: 'Internacional',  icon: '✈️' },
+            ],
+            cols: 3,
+        },
+        {
+            field: 'q9_presupuesto',
+            text: '¿Cuál es tu presupuesto aproximado?',
+            options: [
+                { value: 'bajo',  label: 'Menos de $1M COP',  icon: '💰' },
+                { value: 'medio', label: '$1M – $3M COP',      icon: '💳' },
+                { value: 'alto',  label: 'Más de $3M COP',    icon: '💎' },
+            ],
+            cols: 3,
+        },
+        {
+            field: 'q10_aventura',
+            text: '¿Qué tan aventurero eres?',
+            options: [
+                { value: 'aventurero', label: 'Muy aventurero',       icon: '🧗' },
+                { value: 'moderado',   label: 'Moderado',             icon: '🚶' },
+                { value: 'comodo',     label: 'Prefiero comodidad',   icon: '🛋️' },
+            ],
+            cols: 3,
+        },
+    ];
+
+    let currentStep = 0;
+    const answers = {};
+
+    const wizardEl  = document.getElementById('recWizard');
+    const loadingEl = document.getElementById('recLoading');
+    const resultsEl = document.getElementById('recResults');
+    const questionArea  = document.getElementById('recQuestionArea');
+    const progressFill  = document.getElementById('recProgressFill');
+    const progressLabel = document.getElementById('recProgressLabel');
+    const btnBack = document.getElementById('recBtnBack');
+    const btnNext = document.getElementById('recBtnNext');
+
+    const openModal = () => {
+        currentStep = 0;
+        Object.keys(answers).forEach(k => delete answers[k]);
+        showWizard();
+        renderStep();
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    };
+
+    const closeModal = () => {
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+    };
+
+    const showWizard  = () => { wizardEl.style.display=''; loadingEl.style.display='none'; resultsEl.style.display='none'; };
+    const showLoading = () => { wizardEl.style.display='none'; loadingEl.style.display=''; resultsEl.style.display='none'; };
+    const showResults = () => { wizardEl.style.display='none'; loadingEl.style.display='none'; resultsEl.style.display=''; };
+
+    const renderStep = () => {
+        const q = questions[currentStep];
+        const pct = ((currentStep + 1) / questions.length) * 100;
+        progressFill.style.width = pct + '%';
+        progressLabel.textContent = `Pregunta ${currentStep + 1} de ${questions.length}`;
+        btnBack.disabled = currentStep === 0;
+
+        const isLast = currentStep === questions.length - 1;
+        btnNext.innerHTML = isLast
+            ? `Descubrir mi destino <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 19-7z"/></svg>`
+            : `Siguiente <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>`;
+
+        const colsClass = q.cols ? ` cols-${q.cols}` : '';
+        const optionsHTML = q.options.map(opt => {
+            const sel = answers[q.field] === opt.value ? ' selected' : '';
+            return `<button type="button" class="rec-option-btn${sel}" data-value="${opt.value}">
+                <span style="font-size:20px">${opt.icon}</span>
+                <span>${opt.label}</span>
+                <svg class="rec-opt-check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            </button>`;
+        }).join('');
+
+        questionArea.innerHTML = `
+            <p class="rec-question-text">${q.text}</p>
+            <div class="rec-options-grid${colsClass}">${optionsHTML}</div>
+        `;
+
+        updateNextBtn();
+
+        questionArea.querySelectorAll('.rec-option-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                answers[q.field] = btn.dataset.value;
+                questionArea.querySelectorAll('.rec-option-btn').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                updateNextBtn();
+            });
+        });
+    };
+
+    const updateNextBtn = () => {
+        const q = questions[currentStep];
+        btnNext.disabled = !answers[q.field];
+    };
+
+    const goNext = async () => {
+        if (currentStep < questions.length - 1) {
+            currentStep++;
+            renderStep();
+        } else {
+            await submitRecommendation();
+        }
+    };
+
+    const goBack = () => {
+        if (currentStep > 0) { currentStep--; renderStep(); }
+    };
+
+    const submitRecommendation = async () => {
+        showLoading();
+        try {
+            const body = {
+                q1_paisaje:     answers.q1_paisaje,
+                q2_actividad:   answers.q2_actividad,
+                q3_clima:       answers.q3_clima,
+                q4_gastro:      answers.q4_gastro,
+                q5_compania:    answers.q5_compania,
+                q6_duracion:    answers.q6_duracion,
+                q7_nocturna:    answers.q7_nocturna,
+                q8_tipo:        answers.q8_tipo,
+                q9_presupuesto: answers.q9_presupuesto,
+                q10_aventura:   answers.q10_aventura,
+            };
+
+            const res = await fetch('https://qxsi6eee0k.execute-api.us-east-1.amazonaws.com/recommendations', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body),
+            });
+
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            renderResults(data);
+        } catch (err) {
+            console.error('Recommendation API error:', err);
+            showWizard();
+            currentStep = questions.length - 1;
+            renderStep();
+            alert('No pudimos obtener recomendaciones en este momento. Por favor intenta de nuevo.');
+        }
+    };
+
+    const medals = ['🥇', '🥈', '🥉'];
+    const rankClass = ['rank-1', 'rank-2', 'rank-3'];
+
+    const renderResults = (data) => {
+        const cards = document.getElementById('recResultsCards');
+        const maxScore = data.top3[0]?.score || 1;
+
+        cards.innerHTML = data.top3.map((dest, i) => {
+            const scorePct  = Math.round((dest.score / maxScore) * 100);
+            const barWidth  = scorePct < 1 ? 4 : scorePct;
+            const scoreLabel = scorePct < 1 ? '< 1%' : `${scorePct}%`;
+            const searchUrl = `destino.html?city=${encodeURIComponent(dest.ciudad)}`;
+            return `
+                <a href="${searchUrl}" class="rec-result-card ${rankClass[i]}">
+                    <div class="rec-rank-medal">${medals[i]}</div>
+                    <div class="rec-card-info">
+                        <div class="rec-card-city">${dest.ciudad}</div>
+                        <div class="rec-card-iata">${dest.destino}</div>
+                        <div class="rec-score-wrap">
+                            <div class="rec-score-bar">
+                                <div class="rec-score-fill" style="width:${barWidth}%"></div>
+                            </div>
+                            <span class="rec-score-pct">${scoreLabel}</span>
+                        </div>
+                    </div>
+                    <svg class="rec-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                </a>
+            `;
+        }).join('');
+
+        showResults();
+    };
+
+    btnOpen.addEventListener('click', openModal);
+    btnClose.addEventListener('click', closeModal);
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+    btnNext.addEventListener('click', goNext);
+    btnBack.addEventListener('click', goBack);
+    document.getElementById('recBtnRetry').addEventListener('click', () => { showWizard(); currentStep = 0; Object.keys(answers).forEach(k => delete answers[k]); renderStep(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+};
+
+initRecommendationWizard();

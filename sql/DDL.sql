@@ -1,8 +1,5 @@
 USE avianca_flights;
 
--- ─────────────────────────────────────────
--- 1. AIRPORTS
--- ─────────────────────────────────────────
 CREATE TABLE airports (
   iata_code     CHAR(3)      NOT NULL,
   name          VARCHAR(100) NOT NULL,
@@ -13,9 +10,6 @@ CREATE TABLE airports (
   PRIMARY KEY (iata_code)
 );
 
--- ─────────────────────────────────────────
--- 2. AIRCRAFT
--- ─────────────────────────────────────────
 CREATE TABLE aircraft (
   id            SMALLINT    NOT NULL AUTO_INCREMENT,
   model         VARCHAR(50) NOT NULL,
@@ -24,10 +18,6 @@ CREATE TABLE aircraft (
   UNIQUE KEY uq_aircraft_model (model)
 );
 
--- ─────────────────────────────────────────
--- 3. FLIGHTS
--- Un vuelo = un horario recurrente diario
--- ─────────────────────────────────────────
 CREATE TABLE flights (
   id              INT         NOT NULL AUTO_INCREMENT,
   flight_number   VARCHAR(10) NOT NULL,

@@ -228,6 +228,109 @@
         </div>
     </section>
 
+    <!-- RECOMMENDATION SECTION — ML-powered destination discovery -->
+    <section class="recommendation-section">
+        <div class="container">
+            <div class="rec-banner">
+                <div class="rec-banner-content">
+                    <div class="rec-banner-badge">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        IA · Recomendaciones personalizadas
+                    </div>
+                    <h3>¿No sabes a dónde volar?</h3>
+                    <p>Responde 10 preguntas rápidas y nuestro modelo de inteligencia artificial encontrará tu destino perfecto.</p>
+                    <button class="btn-rec-start" id="openRecWizard">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 19-7z"/></svg>
+                        Descubrir mi destino
+                    </button>
+                </div>
+                <div class="rec-banner-visual">
+                    <svg width="160" height="160" viewBox="0 0 200 200" fill="none">
+                        <circle cx="100" cy="100" r="80" stroke="rgba(255,255,255,0.06)" stroke-width="2"/>
+                        <circle cx="100" cy="100" r="55" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+                        <circle cx="100" cy="100" r="30" fill="rgba(255,255,255,0.06)"/>
+                        <path d="M80 100 L130 80 L115 100 L130 120 Z" fill="rgba(255,255,255,0.25)" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" stroke-linejoin="round"/>
+                        <path d="M115 100 L95 106 L80 100" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+                        <circle cx="55" cy="70" r="4" fill="rgba(255,255,255,0.3)"/>
+                        <circle cx="150" cy="130" r="3" fill="rgba(255,255,255,0.2)"/>
+                        <circle cx="145" cy="65" r="5" fill="rgba(255,255,255,0.2)"/>
+                        <circle cx="60" cy="140" r="3" fill="rgba(255,255,255,0.3)"/>
+                        <line x1="55" y1="70" x2="80" y2="100" stroke="rgba(255,255,255,0.1)" stroke-width="1" stroke-dasharray="4 4"/>
+                        <line x1="145" y1="65" x2="130" y2="80" stroke="rgba(255,255,255,0.1)" stroke-width="1" stroke-dasharray="4 4"/>
+                        <line x1="150" y1="130" x2="130" y2="120" stroke="rgba(255,255,255,0.1)" stroke-width="1" stroke-dasharray="4 4"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- RECOMMENDATION WIZARD MODAL -->
+    <div class="rec-modal-overlay" id="recModalOverlay">
+        <div class="rec-modal" role="dialog" aria-modal="true" aria-labelledby="recModalTitle">
+            <button class="rec-modal-close" id="recModalClose" aria-label="Cerrar">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+
+            <!-- WIZARD -->
+            <div class="rec-wizard" id="recWizard">
+                <div class="rec-wizard-header">
+                    <div class="rec-wizard-branding">
+                        <svg width="82" height="22" viewBox="0 0 120 32" fill="none">
+                            <text x="0" y="24" font-family="Inter" font-size="28" font-weight="700" fill="#E30613" style="letter-spacing:-0.5px">avianca</text>
+                        </svg>
+                        <span class="rec-ai-badge">IA</span>
+                    </div>
+                    <div class="rec-progress-wrap">
+                        <div class="rec-progress-track">
+                            <div class="rec-progress-fill" id="recProgressFill" style="width:10%"></div>
+                        </div>
+                        <span class="rec-progress-label" id="recProgressLabel">Pregunta 1 de 10</span>
+                    </div>
+                </div>
+
+                <div class="rec-question-area" id="recQuestionArea">
+                    <!-- Filled dynamically -->
+                </div>
+
+                <div class="rec-wizard-footer">
+                    <button class="rec-btn-back" id="recBtnBack">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+                        Anterior
+                    </button>
+                    <button class="rec-btn-next" id="recBtnNext" disabled>
+                        Siguiente
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- LOADING -->
+            <div class="rec-loading" id="recLoading" style="display:none">
+                <div class="rec-loading-plane">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#E30613" stroke-width="1.5"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 19-7z"/></svg>
+                </div>
+                <p class="rec-loading-title">Analizando tus preferencias...</p>
+                <p class="rec-loading-sub">Nuestro modelo <strong>SVD + KNN</strong> está procesando tus respuestas</p>
+                <div class="rec-loading-dots"><span></span><span></span><span></span></div>
+            </div>
+
+            <!-- RESULTS -->
+            <div class="rec-results" id="recResults" style="display:none">
+                <div class="rec-results-header">
+                    <h3 id="recModalTitle">Tus destinos ideales</h3>
+                    <p>Basados en tus preferencias, estos son los destinos que más se adaptan a ti:</p>
+                </div>
+                <div class="rec-results-cards" id="recResultsCards"></div>
+                <div class="rec-results-actions">
+                    <button class="rec-btn-retry" id="recBtnRetry">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
+                        Volver a intentar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- PREPARE SECTION — contenido desde prepareCard en Contentful -->
     <section class="prepare-section">
         <div class="container">

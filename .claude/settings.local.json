@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./deploy.sh:*)",
+      "Bash(git push:*)",
+      "WebFetch(domain:qxsi6eee0k.execute-api.us-east-1.amazonaws.com)"
+    ]
+  }
+}

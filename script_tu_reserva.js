@@ -4,6 +4,7 @@
  */
 
 const API_BASE = 'https://qxsi6eee0k.execute-api.us-east-1.amazonaws.com';
+const BOOKINGS_PATH = 'lambda-bookings';
 
 // ─── BUSCAR RESERVA ───────────────────────────────────────────────────────────
 
@@ -24,7 +25,7 @@ document.getElementById('reservationForm').addEventListener('submit', async (e) 
   btn.disabled    = true;
 
   try {
-    const res = await fetch(`${API_BASE}/bookings/${code}`, {
+    const res = await fetch(`${API_BASE}/${BOOKINGS_PATH}/${code}`, {
       headers: { 'Authorization': localStorage.getItem('idToken') || '' },
     });
 

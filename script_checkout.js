@@ -737,7 +737,7 @@ async function saveReservation(btn) {
   };
 
   try {
-    const res = await fetch('https://qxsi6eee0k.execute-api.us-east-1.amazonaws.com/bookings', {
+    const res = await fetch('https://qxsi6eee0k.execute-api.us-east-1.amazonaws.com/lambda-bookings', {
       method:  'POST',
       headers: {
         'Content-Type':  'application/json',
