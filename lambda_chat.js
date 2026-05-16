@@ -60,27 +60,34 @@ Haz estas 10 preguntas una por una:
 6. ¿Cuánto tiempo tienes? → un fin de semana / una semana / más de dos semanas
 7. ¿Qué tanto te importa la vida nocturna? → mucho / algo / nada
 8. ¿Prefieres destino nacional o internacional? → nacional / internacional
-9. ¿Cuál es tu presupuesto? → menos de 1M COP / entre 1M y 3M COP / más de 3M COP
+9. ¿Cuál es tu presupuesto? → menos de un millón / entre uno y tres millones / más de tres millones
 10. ¿Qué tan aventurero eres? → muy aventurero / moderado / prefiero la comodidad
 
-Cuando tengas las 10 respuestas llama execute_action con action "get_recommendations" y los valores mapeados.
+Cuando tengas las 10 respuestas llama execute_action con:
+- context: un resumen detallado en español con todas las preferencias del usuario.
 
-Mapeo:
-- "local típica" → "local"
-- "muy aventurero" → "aventurero"
-- "prefiero la comodidad" → "comodo"
-- "un fin de semana" → "finde"
-- "una semana" → "semana"
-- "más de dos semanas" → "dos_semanas"
-- "menos de 1M COP" → "bajo"
-- "entre 1M y 3M COP" → "medio"
-- "más de 3M COP" → "alto"
-- "frío" → "frio"
+Ejemplo:
+"El usuario quiere recomendaciones de destinos. Sus preferencias son: paisaje de playa, actividad de fiesta, clima caliente, gastronomía de mariscos, viaja con amigos, duración de una semana, vida nocturna muy importante, destino nacional, presupuesto bajo, perfil moderadamente aventurero."
+
+Mapeo interno de respuestas (NO mencionar al usuario):
+- "local típica" → local
+- "muy aventurero" → aventurero
+- "prefiero la comodidad" → comodo
+- "un fin de semana" → finde
+- "una semana" → semana
+- "más de dos semanas" → dos_semanas
+- "menos de un millón" → bajo
+- "entre uno y tres millones" → medio
+- "más de tres millones" → alto
+- "frío" → frio
 
 ## FLUJO PARA CONSULTAR RESERVA
-1. Pide el código de reserva (6 caracteres, ej: XK29TF)
-2. Llama execute_action con action "get_booking" y params: {booking_code: código}
-3. Presenta: estado, vuelo, pasajeros y fecha
+1. Pide el código de reserva. Formato: 3 letras + 3 números (ej: ABC123)
+   - Dile al usuario que lo debe digitar en el campo de texto
+2. Espera a que el usuario escriba el código
+3. Llama execute_action con:
+   - context: "El usuario quiere consultar su reserva con código [CÓDIGO]."
+4. Presenta: estado, vuelo, pasajeros y fecha
 
 ## DESPUÉS DE RECIBIR RESPUESTA
 - Para vuelos: número de vuelo, horarios y precio en palabras
@@ -117,24 +124,13 @@ const TOOLS = [
     type: 'function',
     function: {
       name: 'execute_action',
-      description: 'Ejecuta get_recommendations o get_booking',
+      description: 'Envía contexto conversacional al agente para recomendaciones o consulta de reserva',
       parameters: {
         type: 'object',
         properties: {
-          action:         { type: 'string', enum: ['get_recommendations', 'get_booking'] },
-          q1_paisaje:     { type: 'string' },
-          q2_actividad:   { type: 'string' },
-          q3_clima:       { type: 'string' },
-          q4_gastro:      { type: 'string' },
-          q5_compania:    { type: 'string' },
-          q6_duracion:    { type: 'string' },
-          q7_nocturna:    { type: 'string' },
-          q8_tipo:        { type: 'string' },
-          q9_presupuesto: { type: 'string' },
-          q10_aventura:   { type: 'string' },
-          params:         { type: 'object', properties: { booking_code: { type: 'string' } } },
+          context: { type: 'string', description: 'Resumen en español de lo que el usuario necesita' },
         },
-        required: ['action'],
+        required: ['context'],
       },
     },
   },
@@ -208,16 +204,7 @@ async function executeTool(name, args) {
     }
 
     if (name === 'execute_action') {
-      const { action, params, ...rest } = args;
-
-      if (action === 'get_recommendations') {
-        return await httpPost(`${API_BASE}/recommendations`, rest);
-      }
-
-      if (action === 'get_booking') {
-        const code = params?.booking_code;
-        return await httpGet(`${API_BASE}/lambda-bookings/${code}`);
-      }
+      return await httpPost(`${API_BASE}/agent`, { context: args.context });
     }
 
     return { error: 'Tool desconocida' };

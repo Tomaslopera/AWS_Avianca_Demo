@@ -669,8 +669,11 @@ function confirmPurchase() {
 // ─── CONFIRMATION ─────────────────────────────────────────────────────────────
 
 function generateBookingCode() {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  return Array.from({ length: 6 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const digits = '0123456789';
+  const letterPart = Array.from({ length: 3 }, () => letters[Math.floor(Math.random() * letters.length)]).join('');
+  const digitPart = Array.from({ length: 3 }, () => digits[Math.floor(Math.random() * digits.length)]).join('');
+  return letterPart + digitPart;
 }
 
 // ─── BOOKINGS API ─────────────────────────────────────────────────────────────

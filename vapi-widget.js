@@ -73,7 +73,7 @@
         </div>
         <div class="vapi-chat-messages" id="vapi-chat-messages">
           <div class="vapi-msg vapi-msg--bot">
-            <p>¡Hola! Soy Ava, tu asistente de Avianca. ¿En qué puedo ayudarte hoy?</p>
+            <p>Hola, soy Ava, la asistente virtual de Avianca Colombia. Puedo ayudarte con:<br><br>• Buscar vuelos disponibles<br>• Recomendarte destinos según tus gustos<br>• Consultar el estado de una reserva existente<br><br>Próximamente también podrás realizar reservas directamente desde aquí.<br><br>¿En qué te puedo ayudar hoy?</p>
           </div>
         </div>
         <div class="vapi-chat-footer">
@@ -268,7 +268,7 @@
     const div = document.createElement('div');
     div.className = `vapi-msg vapi-msg--${role}`;
     const p = document.createElement('p');
-    p.textContent = text;
+    p.innerHTML = text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
     div.appendChild(p);
     box.appendChild(div);
     box.scrollTop = box.scrollHeight;
