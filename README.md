@@ -4,30 +4,6 @@ Desarrollo de página web estática alojada en los servicios de **AWS**, con int
 
 [**Web Page**](https://d1cq6wgq3znilx.cloudfront.net)
 
----
-
-## Arquitectura General
-
-```
-Usuario
-  │
-  ▼
-CloudFront (CDN + HTTPS)
-  │
-  ├── S3 (Frontend estático: HTML, CSS, JS)
-  │
-  ├── Cognito (Autenticación OAuth2/PKCE + Google + Facebook)
-  │
-  └── API Gateway (REST API)
-        │
-        ├── GET  /flights        → Lambda (búsqueda en RDS MySQL)
-        ├── POST /chat           → Lambda (OpenAI GPT-4o-mini + tool use)
-        ├── POST /agent          → Lambda (recomendaciones / reservas)
-        └── GET  /lambda-bookings/{code} → Lambda (consulta RDS)
-```
-
----
-
 ## Despliegue en AWS
 
 ### Paso 1: Crear el Bucket S3 y Subir los Archivos
@@ -215,9 +191,6 @@ La página de entrada implementa el flujo PKCE completo en el navegador sin back
         if (!logged && !idToken) redirectToLogin();
     })();
 </script>
-```
-
----
 
 ## API Gateway
 
@@ -258,8 +231,6 @@ Access-Control-Allow-Origin: *
 Access-Control-Allow-Headers: Content-Type, Authorization
 Access-Control-Allow-Methods: POST, GET, OPTIONS
 ```
-
----
 
 ## Lambda Functions
 
@@ -329,8 +300,6 @@ La función define a **Ava**, asistente virtual de Avianca en español, con tres
 1. **Búsqueda de vuelos** — Recopila origen, destino y fecha → llama `search_flights`
 2. **Recomendación de destino** — Hace 10 preguntas (paisaje, actividad, clima, gastronomía, compañía, duración, vida nocturna, nacional/intl, presupuesto, nivel aventura) → llama `execute_action`
 3. **Consulta de reserva** — Solicita código (formato 3 letras + 3 números) → llama `execute_action`
-
----
 
 ## RDS — Base de Datos MySQL
 
@@ -417,8 +386,6 @@ WHERE b.booking_code = 'XK29TF';
 
 La integración usa **function calling** (tool use) de OpenAI. Lambda ejecuta el agentic loop: recibe la respuesta, detecta si hay `tool_calls`, ejecuta la herramienta correspondiente, agrega el resultado al historial y vuelve a llamar a OpenAI hasta obtener `finish_reason: "stop"`.
 
----
-
 ## VAPI — Asistente de Voz
 
 **VAPI** permite llamadas de voz en tiempo real con el asistente Ava directamente desde el navegador.
@@ -457,8 +424,6 @@ vapi.on('call-end', () => { ... });    // Restaura UI
 vapi.on('error', (e) => { ... });      // Fallback a chat
 ```
 
----
-
 ## Contentful CMS
 
 **Space ID:** `d4f15mm5mss6`  
@@ -480,7 +445,6 @@ node contentful-migration.js
 ```
 Requiere `.env` con `CONTENTFUL_SPACE_ID` y `CONTENTFUL_MANAGEMENT_TOKEN`.
 
----
 
 ## Google Analytics 4
 
@@ -496,19 +460,3 @@ Eventos rastreados por página:
 | Tu Reserva | `search_reservation`, `reservation_found`, `reservation_not_found` |
 | Ofertas | `filter_origin`, `filter_country`, `click_offer_card` |
 | Destino | `view_destination`, `click_attraction` |
-
----
-
-## Despliegue Continuo
-
-```bash
-./deploy.sh
-```
-
-El script:
-1. Sincroniza todos los archivos al bucket S3 `avianca-demo` (excluye `.sh`, `.git/`, `node_modules/`)
-2. Crea una invalidación de CloudFront en `/*` para la distribución `E27ZEE9AOMFS01`
-3. Espera a que la invalidación complete
-4. Confirma la URL en producción
-
-**Requisitos:** AWS CLI configurado con permisos sobre S3 y CloudFront.
