@@ -5,7 +5,8 @@
       "Bash(git push:*)",
       "WebFetch(domain:qxsi6eee0k.execute-api.us-east-1.amazonaws.com)",
       "Bash(python3 *)",
-      "Bash(brctl download *)"
+      "Bash(brctl download *)",
+      "Bash(file *)"
     ]
   }
 }
